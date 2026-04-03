@@ -1,18 +1,36 @@
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
+let pool: Pool | null = null;
 let _db: ReturnType<typeof drizzle> | null = null;
+
+function connectionString(): string | undefined {
+  const url = process.env.DATABASE_URL;
+  if (!url) return undefined;
+  // node-pg does not support channel_binding; Neon URLs often include it.
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.delete("channel_binding");
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
+  const url = connectionString();
+  if (!_db && url) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      pool = new Pool({ connectionString: url, max: 10 });
+      _db = drizzle({ client: pool });
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
+      pool = null;
     }
   }
   return _db;
@@ -67,8 +85,10 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     if (Object.keys(updateSet).length === 0) {
       updateSet.lastSignedIn = new Date();
     }
+    updateSet.updatedAt = new Date();
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.openId,
       set: updateSet,
     });
   } catch (error) {

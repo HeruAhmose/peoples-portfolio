@@ -1,6 +1,6 @@
 # Peoples Portfolio
 
-Full-stack portfolio: **React 19**, **Vite 7**, **Express**, **tRPC**, **Drizzle/MySQL**, **Tailwind 4**, **Three.js**. Includes a **Claude-powered H.K. Assistant** (Anthropic), patent-claims explorer, and optional owner email notifications.
+Full-stack portfolio: **React 19**, **Vite 7**, **Express**, **tRPC**, **Drizzle/PostgreSQL** (e.g. **Neon**), **Tailwind 4**, **Three.js**. Includes a **Claude-powered H.K. Assistant** (Anthropic), patent-claims explorer, and optional owner email notifications.
 
 [![CI](https://github.com/HeruAhmose/peoples-portfolio/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HeruAhmose/peoples-portfolio/actions/workflows/ci.yml)
 
@@ -14,7 +14,7 @@ Suggested review order:
 
 1. **Security** — [`SECURITY.md`](SECURITY.md); confirm no credentials in repo; tRPC procedures are `publicProcedure` by design for this marketing/analytics surface—validate rate limits and payload sizes if exposing publicly at scale.
 2. **API** — `server/portfolioRouter.ts` (`hk`, `portfolio`); `server/_core/claude.ts` (Anthropic Messages API).
-3. **Data** — `drizzle/schema.ts`, `drizzle/0001_portfolio_engagement.sql`, `server/portfolioService.ts`.
+3. **Data** — `drizzle/schema.ts`, `drizzle/0000_postgres_init.sql`, `server/portfolioService.ts`.
 4. **Client** — `client/src/App.tsx` routing/intro; `PatentClaimsExplorer.tsx`, `HKAssistant.tsx`; shared copy in `shared/`.
 5. **Build** — `pnpm run ci` matches [GitHub Actions](.github/workflows/ci.yml).
 
@@ -24,7 +24,7 @@ Suggested review order:
 
 ```
 Browser  →  Express (dev: Vite middleware; prod: dist/public static)
-              └── /api/trpc  →  tRPC  →  MySQL (Drizzle) | Anthropic | SMTP
+              └── /api/trpc  →  tRPC  →  PostgreSQL (Drizzle) | Anthropic | SMTP
 ```
 
 - **Auth**: existing OAuth/session helpers (`server/_core/oauth.ts`, `sdk.ts`); many portfolio routes are intentionally public.
@@ -51,7 +51,7 @@ Production-oriented steps and env reference: **[docs/DEPLOYMENT.md](docs/DEPLOYM
 
 - Node.js **20+** (CI uses **22**)
 - **pnpm** **10.26+** (see `packageManager` in `package.json`)
-- **MySQL 8+** (for analytics, inquiries, preferences, timeline)
+- **PostgreSQL** (for analytics, inquiries, preferences, timeline; **Neon** works well with `render.yaml` + Docker)
 
 ## Setup
 
@@ -87,11 +87,11 @@ Open http://localhost:3000 (or the port printed in the terminal).
 
 ## Environment (high level)
 
-| Variable                        | Purpose                            |
-| ------------------------------- | ---------------------------------- |
-| `DATABASE_URL`                  | MySQL for Drizzle                  |
-| `ANTHROPIC_API_KEY`             | Claude (`hk.chat`)                 |
-| `OWNER_NOTIFY_EMAIL` + `SMTP_*` | Owner notifications (`nodemailer`) |
+| Variable                        | Purpose                                       |
+| ------------------------------- | --------------------------------------------- |
+| `DATABASE_URL`                  | PostgreSQL (e.g. Neon pooled URL) for Drizzle |
+| `ANTHROPIC_API_KEY`             | Claude (`hk.chat`)                            |
+| `OWNER_NOTIFY_EMAIL` + `SMTP_*` | Owner notifications (`nodemailer`)            |
 
 See `.env.example` for the full list.
 
@@ -102,7 +102,7 @@ Umami (or similar) was removed from `index.html` to avoid shipping broken `%VITE
 ## Hosting
 
 - **Docker**: `docker build -t peoples-portfolio .` — run with `-p 3000:3000` and required env vars.
-- **Render**: see `render.yaml`. Run `pnpm db:migrate` against production MySQL once before or after first deploy.
+- **Render**: see `render.yaml`. Set `DATABASE_URL` to your Neon connection string in the service env, then run `pnpm db:migrate` once against that database before or after first deploy.
 
 ## tRPC surface
 

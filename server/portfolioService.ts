@@ -156,7 +156,8 @@ export async function upsertNotificationPreferences(input: {
       notifySectionExplores: notifySection,
       notifyInquiries: notifyInq,
     })
-    .onDuplicateKeyUpdate({
+    .onConflictDoUpdate({
+      target: notificationPreferences.visitorKey,
       set: {
         email: input.email ?? null,
         notifySectionExplores: notifySection,

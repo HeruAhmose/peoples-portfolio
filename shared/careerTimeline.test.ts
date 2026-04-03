@@ -64,7 +64,6 @@ describe("CAREER_MILESTONES data", () => {
       expect(MARKER_TONE_CSS_VAR[tone]).toMatch(/^--/);
     }
   });
-
 });
 
 describe("getMilestoneById", () => {

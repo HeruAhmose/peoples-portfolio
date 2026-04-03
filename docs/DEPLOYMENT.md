@@ -1,12 +1,12 @@
 # Deployment (this repository)
 
-This branch is a **Vite 7 + React 19** client, **Express** server, **tRPC** API, **Drizzle ORM** with **MySQL 8**, optional **Anthropic** (H.K. Assistant) and **SMTP** for inquiries.
+This branch is a **Vite 7 + React 19** client, **Express** server, **tRPC** API, **Drizzle ORM** with **PostgreSQL** (e.g. **Neon**), optional **Anthropic** (H.K. Assistant) and **SMTP** for inquiries.
 
 ## Prerequisites
 
 - Node.js **20+** (CI uses **22**)
 - **pnpm** **10.26+** (addresses known supply-chain advisories; CI pins a current 10.x)
-- **MySQL 8+**
+- **PostgreSQL 14+** (managed Neon URL recommended for production)
 
 ## Environment
 

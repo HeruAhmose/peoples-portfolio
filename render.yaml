@@ -1,4 +1,4 @@
-# Render Blueprint: web service + managed MySQL (create DB separately, set DATABASE_URL)
+# Render Blueprint: Docker web service. Set DATABASE_URL to your Neon pooled Postgres URL in the dashboard.
 services:
   - type: web
     name: peoples-portfolio
