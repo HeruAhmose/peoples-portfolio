@@ -36,3 +36,12 @@ We aim to acknowledge within **72 hours** and coordinate a fix timeline.
 - Keep `pnpm-lock.yaml` committed and use `pnpm install --frozen-lockfile` in CI.
 - Review `pnpm audit` regularly; Dependabot opens weekly update PRs when
   configured.
+- **tRPC** and **pnpm** are kept on patched minors where advisories apply; transitive
+  **fast-xml-parser** is overridden to a fixed range for AWS SDK consumers.
+- CI workflows use **`permissions: contents: read`** and a pinned **pnpm** minor on the runner.
+
+## GitHub Actions
+
+- Workflows intentionally avoid broad default `GITHUB_TOKEN` scopes.
+- Pushes that only change Markdown under `docs/` or other `**.md` files skip the main CI
+  workflow to reduce noise; pull requests still run the full suite.

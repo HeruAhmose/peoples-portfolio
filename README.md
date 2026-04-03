@@ -43,10 +43,14 @@ Browser  →  Express (dev: Vite middleware; prod: dist/public static)
 
 ---
 
+## Deployment
+
+Production-oriented steps and env reference: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**. Extended roadmap and env catalog: [docs/Production-Deployment-Guide.md](docs/Production-Deployment-Guide.md).
+
 ## Prerequisites
 
 - Node.js **20+** (CI uses **22**)
-- **pnpm** 10.x
+- **pnpm** **10.26+** (see `packageManager` in `package.json`)
 - **MySQL 8+** (for analytics, inquiries, preferences, timeline)
 
 ## Setup
