@@ -4,7 +4,7 @@ Full-stack portfolio: **React 19**, **Vite 7**, **Express**, **tRPC**, **Drizzle
 
 [![CI](https://github.com/HeruAhmose/peoples-portfolio/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HeruAhmose/peoples-portfolio/actions/workflows/ci.yml)
 
-**License:** [MIT](LICENSE)
+**Proprietary:** [LICENSE](LICENSE) · [PROPRIETARY.md](PROPRIETARY.md)
 
 ---
 

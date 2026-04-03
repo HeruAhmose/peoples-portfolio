@@ -1,5 +1,7 @@
 # Contributing
 
+This repository is **proprietary** (see [`LICENSE`](LICENSE)). Contributions are accepted only under terms agreed in writing with the rights holder (for example a contractor agreement or corporate CLA). Do not assume an open-source contribution license applies.
+
 ## Before you open a PR
 
 1. `pnpm install`
