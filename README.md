@@ -1,11 +1,12 @@
 # Peoples Portfolio
 
-Cyberpunk portfolio site (React 19, Vite 7, tRPC, Tailwind 4, Three.js). Imported from `peoples-portfolio.zip`.
+Standalone full-stack portfolio (React 19, Vite 7, Express, tRPC, Drizzle/MySQL, Tailwind 4, Three.js).
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) 20+
-- [pnpm](https://pnpm.io/) 10.x
+- Node.js 20+
+- pnpm 10.x
+- MySQL 8+ (for analytics, inquiries, and email triggers)
 
 ## Setup
 
@@ -14,17 +15,46 @@ cp .env.example .env
 pnpm install
 ```
 
+Apply database migrations (creates `visitorEvents`, `inquiries`, `notificationPreferences`, `timelineEvents`, and existing `users`):
+
+```bash
+pnpm db:migrate
+```
+
 ## Develop
 
 ```bash
 pnpm dev
 ```
 
-## Build
+Open http://localhost:3000 (or the next free port logged in the terminal).
+
+## Environment highlights
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | MySQL connection string for Drizzle |
+| `ANTHROPIC_API_KEY` | Claude API for H.K. Assistant (`hk.chat`) |
+| `OWNER_NOTIFY_EMAIL` | Destination for first-visit section alerts and inquiries |
+| `SMTP_*` | SMTP delivery for owner notifications (`nodemailer`) |
+
+## Build & run (production)
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-See `todo.md` for feature checklist and design notes.
+## Hosting
+
+- **Docker**: `docker build -t peoples-portfolio .` then run with `-p 3000:3000` and pass env vars (including `DATABASE_URL`, `ANTHROPIC_API_KEY`, SMTP).
+- **Render**: see `render.yaml` for a Docker web service template. Create a MySQL instance (or external DB), set `DATABASE_URL`, run `pnpm db:migrate` against that database once, then deploy.
+
+## API surface (tRPC)
+
+- `hk.chat` — Claude-backed assistant with AMC/preprint system context.
+- `portfolio.logEvent` — client analytics (section views, patent expand, assistant open).
+- `portfolio.submitInquiry` — stores inquiry + emails owner when SMTP is configured.
+- `portfolio.setNotificationPreferences` — upsert visitor notification preferences.
+
+See `todo.md` for the broader product checklist.

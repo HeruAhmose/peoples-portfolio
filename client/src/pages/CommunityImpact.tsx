@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import TechMinutesDashboard from '@/components/TechMinutesDashboard';
+import { usePortfolioAnalytics } from '@/hooks/usePortfolioAnalytics';
 
 interface CommunityImpactProps {
   activeSection: string;
@@ -8,6 +10,10 @@ interface CommunityImpactProps {
 
 export default function CommunityImpact({ activeSection }: CommunityImpactProps) {
   const isActive = activeSection === 'community';
+  const { logSectionView } = usePortfolioAnalytics();
+  useEffect(() => {
+    logSectionView('community');
+  }, [logSectionView]);
 
   return (
     <div className="min-h-screen">

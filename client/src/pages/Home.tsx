@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { usePortfolioAnalytics } from '@/hooks/usePortfolioAnalytics';
 
 interface HomeProps {
   activeSection: string;
@@ -7,6 +9,11 @@ interface HomeProps {
 }
 
 export default function Home({ activeSection, onNavigate }: HomeProps) {
+  const { logSectionView } = usePortfolioAnalytics();
+  useEffect(() => {
+    logSectionView('home');
+  }, [logSectionView]);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}

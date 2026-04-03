@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { usePortfolioAnalytics } from '@/hooks/usePortfolioAnalytics';
 
 interface ResearchLabProps {
   activeSection: string;
@@ -6,6 +8,11 @@ interface ResearchLabProps {
 }
 
 export default function ResearchLab({ activeSection }: ResearchLabProps) {
+  const { logSectionView } = usePortfolioAnalytics();
+  useEffect(() => {
+    logSectionView('research');
+  }, [logSectionView]);
+
   return (
     <div className="min-h-screen">
       {/* Header */}

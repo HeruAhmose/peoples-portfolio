@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AMCVisualization from '@/components/AMCVisualization';
 import PatentClaimsExplorer from '@/components/PatentClaimsExplorer';
 import ManufacturingProcess from '@/components/ManufacturingProcess';
+import { usePortfolioAnalytics } from '@/hooks/usePortfolioAnalytics';
 
 interface MaterialsScienceProps {
   activeSection: string;
@@ -11,6 +12,10 @@ interface MaterialsScienceProps {
 
 export default function MaterialsScience({ activeSection }: MaterialsScienceProps) {
   const [activeTab, setActiveTab] = useState<'visualization' | 'patents' | 'manufacturing'>('visualization');
+  const { logSectionView } = usePortfolioAnalytics();
+  useEffect(() => {
+    logSectionView('materials');
+  }, [logSectionView]);
 
   return (
     <div className="min-h-screen">
