@@ -141,7 +141,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                 SECTOR MAP /// SELECT NODE
               </p>
             </ScrollReveal>
-            <div className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
+            <div className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
               {[
                 {
                   id: "califia",
@@ -150,6 +150,13 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                     "Sovereign cybersecurity intelligence — sovereign awakening experience",
                   icon: "◉",
                   externalUrl: "https://queencalifia-cyberai.web.app/",
+                },
+                {
+                  id: "gallery",
+                  title: "3D Project Gallery",
+                  description:
+                    "Flip cards, live search, category filters, and three sort modes — six builds",
+                  icon: "⎔",
                 },
                 {
                   id: "materials",

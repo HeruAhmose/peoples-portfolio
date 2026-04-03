@@ -15,6 +15,7 @@ import { ParticleBackground } from "./components/AdvancedVisuals";
 const MaterialsScience = lazy(() => import("./pages/MaterialsScience"));
 const CommunityImpact = lazy(() => import("./pages/CommunityImpact"));
 const ResearchLab = lazy(() => import("./pages/ResearchLab"));
+const ProjectGallery = lazy(() => import("./pages/ProjectGallery"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function pathToSection(loc: string): string {
@@ -22,7 +23,12 @@ function pathToSection(loc: string): string {
   const path = raw.replace(/\/$/, "") || "/";
   if (path === "/" || path === "") return "home";
   const seg = path.slice(1).split("/")[0];
-  if (seg === "materials" || seg === "community" || seg === "research")
+  if (
+    seg === "materials" ||
+    seg === "community" ||
+    seg === "research" ||
+    seg === "gallery"
+  )
     return seg;
   return "home";
 }
@@ -37,6 +43,7 @@ const SECTION_TITLES: Record<string, string> = {
   materials: "Materials Science | Jonathan Peoples",
   community: "Community Impact | Jonathan Peoples",
   research: "Research Lab | Jonathan Peoples",
+  gallery: "3D Project Gallery | Jonathan Peoples",
 };
 
 function Router({
@@ -73,6 +80,14 @@ function Router({
       <Route path="/research">
         <Suspense fallback={<PageLoadFallback />}>
           <ResearchLab activeSection={activeSection} onNavigate={onNavigate} />
+        </Suspense>
+      </Route>
+      <Route path="/gallery">
+        <Suspense fallback={<PageLoadFallback />}>
+          <ProjectGallery
+            activeSection={activeSection}
+            onNavigate={onNavigate}
+          />
         </Suspense>
       </Route>
       <Route path="/404">

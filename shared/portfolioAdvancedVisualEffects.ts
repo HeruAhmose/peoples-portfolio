@@ -30,9 +30,9 @@ export const ADVANCED_VISUAL_EFFECTS_MILESTONE = {
   ] as const,
   nextSteps: [
     {
-      title: "Animated project gallery",
+      title: "Project gallery — shipped",
       detail:
-        "3D card flips, hover depth reveals, and category filters so each build reads like a mission dossier.",
+        "Live at /gallery: Project3DCard flips, search, filters, sorts. Next: modal deep-dives and richer media per card.",
     },
     {
       title: "Interactive career timeline",
