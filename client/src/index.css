@@ -271,18 +271,44 @@
     }
   }
 
+  /* Holographic title (gradient clipped to text; works with oklch theme tokens) */
+  @keyframes holographic-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+
+  .holographic-text {
+    background: linear-gradient(
+      90deg,
+      #ffd700,
+      #00d9ff,
+      #e879f9,
+      #00d9ff,
+      #ffd700
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: holographic-shift 5s linear infinite;
+  }
+
   /* Cyber Border Glow */
   @keyframes cyber-border-glow {
     0%,
     100% {
       box-shadow:
-        0 0 10px hsl(var(--gold)),
-        inset 0 0 10px hsl(var(--gold) / 0.2);
+        0 0 10px var(--gold),
+        inset 0 0 10px color-mix(in oklch, var(--gold) 22%, transparent);
     }
     50% {
       box-shadow:
-        0 0 20px hsl(var(--gold)),
-        inset 0 0 20px hsl(var(--gold) / 0.3);
+        0 0 22px var(--gold),
+        inset 0 0 14px color-mix(in oklch, var(--gold) 32%, transparent);
     }
   }
 
@@ -315,19 +341,19 @@
     animation: fade-in-up 0.6s ease-out;
   }
 
-  /* Neon Border */
+  /* Neon Border — use theme tokens directly (oklch), not hsl() */
   .neon-border {
-    border: 1px solid hsl(var(--gold));
+    border: 1px solid var(--gold);
     box-shadow:
-      0 0 10px hsl(var(--gold)),
-      inset 0 0 10px hsl(var(--gold) / 0.2);
+      0 0 10px var(--gold),
+      inset 0 0 10px color-mix(in oklch, var(--gold) 22%, transparent);
   }
 
   .neon-border-cyan {
-    border: 1px solid hsl(var(--cyan));
+    border: 1px solid var(--cyan);
     box-shadow:
-      0 0 10px hsl(var(--cyan)),
-      inset 0 0 10px hsl(var(--cyan) / 0.2);
+      0 0 10px var(--cyan),
+      inset 0 0 10px color-mix(in oklch, var(--cyan) 22%, transparent);
   }
 
   .neon-border-glow {
@@ -345,15 +371,15 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: hsl(var(--background));
+    background: var(--background);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--gold));
+    background: var(--gold);
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--gold) / 0.8);
+    background: color-mix(in oklch, var(--gold) 85%, white);
   }
 }

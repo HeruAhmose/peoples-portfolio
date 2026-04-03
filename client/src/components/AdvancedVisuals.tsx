@@ -1,6 +1,24 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
+/** 2D canvas fill/stroke from #RRGGBB */
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace("#", "");
+  const full =
+    h.length === 3
+      ? h
+          .split("")
+          .map(c => c + c)
+          .join("")
+      : h;
+  if (full.length !== 6) return `rgba(255, 215, 0, ${alpha})`;
+  const n = parseInt(full, 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 interface Particle {
   x: number;
   y: number;
@@ -12,7 +30,11 @@ interface Particle {
   color: string;
 }
 
-export const ParticleBackground = () => {
+export const ParticleBackground = ({
+  className = "fixed inset-0",
+}: {
+  className?: string;
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const animationRef = useRef<number | undefined>(undefined);
@@ -25,12 +47,20 @@ export const ParticleBackground = () => {
     if (!ctx) return;
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const parent = canvas.parentElement;
+      const w = parent ? parent.clientWidth : globalThis.innerWidth;
+      const h = parent ? parent.clientHeight : globalThis.innerHeight;
+      canvas.width = Math.max(1, w);
+      canvas.height = Math.max(1, h);
     };
 
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
+    let ro: ResizeObserver | undefined;
+    if (canvas.parentElement) {
+      ro = new ResizeObserver(() => resizeCanvas());
+      ro.observe(canvas.parentElement);
+    }
 
     // Initialize particles
     const initParticles = () => {
@@ -68,9 +98,7 @@ export const ParticleBackground = () => {
         }
 
         const alpha = (p.life / p.maxLife) * 0.6;
-        ctx.fillStyle = p.color
-          .replace(")", `, ${alpha})`)
-          .replace("rgb", "rgba");
+        ctx.fillStyle = hexToRgba(p.color, alpha);
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
@@ -114,6 +142,7 @@ export const ParticleBackground = () => {
     animate();
 
     return () => {
+      ro?.disconnect();
       window.removeEventListener("resize", resizeCanvas);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -124,15 +153,16 @@ export const ParticleBackground = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
+      className={`pointer-events-none z-0 ${className}`}
       style={{
         background:
-          "radial-gradient(ellipse at center, rgba(10,14,39,0.5) 0%, rgba(5,7,20,1) 100%)",
+          "radial-gradient(ellipse at center, rgba(10,14,39,0.35) 0%, rgba(5,7,20,0.92) 100%)",
       }}
     />
   );
 };
 
+/** Gradient “hologram” text via `background-clip: text` (see `.holographic-text` in index.css). */
 export const HolographicText = ({
   children,
   className = "",
@@ -141,48 +171,14 @@ export const HolographicText = ({
   className?: string;
 }) => {
   return (
-    <motion.div
-      className={`relative ${className}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
+    <motion.span
+      className={`holographic-text ${className}`}
+      initial={{ opacity: 0, filter: "blur(4px)" }}
+      animate={{ opacity: 1, filter: "blur(0px)" }}
+      transition={{ duration: 0.85 }}
     >
-      {/* Base text */}
-      <div className="relative z-10">{children}</div>
-
-      {/* Holographic glow layers */}
-      <motion.div
-        className="absolute inset-0 blur-md opacity-50"
-        style={{
-          background: "linear-gradient(45deg, #ffd700, #00d9ff, #ffd700)",
-          backgroundSize: "200% 200%",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-        }}
-        animate={{
-          backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
-        }}
-        transition={{ duration: 4, repeat: Infinity }}
-      >
-        {children}
-      </motion.div>
-
-      {/* Shimmer effect */}
-      <motion.div
-        className="absolute inset-0 opacity-30"
-        animate={{
-          backgroundPosition: ["200% 0%", "-200% 0%"],
-        }}
-        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(255,215,0,0.5), transparent)",
-          backgroundSize: "200% 100%",
-        }}
-      >
-        {children}
-      </motion.div>
-    </motion.div>
+      {children}
+    </motion.span>
   );
 };
 
@@ -212,6 +208,7 @@ export const GlitchText = ({
 };
 
 export const NeuralNetwork = () => {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const nodesRef = useRef<
     Array<{ x: number; y: number; vx: number; vy: number }>
@@ -220,37 +217,53 @@ export const NeuralNetwork = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const wrap = wrapRef.current;
+    if (!canvas || !wrap) return;
 
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    canvas.width = 400;
-    canvas.height = 300;
-
-    // Initialize nodes
     const nodeCount = 15;
-    nodesRef.current = Array.from({ length: nodeCount }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 1,
-      vy: (Math.random() - 0.5) * 1,
-    }));
+
+    const initNodes = (w: number, h: number) => {
+      nodesRef.current = Array.from({ length: nodeCount }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 1,
+        vy: (Math.random() - 0.5) * 1,
+      }));
+    };
+
+    const resize = () => {
+      const w = Math.max(1, wrap.clientWidth);
+      const h = Math.max(280, Math.min(420, wrap.clientHeight || 320));
+      const dpr = Math.min(2, globalThis.devicePixelRatio || 1);
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (nodesRef.current.length === 0) initNodes(w, h);
+    };
+
+    resize();
+    const ro = new ResizeObserver(() => resize());
+    ro.observe(wrap);
 
     const animate = () => {
-      ctx.fillStyle = "rgba(10, 14, 39, 0.2)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const w = Math.max(1, wrap.clientWidth);
+      const h = Math.max(280, Math.min(420, wrap.clientHeight || 320));
+      if (nodesRef.current.length === 0) initNodes(w, h);
+      ctx.fillStyle = "rgba(10, 14, 39, 0.22)";
+      ctx.fillRect(0, 0, w, h);
 
-      // Update and draw nodes
       nodesRef.current.forEach((node, i) => {
         node.x += node.vx;
         node.y += node.vy;
 
-        // Bounce off edges
-        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+        if (node.x < 0 || node.x > w) node.vx *= -1;
+        if (node.y < 0 || node.y > h) node.vy *= -1;
 
-        // Draw connections
         nodesRef.current.forEach((other, j) => {
           if (i < j) {
             const dx = other.x - node.x;
@@ -268,13 +281,11 @@ export const NeuralNetwork = () => {
           }
         });
 
-        // Draw node
         ctx.fillStyle = "#ffd700";
         ctx.beginPath();
         ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw glow
         ctx.fillStyle = "rgba(255, 215, 0, 0.3)";
         ctx.beginPath();
         ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
@@ -287,6 +298,7 @@ export const NeuralNetwork = () => {
     animate();
 
     return () => {
+      ro.disconnect();
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -294,10 +306,12 @@ export const NeuralNetwork = () => {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full rounded border border-primary/30 bg-card"
-    />
+    <div
+      ref={wrapRef}
+      className="w-full min-h-[280px] h-[min(40vh,420px)] rounded border border-primary/30 bg-card"
+    >
+      <canvas ref={canvasRef} className="block w-full h-full rounded" />
+    </div>
   );
 };
 

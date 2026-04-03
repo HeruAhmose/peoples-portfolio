@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AwakeningStatus {
@@ -21,6 +21,21 @@ export default function SovereignAwakening({
   ]);
   const [isComplete, setIsComplete] = useState(false);
   const [skipClicked, setSkipClicked] = useState(false);
+
+  const particleSeeds = useMemo(
+    () =>
+      [...Array(20)].map((_, i) => {
+        const a = Math.sin((i + 1) * 12.9898) * 43758.5453;
+        const leftPct = (a - Math.floor(a)) * 100;
+        const b = Math.sin((i + 1) * 78.233) * 43758.5453;
+        const topPct = (b - Math.floor(b)) * 100;
+        const c = Math.sin((i + 1) * 45.164) * 9911.547;
+        const dur = 3 + (c - Math.floor(c)) * 2;
+        const delay = (b - Math.floor(b)) * 2;
+        return { leftPct, topPct, duration: dur, delay };
+      }),
+    []
+  );
 
   useEffect(() => {
     if (skipClicked) {
@@ -99,25 +114,27 @@ export default function SovereignAwakening({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8 }}
         >
+          <div
+            className="pointer-events-none absolute inset-0 z-0 scan-effect opacity-[0.22]"
+            aria-hidden
+          />
+
           {/* Animated Background Elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            {[...Array(20)].map((_, i) => (
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            {particleSeeds.map((p, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 bg-primary rounded-full"
-                initial={{
-                  x: Math.random() * window.innerWidth,
-                  y: Math.random() * window.innerHeight,
-                  opacity: 0,
-                }}
+                className="absolute w-1 h-1 rounded-full bg-primary"
+                style={{ left: `${p.leftPct}%`, top: `${p.topPct}%` }}
                 animate={{
-                  y: Math.random() * window.innerHeight,
-                  opacity: [0, 0.8, 0],
+                  y: [0, -60 - (i % 6) * 14, 0],
+                  opacity: [0, 0.85, 0],
                 }}
                 transition={{
-                  duration: 3 + Math.random() * 2,
+                  duration: p.duration,
                   repeat: Infinity,
-                  delay: Math.random() * 2,
+                  delay: p.delay,
+                  ease: "easeInOut",
                 }}
               />
             ))}
@@ -151,6 +168,14 @@ export default function SovereignAwakening({
 
           {/* Status Indicators */}
           <div className="space-y-4 mb-16 text-center">
+            <motion.p
+              className="text-sm font-mono text-muted-foreground tracking-widest"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              QUEEN CALIFIA CYBERAI — SOVEREIGN CYBERSECURITY INTELLIGENCE
+            </motion.p>
             <motion.h1
               className="text-3xl font-bold text-primary tracking-widest"
               initial={{ opacity: 0 }}

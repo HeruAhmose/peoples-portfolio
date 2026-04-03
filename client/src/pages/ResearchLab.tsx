@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { HolographicText } from "@/components/AdvancedVisuals";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 
 interface ResearchLabProps {
@@ -23,12 +24,24 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
           transition={{ duration: 0.6 }}
           className="space-y-6"
         >
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground">
-            <span className="text-primary neon-text">RESEARCH LAB</span>
+          <h1 className="text-5xl md:text-6xl font-bold">
+            <HolographicText className="font-bold">
+              RESEARCH LAB
+            </HolographicText>
           </h1>
           <p className="text-xl text-foreground/80 max-w-2xl">
             Preprint publications, experimental validation frameworks, and
-            scientific hypothesis development.
+            scientific hypothesis development — companion to the public Tamerian
+            Materials narrative at{" "}
+            <a
+              href="https://tamerian-materials.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              tamerian-materials.com
+            </a>
+            .
           </p>
         </motion.div>
       </section>
@@ -93,12 +106,22 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
               </p>
             </div>
 
-            <a
-              href="/Peoples_2026_AMC_PREPRINT.pdf"
-              className="inline-block px-6 py-3 bg-primary text-background hover:bg-primary/80 rounded font-mono text-sm tracking-widest transition-colors"
-            >
-              DOWNLOAD PREPRINT
-            </a>
+            <div className="flex flex-col sm:flex-row gap-4 flex-wrap">
+              <a
+                href="/Peoples_2026_AMC_PREPRINT.pdf"
+                className="inline-block px-6 py-3 bg-primary text-background hover:bg-primary/80 rounded font-mono text-sm tracking-widest transition-colors text-center"
+              >
+                DOWNLOAD PREPRINT
+              </a>
+              <a
+                href="https://tamerian-materials.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-3 border border-primary text-primary hover:bg-primary/10 rounded font-mono text-sm tracking-widest transition-colors text-center"
+              >
+                TAMERIAN MATERIALS (LIVE)
+              </a>
+            </div>
           </div>
         </motion.div>
       </section>

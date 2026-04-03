@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AMCVisualization from "@/components/AMCVisualization";
+import { HolographicText, NeuralNetwork } from "@/components/AdvancedVisuals";
 import PatentClaimsExplorer from "@/components/PatentClaimsExplorer";
 import ManufacturingProcess from "@/components/ManufacturingProcess";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
@@ -31,13 +32,30 @@ export default function MaterialsScience({
           transition={{ duration: 0.6 }}
           className="space-y-6"
         >
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground">
-            <span className="text-primary neon-text">MATERIAL SCIENCE</span>
+          <h1 className="text-5xl md:text-6xl font-bold">
+            <HolographicText className="font-bold">
+              MATERIAL SCIENCE
+            </HolographicText>
           </h1>
+          <p className="text-lg font-mono text-primary tracking-wide">
+            Tamerian Materials — Where Carbon Meets Crystal · Patent pending ·
+            U.S. App. No. 63/934,269
+          </p>
           <p className="text-xl text-foreground/80 max-w-2xl">
-            Architected Multi-Modal Coupling: A testable hypothesis for
-            multi-modal transduction through coupled piezoelectric,
-            pyroelectric, ferrimagnetic, and optically active constituents.
+            Hemp-derived carbon matrices with embedded piezoelectric,
+            thermoelectric, magnetic, and quantum-active crystalline phases — a
+            single composite for simultaneous energy harvesting and
+            room-temperature quantum sensing (narrative aligned with{" "}
+            <a
+              href="https://tamerian-materials.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              tamerian-materials.com
+            </a>
+            ). This section pairs that public story with the AMC research
+            framing and claim explorer.
           </p>
         </motion.div>
       </section>
@@ -87,7 +105,7 @@ export default function MaterialsScience({
           >
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Visualization */}
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-2 min-h-[min(50vh,480px)]">
                 <AMCVisualization isActive={activeTab === "visualization"} />
               </div>
 
@@ -148,9 +166,16 @@ export default function MaterialsScience({
               </motion.div>
             </div>
 
+            <div className="space-y-3">
+              <p className="text-xs font-mono text-muted-foreground tracking-widest">
+                COUPLING GRAPH — multi-node interaction (live)
+              </p>
+              <NeuralNetwork />
+            </div>
+
             {/* Description */}
             <motion.div
-              className="p-6 rounded border border-border bg-card"
+              className="p-6 rounded border border-border bg-card neon-border"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -220,8 +245,10 @@ export default function MaterialsScience({
               transition={{ delay: 0.6 + idx * 0.1 }}
               whileHover={{ scale: 1.05 }}
             >
-              <div className="text-3xl font-bold text-primary neon-text">
-                {metric.value}
+              <div className="text-3xl font-bold">
+                <HolographicText className="font-bold">
+                  {metric.value}
+                </HolographicText>
               </div>
               <p className="text-xs font-mono text-muted-foreground mt-2 tracking-widest">
                 {metric.label}
@@ -229,6 +256,17 @@ export default function MaterialsScience({
             </motion.div>
           ))}
         </motion.div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-16">
+        <a
+          href="https://tamerian-materials.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3 border border-primary text-primary hover:bg-primary/10 rounded font-mono text-sm tracking-widest transition-colors"
+        >
+          OPEN TAMERIAN MATERIALS (LIVE SITE) →
+        </a>
       </section>
     </div>
   );

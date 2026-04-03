@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { HolographicText } from "@/components/AdvancedVisuals";
 import TechMinutesDashboard from "@/components/TechMinutesDashboard";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 
@@ -27,13 +28,15 @@ export default function CommunityImpact({
           transition={{ duration: 0.6 }}
           className="space-y-6"
         >
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground">
-            <span className="text-primary neon-text">COMMUNITY IMPACT</span>
+          <h1 className="text-5xl md:text-6xl font-bold">
+            <HolographicText className="font-bold">
+              COMMUNITY IMPACT
+            </HolographicText>
           </h1>
           <p className="text-xl text-foreground/80 max-w-2xl">
-            Building bridges of access, dignity, and opportunity through
-            human-centered digital help. Free, community-based digital
-            navigation services across the Triangle Area.
+            Building bridges of access, dignity, and opportunity — free,
+            human-centered digital help at community sites across the Triangle.
+            Walk in. Get help. Cross the bridge.
           </p>
         </motion.div>
       </section>
@@ -82,8 +85,7 @@ export default function CommunityImpact({
               {
                 icon: "🤝",
                 title: "Human-First Technology",
-                description:
-                  "H.K. triages; humans deliver. Technology serves people, not the reverse.",
+                description: "H.K. triages; humans deliver.",
               },
               {
                 icon: "📊",
@@ -181,6 +183,12 @@ export default function CommunityImpact({
                 status: "YEAR 2 EXPANSION",
                 hours: "TBD",
               },
+              {
+                name: "El Centro Hispano",
+                location: "Triangle, NC",
+                status: "YEAR 2 EXPANSION",
+                hours: "TBD",
+              },
             ].map((hub, idx) => (
               <motion.div
                 key={idx}
@@ -221,8 +229,17 @@ export default function CommunityImpact({
           </h2>
           <p className="text-foreground/80 mb-6">
             Named for Horace King, the enslaved master bridge builder who
-            connected communities across the American South, H.K. provides 24/7
-            step-by-step guidance between visits.
+            connected communities across the American South. On the{" "}
+            <a
+              href="https://techbridge-collective.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              TechBridge Collective
+            </a>{" "}
+            model, H.K. is 24/7 triage between visits — step-by-step guidance,
+            portal navigation, smart escalation, and no credential collection.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
@@ -263,20 +280,38 @@ export default function CommunityImpact({
             Whether you need help with digital access, want to host a hub, or
             are interested in partnership opportunities, we're here to help.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-wrap sm:flex-row gap-4 justify-center">
             <a
-              href="mailto:hello@techbridge-collective.org"
-              className="px-8 py-3 bg-primary text-background hover:bg-primary/80 rounded font-mono text-sm tracking-widest transition-colors"
-            >
-              GET IN TOUCH
-            </a>
-            <a
-              href="https://techbridge-collective.org"
+              href="https://techbridge-collective.org/get-help"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3 border border-primary text-primary hover:bg-primary/10 rounded font-mono text-sm tracking-widest transition-colors"
+              className="px-8 py-3 bg-primary text-background hover:bg-primary/80 rounded font-mono text-sm tracking-widest transition-colors text-center"
             >
-              LEARN MORE
+              GET HELP NOW
+            </a>
+            <a
+              href="https://techbridge-collective.org/host-a-hub"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 border border-primary text-primary hover:bg-primary/10 rounded font-mono text-sm tracking-widest transition-colors text-center"
+            >
+              HOST A HUB
+            </a>
+            <a
+              href="https://techbridge-collective.org/about"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 border border-primary text-primary hover:bg-primary/10 rounded font-mono text-sm tracking-widest transition-colors text-center"
+            >
+              OUR STORY
+            </a>
+            <a
+              href="https://calendly.com/aitconsult22/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 border border-border text-foreground hover:border-primary rounded font-mono text-sm tracking-widest transition-colors text-center"
+            >
+              BOOK A PILOT CALL
             </a>
           </div>
         </motion.div>

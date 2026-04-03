@@ -13,6 +13,7 @@ import CommunityImpact from "./pages/CommunityImpact";
 import ResearchLab from "./pages/ResearchLab";
 import NotFound from "./pages/NotFound";
 import { useAudioSystem } from "./hooks/useAudioSystem";
+import { ParticleBackground } from "./components/AdvancedVisuals";
 
 function pathToSection(loc: string): string {
   const raw = loc.split("?")[0] || "/";
@@ -120,11 +121,18 @@ function App() {
                 onAudioToggle={toggleMute}
               />
 
-              <main className="pt-16 min-h-screen bg-background space-bg">
-                <Router
-                  activeSection={activeSection}
-                  onNavigate={handleNavigate}
+              <main className="relative z-10 overflow-x-hidden pt-16 min-h-screen space-bg">
+                <ParticleBackground className="absolute inset-0" />
+                <div
+                  className="pointer-events-none absolute inset-0 z-[1] scan-effect opacity-[0.18]"
+                  aria-hidden
                 />
+                <div className="relative z-10">
+                  <Router
+                    activeSection={activeSection}
+                    onNavigate={handleNavigate}
+                  />
+                </div>
               </main>
 
               {/* H.K. Assistant Button */}
