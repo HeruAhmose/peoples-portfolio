@@ -9,7 +9,9 @@
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
+    "ci": "pnpm check && pnpm test && pnpm format:check && pnpm build",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "db:migrate": "drizzle-kit migrate"
   },
@@ -95,7 +97,6 @@
     "@types/react": "^19.2.1",
     "@types/react-dom": "^19.2.1",
     "@vitejs/plugin-react": "^5.0.4",
-    "add": "^2.0.6",
     "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.31.4",
@@ -118,6 +119,10 @@
     },
     "overrides": {
       "tailwindcss>nanoid": "3.3.7"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@tailwindcss/oxide"
+    ]
   }
 }

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from "react";
 
 export interface AudioCue {
   name: string;
   frequency?: number;
   duration: number;
-  type: 'sine' | 'square' | 'sawtooth' | 'triangle';
+  type: "sine" | "square" | "sawtooth" | "triangle";
   volume: number;
   attack: number;
   decay: number;
@@ -26,7 +26,8 @@ export const useAudioSystem = () => {
   // Initialize Web Audio API context
   const initAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
       audioContextRef.current = audioContext;
     }
     return audioContextRef.current;
@@ -49,11 +50,11 @@ export const useAudioSystem = () => {
       const osc = ctx.createOscillator();
       const filter = ctx.createBiquadFilter();
 
-      osc.type = 'square';
+      osc.type = "square";
       osc.frequency.setValueAtTime(200 + i * 150, now);
       osc.frequency.exponentialRampToValueAtTime(50 + i * 100, now + 0.5);
 
-      filter.type = 'highpass';
+      filter.type = "highpass";
       filter.frequency.setValueAtTime(100, now);
       filter.frequency.linearRampToValueAtTime(2000, now + 0.3);
 
@@ -78,7 +79,7 @@ export const useAudioSystem = () => {
 
     // Ascending tone sweep
     const osc = ctx.createOscillator();
-    osc.type = 'sine';
+    osc.type = "sine";
     osc.frequency.setValueAtTime(300, now);
     osc.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
 
@@ -88,7 +89,7 @@ export const useAudioSystem = () => {
 
     // Second harmonic
     const osc2 = ctx.createOscillator();
-    osc2.type = 'sine';
+    osc2.type = "sine";
     osc2.frequency.setValueAtTime(600, now + 0.2);
     osc2.frequency.exponentialRampToValueAtTime(1800, now + 0.6);
 
@@ -109,7 +110,7 @@ export const useAudioSystem = () => {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
 
     const osc = ctx.createOscillator();
-    osc.type = 'square';
+    osc.type = "square";
     osc.frequency.setValueAtTime(800, now);
     osc.frequency.exponentialRampToValueAtTime(200, now + 0.1);
 
@@ -130,7 +131,7 @@ export const useAudioSystem = () => {
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
 
     const osc = ctx.createOscillator();
-    osc.type = 'sine';
+    osc.type = "sine";
     osc.frequency.setValueAtTime(600, now);
     osc.frequency.linearRampToValueAtTime(800, now + 0.15);
 
@@ -154,7 +155,7 @@ export const useAudioSystem = () => {
     const frequencies = [523.25, 659.25, 783.99]; // C, E, G
     frequencies.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
-      osc.type = 'sine';
+      osc.type = "sine";
       osc.frequency.setValueAtTime(freq, now + idx * 0.15);
 
       osc.connect(gainNode);
@@ -176,7 +177,7 @@ export const useAudioSystem = () => {
 
     // Two descending tones
     const osc1 = ctx.createOscillator();
-    osc1.type = 'square';
+    osc1.type = "square";
     osc1.frequency.setValueAtTime(800, now);
     osc1.frequency.exponentialRampToValueAtTime(400, now + 0.2);
 
@@ -185,7 +186,7 @@ export const useAudioSystem = () => {
     osc1.stop(now + 0.2);
 
     const osc2 = ctx.createOscillator();
-    osc2.type = 'square';
+    osc2.type = "square";
     osc2.frequency.setValueAtTime(600, now + 0.25);
     osc2.frequency.exponentialRampToValueAtTime(300, now + 0.45);
 
@@ -196,7 +197,7 @@ export const useAudioSystem = () => {
 
   // Toggle mute state
   const toggleMute = useCallback(() => {
-    setIsMuted((prev) => !prev);
+    setIsMuted(prev => !prev);
   }, []);
 
   // Update master volume
@@ -207,7 +208,10 @@ export const useAudioSystem = () => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      if (
+        audioContextRef.current &&
+        audioContextRef.current.state !== "closed"
+      ) {
         audioContextRef.current.close();
       }
     };

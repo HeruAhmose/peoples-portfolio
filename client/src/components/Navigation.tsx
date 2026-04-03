@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Volume2, VolumeX } from 'lucide-react';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Volume2, VolumeX } from "lucide-react";
 
 interface NavigationProps {
   activeSection: string;
@@ -10,10 +10,10 @@ interface NavigationProps {
 }
 
 const sections = [
-  { id: 'home', label: 'SOVEREIGN INTELLIGENCE' },
-  { id: 'materials', label: 'MATERIAL SCIENCE' },
-  { id: 'community', label: 'COMMUNITY IMPACT' },
-  { id: 'research', label: 'RESEARCH LAB' },
+  { id: "home", label: "SOVEREIGN INTELLIGENCE" },
+  { id: "materials", label: "MATERIAL SCIENCE" },
+  { id: "community", label: "COMMUNITY IMPACT" },
+  { id: "research", label: "RESEARCH LAB" },
 ];
 
 export default function Navigation({
@@ -45,7 +45,7 @@ export default function Navigation({
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center gap-8">
-          {sections.map((section) => (
+          {sections.map(section => (
             <motion.button
               key={section.id}
               onClick={() => onNavigate(section.id)}
@@ -58,10 +58,10 @@ export default function Navigation({
               <span
                 className={`${
                   activeSection === section.id
-                    ? 'text-primary neon-text'
+                    ? "text-primary neon-text"
                     : hoveredSection === section.id
-                      ? 'text-cyan-400'
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? "text-cyan-400"
+                      : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {section.label}
@@ -70,7 +70,7 @@ export default function Navigation({
                 <motion.div
                   className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
                   layoutId="activeIndicator"
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
             </motion.button>
@@ -83,7 +83,7 @@ export default function Navigation({
           className="p-2 rounded border border-border hover:border-primary transition-colors"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+          title={audioEnabled ? "Mute audio" : "Unmute audio"}
         >
           {audioEnabled ? (
             <Volume2 className="w-5 h-5 text-primary" />

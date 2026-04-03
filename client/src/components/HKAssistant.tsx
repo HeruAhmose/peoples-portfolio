@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Send, X } from 'lucide-react';
-import { TRPCClientError } from '@trpc/client';
-import { trpc } from '@/lib/trpc';
-import { usePortfolioAnalytics } from '@/hooks/usePortfolioAnalytics';
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Send, X } from "lucide-react";
+import { TRPCClientError } from "@trpc/client";
+import { trpc } from "@/lib/trpc";
+import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: Date;
 }
@@ -24,20 +24,20 @@ When the Claude API is configured on the server, I answer with full context from
 How may I assist you today?`;
 
 const fallbackReply =
-  'The live model is offline (set ANTHROPIC_API_KEY on the server). For now: the AMC hypothesis proposes engineered coupling among hemp-derived carbon, quartz, tourmaline, magnetite, and rare-earth-doped crystallites in a polymer binder to enable multi-modal transduction—see Materials and Research sections for detail.';
+  "The live model is offline (set ANTHROPIC_API_KEY on the server). For now: the AMC hypothesis proposes engineered coupling among hemp-derived carbon, quartz, tourmaline, magnetite, and rare-earth-doped crystallites in a polymer binder to enable multi-modal transduction—see Materials and Research sections for detail.";
 
 export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
   const { logAssistantOpen } = usePortfolioAnalytics();
   const chat = trpc.hk.chat.useMutation();
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      role: 'assistant',
+      id: "1",
+      role: "assistant",
       content: initialGreeting,
       timestamp: new Date(),
     },
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
   }, [isOpen, logAssistantOpen]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, chat.isPending]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -54,13 +54,13 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      role: 'user',
+      role: "user",
       content: input,
       timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    setInput("");
 
     const history = [...messages, userMessage].map(m => ({
       role: m.role,
@@ -73,7 +73,7 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
         ...prev,
         {
           id: (Date.now() + 1).toString(),
-          role: 'assistant',
+          role: "assistant",
           content: reply,
           timestamp: new Date(),
         },
@@ -82,7 +82,10 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
       let body = fallbackReply;
       if (err instanceof TRPCClientError) {
         const code = err.data?.code ?? err.shape?.data?.code;
-        if (code === 'PRECONDITION_FAILED' || err.message.includes('ANTHROPIC')) {
+        if (
+          code === "PRECONDITION_FAILED" ||
+          err.message.includes("ANTHROPIC")
+        ) {
           body = fallbackReply;
         } else {
           body = `Request error: ${err.message}`;
@@ -92,7 +95,7 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
         ...prev,
         {
           id: (Date.now() + 1).toString(),
-          role: 'assistant',
+          role: "assistant",
           content: body,
           timestamp: new Date(),
         },
@@ -115,7 +118,9 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
           <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
             <div>
               <h3 className="font-bold text-foreground">H.K. ASSISTANT</h3>
-              <p className="text-xs text-muted-foreground font-mono">Claude-powered · AMC context</p>
+              <p className="text-xs text-muted-foreground font-mono">
+                Claude-powered · AMC context
+              </p>
             </div>
             <motion.button
               type="button"
@@ -135,13 +140,13 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.02 }}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
                   className={`max-w-[85%] p-3 rounded text-sm leading-relaxed whitespace-pre-wrap ${
-                    message.role === 'user'
-                      ? 'bg-primary text-background'
-                      : 'bg-background border border-border text-foreground'
+                    message.role === "user"
+                      ? "bg-primary text-background"
+                      : "bg-background border border-border text-foreground"
                   }`}
                 >
                   {message.content}
@@ -149,7 +154,11 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
               </motion.div>
             ))}
             {loading && (
-              <motion.div className="flex justify-start" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <motion.div
+                className="flex justify-start"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
                 <div className="bg-background border border-border p-3 rounded">
                   <div className="flex gap-2">
                     {[0, 1, 2].map(i => (
@@ -157,7 +166,11 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
                         key={i}
                         className="w-2 h-2 bg-primary rounded-full"
                         animate={{ y: [0, -4, 0] }}
-                        transition={{ delay: i * 0.1, repeat: Infinity, duration: 0.6 }}
+                        transition={{
+                          delay: i * 0.1,
+                          repeat: Infinity,
+                          duration: 0.6,
+                        }}
                       />
                     ))}
                   </div>
@@ -167,7 +180,10 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
             <div ref={messagesEndRef} />
           </div>
 
-          <form onSubmit={handleSendMessage} className="p-4 border-t border-border flex gap-2 shrink-0">
+          <form
+            onSubmit={handleSendMessage}
+            className="p-4 border-t border-border flex gap-2 shrink-0"
+          >
             <input
               type="text"
               value={input}

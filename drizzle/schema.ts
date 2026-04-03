@@ -1,4 +1,11 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import {
+  int,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -44,7 +51,9 @@ export const inquiries = mysqlTable("inquiries", {
   email: varchar("email", { length: 320 }).notNull(),
   subject: varchar("subject", { length: 512 }).notNull(),
   body: text("body").notNull(),
-  status: mysqlEnum("status", ["new", "read", "replied"]).default("new").notNull(),
+  status: mysqlEnum("status", ["new", "read", "replied"])
+    .default("new")
+    .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -56,14 +65,20 @@ export const notificationPreferences = mysqlTable("notificationPreferences", {
   id: int("id").autoincrement().primaryKey(),
   visitorKey: varchar("visitorKey", { length: 64 }).notNull().unique(),
   email: varchar("email", { length: 320 }),
-  notifySectionExplores: int("notifySectionExplores", { unsigned: true }).default(1).notNull(),
-  notifyInquiries: int("notifyInquiries", { unsigned: true }).default(1).notNull(),
+  notifySectionExplores: int("notifySectionExplores", { unsigned: true })
+    .default(1)
+    .notNull(),
+  notifyInquiries: int("notifyInquiries", { unsigned: true })
+    .default(1)
+    .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
-export type NotificationPreference = typeof notificationPreferences.$inferSelect;
-export type InsertNotificationPreference = typeof notificationPreferences.$inferInsert;
+export type NotificationPreference =
+  typeof notificationPreferences.$inferSelect;
+export type InsertNotificationPreference =
+  typeof notificationPreferences.$inferInsert;
 
 /** Audit / timeline for notifications and milestones */
 export const timelineEvents = mysqlTable("timelineEvents", {

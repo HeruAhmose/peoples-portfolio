@@ -14,7 +14,9 @@ export type SendMailInput = {
  */
 export async function sendSmtpMail(input: SendMailInput): Promise<boolean> {
   if (!ENV.smtpHost || !ENV.ownerNotifyEmail) {
-    console.warn("[Email] SMTP_HOST or OWNER_NOTIFY_EMAIL not set; skipping send.");
+    console.warn(
+      "[Email] SMTP_HOST or OWNER_NOTIFY_EMAIL not set; skipping send."
+    );
     return false;
   }
 

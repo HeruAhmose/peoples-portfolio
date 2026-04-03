@@ -17,7 +17,12 @@ export const NOTIFY_OWNER_SECTIONS = new Set([
   "research",
 ]);
 
-export async function insertTimeline(kind: string, title: string, detail?: string, payload?: unknown): Promise<void> {
+export async function insertTimeline(
+  kind: string,
+  title: string,
+  detail?: string,
+  payload?: unknown
+): Promise<void> {
   const db = await getDb();
   if (!db) return;
   await db.insert(timelineEvents).values({
@@ -28,7 +33,10 @@ export async function insertTimeline(kind: string, title: string, detail?: strin
   });
 }
 
-async function countPriorSectionViews(sessionId: string, section: string): Promise<number> {
+async function countPriorSectionViews(
+  sessionId: string,
+  section: string
+): Promise<number> {
   const db = await getDb();
   if (!db) return 0;
   const [row] = await db
@@ -57,7 +65,8 @@ export async function logVisitorInteraction(input: {
   }
 
   const isKeySectionView =
-    input.eventType === "section_view" && NOTIFY_OWNER_SECTIONS.has(input.section);
+    input.eventType === "section_view" &&
+    NOTIFY_OWNER_SECTIONS.has(input.section);
 
   const priorViews = isKeySectionView
     ? await countPriorSectionViews(input.sessionId, input.section)
@@ -70,10 +79,15 @@ export async function logVisitorInteraction(input: {
     metadata: input.metadata ? JSON.stringify(input.metadata) : null,
   });
 
-  await insertTimeline("visitor", `${input.eventType}: ${input.section}`, undefined, {
-    sessionId: input.sessionId,
-    ...input.metadata,
-  });
+  await insertTimeline(
+    "visitor",
+    `${input.eventType}: ${input.section}`,
+    undefined,
+    {
+      sessionId: input.sessionId,
+      ...input.metadata,
+    }
+  );
 
   if (isKeySectionView && priorViews === 0 && ENV.ownerNotifyEmail) {
     const subject = `[Portfolio] Section explored: ${input.section}`;
@@ -83,7 +97,10 @@ export async function logVisitorInteraction(input: {
       subject,
       text,
     });
-    await insertTimeline("notification", subject, text, { sessionId: input.sessionId, section: input.section });
+    await insertTimeline("notification", subject, text, {
+      sessionId: input.sessionId,
+      section: input.section,
+    });
   }
 
   return { persisted: true };

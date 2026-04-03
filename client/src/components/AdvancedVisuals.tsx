@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
 interface Particle {
   x: number;
@@ -21,7 +21,7 @@ export const ParticleBackground = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     if (!ctx) return;
 
     const resizeCanvas = () => {
@@ -30,7 +30,7 @@ export const ParticleBackground = () => {
     };
 
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener("resize", resizeCanvas);
 
     // Initialize particles
     const initParticles = () => {
@@ -44,7 +44,7 @@ export const ParticleBackground = () => {
           life: Math.random() * 100 + 50,
           maxLife: 150,
           size: Math.random() * 2 + 1,
-          color: Math.random() > 0.5 ? '#ffd700' : '#00d9ff',
+          color: Math.random() > 0.5 ? "#ffd700" : "#00d9ff",
         });
       }
     };
@@ -53,11 +53,11 @@ export const ParticleBackground = () => {
 
     const animate = () => {
       // Clear canvas with fade effect
-      ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
+      ctx.fillStyle = "rgba(10, 14, 39, 0.1)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Update and draw particles
-      particlesRef.current = particlesRef.current.filter((p) => {
+      particlesRef.current = particlesRef.current.filter(p => {
         p.x += p.vx;
         p.y += p.vy;
         p.life--;
@@ -68,13 +68,15 @@ export const ParticleBackground = () => {
         }
 
         const alpha = (p.life / p.maxLife) * 0.6;
-        ctx.fillStyle = p.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+        ctx.fillStyle = p.color
+          .replace(")", `, ${alpha})`)
+          .replace("rgb", "rgba");
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
 
         // Draw connections between nearby particles
-        particlesRef.current.forEach((p2) => {
+        particlesRef.current.forEach(p2 => {
           const dx = p2.x - p.x;
           const dy = p2.y - p.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
@@ -102,7 +104,7 @@ export const ParticleBackground = () => {
           life: 150,
           maxLife: 150,
           size: Math.random() * 2 + 1,
-          color: Math.random() > 0.5 ? '#ffd700' : '#00d9ff',
+          color: Math.random() > 0.5 ? "#ffd700" : "#00d9ff",
         });
       }
 
@@ -112,7 +114,7 @@ export const ParticleBackground = () => {
     animate();
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("resize", resizeCanvas);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -123,12 +125,21 @@ export const ParticleBackground = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ background: 'radial-gradient(ellipse at center, rgba(10,14,39,0.5) 0%, rgba(5,7,20,1) 100%)' }}
+      style={{
+        background:
+          "radial-gradient(ellipse at center, rgba(10,14,39,0.5) 0%, rgba(5,7,20,1) 100%)",
+      }}
     />
   );
 };
 
-export const HolographicText = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
+export const HolographicText = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
     <motion.div
       className={`relative ${className}`}
@@ -143,13 +154,13 @@ export const HolographicText = ({ children, className = '' }: { children: React.
       <motion.div
         className="absolute inset-0 blur-md opacity-50"
         style={{
-          background: 'linear-gradient(45deg, #ffd700, #00d9ff, #ffd700)',
-          backgroundSize: '200% 200%',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          background: "linear-gradient(45deg, #ffd700, #00d9ff, #ffd700)",
+          backgroundSize: "200% 200%",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
         }}
         animate={{
-          backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+          backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
         }}
         transition={{ duration: 4, repeat: Infinity }}
       >
@@ -160,12 +171,13 @@ export const HolographicText = ({ children, className = '' }: { children: React.
       <motion.div
         className="absolute inset-0 opacity-30"
         animate={{
-          backgroundPosition: ['200% 0%', '-200% 0%'],
+          backgroundPosition: ["200% 0%", "-200% 0%"],
         }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
         style={{
-          background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.5), transparent)',
-          backgroundSize: '200% 100%',
+          background:
+            "linear-gradient(90deg, transparent, rgba(255,215,0,0.5), transparent)",
+          backgroundSize: "200% 100%",
         }}
       >
         {children}
@@ -174,16 +186,22 @@ export const HolographicText = ({ children, className = '' }: { children: React.
   );
 };
 
-export const GlitchText = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
+export const GlitchText = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
     <motion.div
       className={`relative ${className}`}
       animate={{
         textShadow: [
-          '0 0 0 #ffd700, 0 0 0 #00d9ff',
-          '2px 2px 0 #ffd700, -2px -2px 0 #00d9ff',
-          '-2px 2px 0 #ffd700, 2px -2px 0 #00d9ff',
-          '0 0 0 #ffd700, 0 0 0 #00d9ff',
+          "0 0 0 #ffd700, 0 0 0 #00d9ff",
+          "2px 2px 0 #ffd700, -2px -2px 0 #00d9ff",
+          "-2px 2px 0 #ffd700, 2px -2px 0 #00d9ff",
+          "0 0 0 #ffd700, 0 0 0 #00d9ff",
         ],
       }}
       transition={{ duration: 0.3, repeat: Infinity, repeatDelay: 2 }}
@@ -195,14 +213,16 @@ export const GlitchText = ({ children, className = '' }: { children: React.React
 
 export const NeuralNetwork = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const nodesRef = useRef<Array<{ x: number; y: number; vx: number; vy: number }>>([]);
+  const nodesRef = useRef<
+    Array<{ x: number; y: number; vx: number; vy: number }>
+  >([]);
   const animationRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     if (!ctx) return;
 
     canvas.width = 400;
@@ -218,7 +238,7 @@ export const NeuralNetwork = () => {
     }));
 
     const animate = () => {
-      ctx.fillStyle = 'rgba(10, 14, 39, 0.2)';
+      ctx.fillStyle = "rgba(10, 14, 39, 0.2)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Update and draw nodes
@@ -249,13 +269,13 @@ export const NeuralNetwork = () => {
         });
 
         // Draw node
-        ctx.fillStyle = '#ffd700';
+        ctx.fillStyle = "#ffd700";
         ctx.beginPath();
         ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
         ctx.fill();
 
         // Draw glow
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+        ctx.fillStyle = "rgba(255, 215, 0, 0.3)";
         ctx.beginPath();
         ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
         ctx.fill();
@@ -273,22 +293,34 @@ export const NeuralNetwork = () => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="w-full rounded border border-primary/30 bg-card" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="w-full rounded border border-primary/30 bg-card"
+    />
+  );
 };
 
-export const AnimatedGradientBorder = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
+export const AnimatedGradientBorder = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
     <motion.div
       className={`relative ${className}`}
       animate={{
-        backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+        backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
       }}
-      transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+      transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
       style={{
-        background: 'linear-gradient(45deg, #ffd700, #00d9ff, #ff00ff, #ffd700)',
-        backgroundSize: '300% 300%',
-        padding: '2px',
-        borderRadius: '8px',
+        background:
+          "linear-gradient(45deg, #ffd700, #00d9ff, #ff00ff, #ffd700)",
+        backgroundSize: "300% 300%",
+        padding: "2px",
+        borderRadius: "8px",
       }}
     >
       <div className="bg-background rounded">{children}</div>
@@ -315,7 +347,7 @@ export const FloatingElement = ({
         duration,
         delay,
         repeat: Infinity,
-        ease: 'easeInOut',
+        ease: "easeInOut",
       }}
     >
       {children}
@@ -323,15 +355,21 @@ export const FloatingElement = ({
   );
 };
 
-export const PulseGlow = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
+export const PulseGlow = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
     <motion.div
       className={className}
       animate={{
         boxShadow: [
-          '0 0 20px rgba(255, 215, 0, 0.3)',
-          '0 0 40px rgba(0, 217, 255, 0.5)',
-          '0 0 20px rgba(255, 215, 0, 0.3)',
+          "0 0 20px rgba(255, 215, 0, 0.3)",
+          "0 0 40px rgba(0, 217, 255, 0.5)",
+          "0 0 20px rgba(255, 215, 0, 0.3)",
         ],
       }}
       transition={{ duration: 2, repeat: Infinity }}

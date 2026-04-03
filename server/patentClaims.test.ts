@@ -8,7 +8,9 @@ describe("patent claims catalog", () => {
 
   it("uses three categories with expected counts", () => {
     const composition = PATENT_CLAIMS.filter(c => c.category === "composition");
-    const manufacturing = PATENT_CLAIMS.filter(c => c.category === "manufacturing");
+    const manufacturing = PATENT_CLAIMS.filter(
+      c => c.category === "manufacturing"
+    );
     const device = PATENT_CLAIMS.filter(c => c.category === "device");
     expect(composition).toHaveLength(15);
     expect(manufacturing).toHaveLength(3);

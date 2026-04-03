@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Search } from 'lucide-react';
+import { useMemo, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Search } from "lucide-react";
 import {
   PATENT_CLAIMS,
   buildClaimDiagramSvg,
@@ -8,40 +8,45 @@ import {
   type ClaimCategory,
   type ClaimType,
   type PatentClaim,
-} from '@shared/patentClaims';
-import { usePortfolioAnalytics } from '@/hooks/usePortfolioAnalytics';
-import { Input } from '@/components/ui/input';
+} from "@shared/patentClaims";
+import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
+import { Input } from "@/components/ui/input";
 
-const categoryColors: Record<ClaimCategory, { bg: string; text: string; border: string }> = {
+const categoryColors: Record<
+  ClaimCategory,
+  { bg: string; text: string; border: string }
+> = {
   composition: {
-    bg: 'bg-yellow-500/10',
-    text: 'text-yellow-400',
-    border: 'border-yellow-400/30',
+    bg: "bg-yellow-500/10",
+    text: "text-yellow-400",
+    border: "border-yellow-400/30",
   },
   manufacturing: {
-    bg: 'bg-cyan-500/10',
-    text: 'text-cyan-400',
-    border: 'border-cyan-400/30',
+    bg: "bg-cyan-500/10",
+    text: "text-cyan-400",
+    border: "border-cyan-400/30",
   },
   device: {
-    bg: 'bg-fuchsia-500/10',
-    text: 'text-fuchsia-400',
-    border: 'border-fuchsia-400/30',
+    bg: "bg-fuchsia-500/10",
+    text: "text-fuchsia-400",
+    border: "border-fuchsia-400/30",
   },
 };
 
 export default function PatentClaimsExplorer() {
   const { logPatentClaimExpand } = usePortfolioAnalytics();
   const [expandedClaim, setExpandedClaim] = useState<number | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<ClaimCategory | 'all'>('all');
-  const [selectedType, setSelectedType] = useState<ClaimType | 'all'>('all');
-  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<
+    ClaimCategory | "all"
+  >("all");
+  const [selectedType, setSelectedType] = useState<ClaimType | "all">("all");
+  const [search, setSearch] = useState("");
 
   const categoryGroups = useMemo(
     () => ({
-      composition: PATENT_CLAIMS.filter(c => c.category === 'composition'),
-      manufacturing: PATENT_CLAIMS.filter(c => c.category === 'manufacturing'),
-      device: PATENT_CLAIMS.filter(c => c.category === 'device'),
+      composition: PATENT_CLAIMS.filter(c => c.category === "composition"),
+      manufacturing: PATENT_CLAIMS.filter(c => c.category === "manufacturing"),
+      device: PATENT_CLAIMS.filter(c => c.category === "device"),
     }),
     []
   );
@@ -49,10 +54,12 @@ export default function PatentClaimsExplorer() {
   const filteredClaims = useMemo(() => {
     const q = search.trim().toLowerCase();
     return PATENT_CLAIMS.filter(c => {
-      if (selectedCategory !== 'all' && c.category !== selectedCategory) return false;
-      if (selectedType !== 'all' && c.claimType !== selectedType) return false;
+      if (selectedCategory !== "all" && c.category !== selectedCategory)
+        return false;
+      if (selectedType !== "all" && c.claimType !== selectedType) return false;
       if (!q) return true;
-      const blob = `${c.number} ${c.title} ${c.description} ${c.technicalSpecs.join(' ')} ${c.claimType}`.toLowerCase();
+      const blob =
+        `${c.number} ${c.title} ${c.description} ${c.technicalSpecs.join(" ")} ${c.claimType}`.toLowerCase();
       return blob.includes(q);
     });
   }, [search, selectedCategory, selectedType]);
@@ -86,11 +93,13 @@ export default function PatentClaimsExplorer() {
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-        <span className="text-xs font-mono text-muted-foreground tracking-widest">CATEGORY</span>
+        <span className="text-xs font-mono text-muted-foreground tracking-widest">
+          CATEGORY
+        </span>
         <div className="flex gap-2 flex-wrap">
           <FilterChip
-            active={selectedCategory === 'all'}
-            onClick={() => setSelectedCategory('all')}
+            active={selectedCategory === "all"}
+            onClick={() => setSelectedCategory("all")}
             label={`ALL (${PATENT_CLAIMS.length})`}
           />
           {(Object.keys(categoryColors) as ClaimCategory[]).map(cat => (
@@ -106,9 +115,15 @@ export default function PatentClaimsExplorer() {
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-        <span className="text-xs font-mono text-muted-foreground tracking-widest">TYPE</span>
+        <span className="text-xs font-mono text-muted-foreground tracking-widest">
+          TYPE
+        </span>
         <div className="flex gap-2 flex-wrap">
-          <FilterChip active={selectedType === 'all'} onClick={() => setSelectedType('all')} label="ALL TYPES" />
+          <FilterChip
+            active={selectedType === "all"}
+            onClick={() => setSelectedType("all")}
+            label="ALL TYPES"
+          />
           {(Object.keys(CLAIM_TYPE_LABELS) as ClaimType[]).map(t => (
             <FilterChip
               key={t}
@@ -145,17 +160,32 @@ export default function PatentClaimsExplorer() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className={`font-bold text-lg ${colors.text}`}>CLAIM {claim.number}</span>
-                        <span className={`text-xs font-mono ${colors.text} opacity-80`}>{claim.category.toUpperCase()}</span>
+                        <span className={`font-bold text-lg ${colors.text}`}>
+                          CLAIM {claim.number}
+                        </span>
+                        <span
+                          className={`text-xs font-mono ${colors.text} opacity-80`}
+                        >
+                          {claim.category.toUpperCase()}
+                        </span>
                         <span className="text-xs font-mono text-muted-foreground border border-border rounded px-2 py-0.5">
                           {CLAIM_TYPE_LABELS[claim.claimType]}
                         </span>
                       </div>
-                      <h3 className="font-semibold text-foreground">{claim.title}</h3>
-                      <p className="text-sm text-foreground/70 mt-1 line-clamp-2">{claim.description}</p>
+                      <h3 className="font-semibold text-foreground">
+                        {claim.title}
+                      </h3>
+                      <p className="text-sm text-foreground/70 mt-1 line-clamp-2">
+                        {claim.description}
+                      </p>
                     </div>
-                    <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                      <ChevronDown className={`w-5 h-5 shrink-0 ${colors.text}`} />
+                    <motion.div
+                      animate={{ rotate: isExpanded ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronDown
+                        className={`w-5 h-5 shrink-0 ${colors.text}`}
+                      />
                     </motion.div>
                   </div>
 
@@ -163,17 +193,23 @@ export default function PatentClaimsExplorer() {
                     {isExpanded && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
+                        animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3 }}
                         className="mt-4 pt-4 border-t border-current border-opacity-20 space-y-4"
                       >
                         <div>
-                          <h4 className="text-xs font-mono tracking-widest text-muted-foreground mb-2">SUMMARY</h4>
-                          <p className="text-sm text-foreground/85 leading-relaxed">{claim.description}</p>
+                          <h4 className="text-xs font-mono tracking-widest text-muted-foreground mb-2">
+                            SUMMARY
+                          </h4>
+                          <p className="text-sm text-foreground/85 leading-relaxed">
+                            {claim.description}
+                          </p>
                         </div>
                         <div>
-                          <h4 className="text-xs font-mono tracking-widest text-muted-foreground mb-2">TECHNICAL SPECIFICATIONS</h4>
+                          <h4 className="text-xs font-mono tracking-widest text-muted-foreground mb-2">
+                            TECHNICAL SPECIFICATIONS
+                          </h4>
                           <ul className="list-disc pl-5 space-y-1 text-sm text-foreground/80">
                             {claim.technicalSpecs.map((line, i) => (
                               <li key={i}>{line}</li>
@@ -181,8 +217,12 @@ export default function PatentClaimsExplorer() {
                           </ul>
                         </div>
                         <div>
-                          <h4 className="text-xs font-mono tracking-widest text-muted-foreground mb-2">DIAGRAM</h4>
-                          <p className="text-xs text-foreground/70 mb-2">{claim.diagramCaption}</p>
+                          <h4 className="text-xs font-mono tracking-widest text-muted-foreground mb-2">
+                            DIAGRAM
+                          </h4>
+                          <p className="text-xs text-foreground/70 mb-2">
+                            {claim.diagramCaption}
+                          </p>
                           <div
                             className="rounded border border-border bg-[#050814] p-2 overflow-x-auto"
                             dangerouslySetInnerHTML={{ __html: svg }}
@@ -197,7 +237,9 @@ export default function PatentClaimsExplorer() {
           })}
         </AnimatePresence>
         {filteredClaims.length === 0 && (
-          <p className="text-sm text-muted-foreground font-mono text-center py-8">No claims match your filters.</p>
+          <p className="text-sm text-muted-foreground font-mono text-center py-8">
+            No claims match your filters.
+          </p>
         )}
       </div>
 
@@ -209,8 +251,14 @@ export default function PatentClaimsExplorer() {
       >
         {(Object.keys(categoryGroups) as ClaimCategory[]).map(category => (
           <div key={category} className="text-center">
-            <div className={`text-2xl font-bold ${categoryColors[category].text}`}>{categoryGroups[category].length}</div>
-            <div className="text-xs font-mono text-muted-foreground mt-1">{category.toUpperCase()}</div>
+            <div
+              className={`text-2xl font-bold ${categoryColors[category].text}`}
+            >
+              {categoryGroups[category].length}
+            </div>
+            <div className="text-xs font-mono text-muted-foreground mt-1">
+              {category.toUpperCase()}
+            </div>
           </div>
         ))}
       </motion.div>
@@ -230,8 +278,8 @@ function FilterChip({
   activeClassName?: string;
 }) {
   const activeStyles = active
-    ? activeClassName ?? 'bg-primary text-background border-primary'
-    : 'border-border text-foreground hover:border-primary';
+    ? (activeClassName ?? "bg-primary text-background border-primary")
+    : "border-border text-foreground hover:border-primary";
   return (
     <motion.button
       type="button"

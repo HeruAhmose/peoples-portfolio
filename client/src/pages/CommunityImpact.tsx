@@ -1,18 +1,20 @@
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import TechMinutesDashboard from '@/components/TechMinutesDashboard';
-import { usePortfolioAnalytics } from '@/hooks/usePortfolioAnalytics';
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import TechMinutesDashboard from "@/components/TechMinutesDashboard";
+import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 
 interface CommunityImpactProps {
   activeSection: string;
   onNavigate: (section: string) => void;
 }
 
-export default function CommunityImpact({ activeSection }: CommunityImpactProps) {
-  const isActive = activeSection === 'community';
+export default function CommunityImpact({
+  activeSection,
+}: CommunityImpactProps) {
+  const isActive = activeSection === "community";
   const { logSectionView } = usePortfolioAnalytics();
   useEffect(() => {
-    logSectionView('community');
+    logSectionView("community");
   }, [logSectionView]);
 
   return (
@@ -29,7 +31,9 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
             <span className="text-primary neon-text">COMMUNITY IMPACT</span>
           </h1>
           <p className="text-xl text-foreground/80 max-w-2xl">
-            Building bridges of access, dignity, and opportunity through human-centered digital help. Free, community-based digital navigation services across the Triangle Area.
+            Building bridges of access, dignity, and opportunity through
+            human-centered digital help. Free, community-based digital
+            navigation services across the Triangle Area.
           </p>
         </motion.div>
       </section>
@@ -42,12 +46,20 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
           transition={{ delay: 0.2 }}
           className="max-w-3xl"
         >
-          <h2 className="text-2xl font-bold text-foreground mb-6">THE MISSION</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">
+            THE MISSION
+          </h2>
           <p className="text-foreground/80 text-lg leading-relaxed mb-6">
-            TechBridge Collective addresses the digital divide in North Carolina through a three-pillar model: weekly help desk services with paid Digital Navigators, H.K. AI triage for 24/7 guidance, and TechMinutes® impact reporting.
+            TechBridge Collective addresses the digital divide in North Carolina
+            through a three-pillar model: weekly help desk services with paid
+            Digital Navigators, H.K. AI triage for 24/7 guidance, and
+            TechMinutes® impact reporting.
           </p>
           <p className="text-foreground/80 text-lg leading-relaxed">
-            We believe that the best technology in the world doesn't matter if no one shows you how to use it. Our mission is to connect 1.2M North Carolinians who lack adequate digital access with the tools, knowledge, and human support they need to thrive.
+            We believe that the best technology in the world doesn't matter if
+            no one shows you how to use it. Our mission is to connect 1.2M North
+            Carolinians who lack adequate digital access with the tools,
+            knowledge, and human support they need to thrive.
           </p>
         </motion.div>
       </section>
@@ -63,34 +75,39 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                icon: '🔄',
-                title: 'Consistency over Novelty',
-                description: 'We show up. Every week. Same time, same place.',
+                icon: "🔄",
+                title: "Consistency over Novelty",
+                description: "We show up. Every week. Same time, same place.",
               },
               {
-                icon: '🤝',
-                title: 'Human-First Technology',
-                description: 'H.K. triages; humans deliver. Technology serves people, not the reverse.',
+                icon: "🤝",
+                title: "Human-First Technology",
+                description:
+                  "H.K. triages; humans deliver. Technology serves people, not the reverse.",
               },
               {
-                icon: '📊',
-                title: 'Measured Impact',
-                description: 'Every interaction becomes a TechMinute®. We measure what matters.',
+                icon: "📊",
+                title: "Measured Impact",
+                description:
+                  "Every interaction becomes a TechMinute®. We measure what matters.",
               },
               {
-                icon: '🏢',
-                title: 'Low-Lift Partnerships',
-                description: 'Host provides space. TechBridge provides everything else.',
+                icon: "🏢",
+                title: "Low-Lift Partnerships",
+                description:
+                  "Host provides space. TechBridge provides everything else.",
               },
               {
-                icon: '💰',
-                title: 'Paid Navigators',
-                description: 'No volunteers. Paid staff show up, stay trained, and don\'t churn.',
+                icon: "💰",
+                title: "Paid Navigators",
+                description:
+                  "No volunteers. Paid staff show up, stay trained, and don't churn.",
               },
               {
-                icon: '🔒',
-                title: 'Privacy by Design',
-                description: 'No PII. No credential access. We guide; we don\'t control.',
+                icon: "🔒",
+                title: "Privacy by Design",
+                description:
+                  "No PII. No credential access. We guide; we don't control.",
               },
             ].map((value, idx) => (
               <motion.div
@@ -102,8 +119,12 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
                 whileHover={{ scale: 1.05, y: -4 }}
               >
                 <div className="text-4xl mb-4">{value.icon}</div>
-                <h3 className="font-bold text-foreground mb-2">{value.title}</h3>
-                <p className="text-sm text-foreground/80">{value.description}</p>
+                <h3 className="font-bold text-foreground mb-2">
+                  {value.title}
+                </h3>
+                <p className="text-sm text-foreground/80">
+                  {value.description}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -117,7 +138,9 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <h2 className="text-2xl font-bold text-foreground mb-8">IMPACT DASHBOARD</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-8">
+            IMPACT DASHBOARD
+          </h2>
           <TechMinutesDashboard isActive={isActive} />
         </motion.div>
       </section>
@@ -129,32 +152,34 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <h2 className="text-2xl font-bold text-foreground mb-8">HUB NETWORK</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-8">
+            HUB NETWORK
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                name: 'Durham County Library',
-                location: 'Durham, NC',
-                status: 'PILOT TARGET — YEAR 1',
-                hours: '4–8 hrs/wk',
+                name: "Durham County Library",
+                location: "Durham, NC",
+                status: "PILOT TARGET — YEAR 1",
+                hours: "4–8 hrs/wk",
               },
               {
-                name: 'Raleigh Digital Impact Center',
-                location: 'Raleigh, NC',
-                status: 'PILOT TARGET — YEAR 1',
-                hours: '4–8 hrs/wk',
+                name: "Raleigh Digital Impact Center",
+                location: "Raleigh, NC",
+                status: "PILOT TARGET — YEAR 1",
+                hours: "4–8 hrs/wk",
               },
               {
-                name: 'Durham Housing Authority',
-                location: 'Durham, NC',
-                status: 'YEAR 2 EXPANSION',
-                hours: 'TBD',
+                name: "Durham Housing Authority",
+                location: "Durham, NC",
+                status: "YEAR 2 EXPANSION",
+                hours: "TBD",
               },
               {
-                name: 'Raleigh Housing Authority',
-                location: 'Raleigh, NC',
-                status: 'YEAR 2 EXPANSION',
-                hours: 'TBD',
+                name: "Raleigh Housing Authority",
+                location: "Raleigh, NC",
+                status: "YEAR 2 EXPANSION",
+                hours: "TBD",
               },
             ].map((hub, idx) => (
               <motion.div
@@ -166,10 +191,16 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
                 whileHover={{ scale: 1.02 }}
               >
                 <h3 className="font-bold text-foreground mb-2">{hub.name}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{hub.location}</p>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {hub.location}
+                </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-primary">{hub.status}</span>
-                  <span className="text-xs font-mono text-muted-foreground">{hub.hours}</span>
+                  <span className="text-xs font-mono text-primary">
+                    {hub.status}
+                  </span>
+                  <span className="text-xs font-mono text-muted-foreground">
+                    {hub.hours}
+                  </span>
                 </div>
               </motion.div>
             ))}
@@ -185,16 +216,20 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
           transition={{ delay: 0.8 }}
           className="max-w-3xl"
         >
-          <h2 className="text-2xl font-bold text-foreground mb-6">H.K. AI TRIAGE</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">
+            H.K. AI TRIAGE
+          </h2>
           <p className="text-foreground/80 mb-6">
-            Named for Horace King, the enslaved master bridge builder who connected communities across the American South, H.K. provides 24/7 step-by-step guidance between visits.
+            Named for Horace King, the enslaved master bridge builder who
+            connected communities across the American South, H.K. provides 24/7
+            step-by-step guidance between visits.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
-              { label: 'Step-by-step guidance', emoji: '📋' },
-              { label: 'Portal navigation', emoji: '🗺️' },
-              { label: 'Smart escalation', emoji: '🎯' },
-              { label: '24/7 availability', emoji: '⏰' },
+              { label: "Step-by-step guidance", emoji: "📋" },
+              { label: "Portal navigation", emoji: "🗺️" },
+              { label: "Smart escalation", emoji: "🎯" },
+              { label: "24/7 availability", emoji: "⏰" },
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
@@ -204,7 +239,9 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
                 transition={{ delay: 0.9 + idx * 0.05 }}
               >
                 <span className="text-3xl">{feature.emoji}</span>
-                <span className="text-foreground font-semibold">{feature.label}</span>
+                <span className="text-foreground font-semibold">
+                  {feature.label}
+                </span>
               </motion.div>
             ))}
           </div>
@@ -219,9 +256,12 @@ export default function CommunityImpact({ activeSection }: CommunityImpactProps)
           transition={{ delay: 1 }}
           className="text-center max-w-2xl mx-auto"
         >
-          <h2 className="text-3xl font-bold text-foreground mb-6">Ready to Cross the Bridge?</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-6">
+            Ready to Cross the Bridge?
+          </h2>
           <p className="text-foreground/80 mb-8">
-            Whether you need help with digital access, want to host a hub, or are interested in partnership opportunities, we're here to help.
+            Whether you need help with digital access, want to host a hub, or
+            are interested in partnership opportunities, we're here to help.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a

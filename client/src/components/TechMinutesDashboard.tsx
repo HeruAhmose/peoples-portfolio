@@ -1,28 +1,40 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface TechMinutesDashboardProps {
   isActive: boolean;
 }
 
 const impactData = [
-  { month: 'Jan', minutes: 240, residents: 32 },
-  { month: 'Feb', minutes: 380, residents: 52 },
-  { month: 'Mar', minutes: 520, residents: 78 },
-  { month: 'Apr', minutes: 680, residents: 95 },
-  { month: 'May', minutes: 890, residents: 128 },
-  { month: 'Jun', minutes: 1200, residents: 165 },
+  { month: "Jan", minutes: 240, residents: 32 },
+  { month: "Feb", minutes: 380, residents: 52 },
+  { month: "Mar", minutes: 520, residents: 78 },
+  { month: "Apr", minutes: 680, residents: 95 },
+  { month: "May", minutes: 890, residents: 128 },
+  { month: "Jun", minutes: 1200, residents: 165 },
 ];
 
 const categoryData = [
-  { category: 'Education', minutes: 340, color: '#ffd700' },
-  { category: 'Workforce', minutes: 280, color: '#00d9ff' },
-  { category: 'Health', minutes: 220, color: '#ff00ff' },
-  { category: 'Housing', minutes: 160, color: '#00ff88' },
+  { category: "Education", minutes: 340, color: "#ffd700" },
+  { category: "Workforce", minutes: 280, color: "#00d9ff" },
+  { category: "Health", minutes: 220, color: "#ff00ff" },
+  { category: "Housing", minutes: 160, color: "#00ff88" },
 ];
 
-export default function TechMinutesDashboard({ isActive }: TechMinutesDashboardProps) {
+export default function TechMinutesDashboard({
+  isActive,
+}: TechMinutesDashboardProps) {
   const [animatedStats, setAnimatedStats] = useState({
     totalMinutes: 0,
     residentsServed: 0,
@@ -69,9 +81,21 @@ export default function TechMinutesDashboard({ isActive }: TechMinutesDashboardP
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: 'TOTAL TECHMINUTES', value: animatedStats.totalMinutes, suffix: '' },
-          { label: 'RESIDENTS SERVED', value: animatedStats.residentsServed, suffix: '' },
-          { label: 'RESOLUTION RATE', value: animatedStats.averageResolution, suffix: '%' },
+          {
+            label: "TOTAL TECHMINUTES",
+            value: animatedStats.totalMinutes,
+            suffix: "",
+          },
+          {
+            label: "RESIDENTS SERVED",
+            value: animatedStats.residentsServed,
+            suffix: "",
+          },
+          {
+            label: "RESOLUTION RATE",
+            value: animatedStats.averageResolution,
+            suffix: "%",
+          },
         ].map((metric, idx) => (
           <motion.div
             key={idx}
@@ -103,23 +127,26 @@ export default function TechMinutesDashboard({ isActive }: TechMinutesDashboardP
           <h3 className="font-bold text-foreground mb-4">IMPACT TRAJECTORY</h3>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={impactData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 215, 0, 0.1)" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="rgba(255, 215, 0, 0.1)"
+              />
               <XAxis dataKey="month" stroke="rgba(224, 224, 224, 0.5)" />
               <YAxis stroke="rgba(224, 224, 224, 0.5)" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'rgba(10, 14, 39, 0.9)',
-                  border: '1px solid #ffd700',
-                  borderRadius: '4px',
+                  backgroundColor: "rgba(10, 14, 39, 0.9)",
+                  border: "1px solid #ffd700",
+                  borderRadius: "4px",
                 }}
-                labelStyle={{ color: '#e0e0e0' }}
+                labelStyle={{ color: "#e0e0e0" }}
               />
               <Line
                 type="monotone"
                 dataKey="minutes"
                 stroke="#ffd700"
                 strokeWidth={2}
-                dot={{ fill: '#ffd700', r: 4 }}
+                dot={{ fill: "#ffd700", r: 4 }}
                 activeDot={{ r: 6 }}
               />
             </LineChart>
@@ -136,16 +163,19 @@ export default function TechMinutesDashboard({ isActive }: TechMinutesDashboardP
           <h3 className="font-bold text-foreground mb-4">CATEGORY BREAKDOWN</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={categoryData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 215, 0, 0.1)" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="rgba(255, 215, 0, 0.1)"
+              />
               <XAxis dataKey="category" stroke="rgba(224, 224, 224, 0.5)" />
               <YAxis stroke="rgba(224, 224, 224, 0.5)" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'rgba(10, 14, 39, 0.9)',
-                  border: '1px solid #ffd700',
-                  borderRadius: '4px',
+                  backgroundColor: "rgba(10, 14, 39, 0.9)",
+                  border: "1px solid #ffd700",
+                  borderRadius: "4px",
                 }}
-                labelStyle={{ color: '#e0e0e0' }}
+                labelStyle={{ color: "#e0e0e0" }}
               />
               <Bar dataKey="minutes" fill="#ffd700" radius={[8, 8, 0, 0]} />
             </BarChart>
@@ -164,28 +194,32 @@ export default function TechMinutesDashboard({ isActive }: TechMinutesDashboardP
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
             {
-              name: 'Maria',
-              category: 'EDUCATION',
-              story: 'School portal password reset, bookmark setup, physical backup card created. Resolved.',
-              time: '18 min',
+              name: "Maria",
+              category: "EDUCATION",
+              story:
+                "School portal password reset, bookmark setup, physical backup card created. Resolved.",
+              time: "18 min",
             },
             {
-              name: 'James',
-              category: 'WORKFORCE',
-              story: 'VA job application: account creation, draft-save strategy, DD-214 upload. Partial — follow-up scheduled.',
-              time: '35 min',
+              name: "James",
+              category: "WORKFORCE",
+              story:
+                "VA job application: account creation, draft-save strategy, DD-214 upload. Partial — follow-up scheduled.",
+              time: "35 min",
             },
             {
-              name: 'Dorothy',
-              category: 'HEALTH',
-              story: 'Apple ID reset, health portal app install, first telehealth appointment booked. Resolved.',
-              time: '40 min',
+              name: "Dorothy",
+              category: "HEALTH",
+              story:
+                "Apple ID reset, health portal app install, first telehealth appointment booked. Resolved.",
+              time: "40 min",
             },
             {
-              name: 'Carlos',
-              category: 'HOUSING',
-              story: 'Phone document scanner setup, housing application upload, screenshot confirmation. Resolved.',
-              time: '22 min',
+              name: "Carlos",
+              category: "HOUSING",
+              story:
+                "Phone document scanner setup, housing application upload, screenshot confirmation. Resolved.",
+              time: "22 min",
             },
           ].map((story, idx) => (
             <motion.div
@@ -198,9 +232,13 @@ export default function TechMinutesDashboard({ isActive }: TechMinutesDashboardP
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <h4 className="font-bold text-foreground">{story.name}</h4>
-                  <p className="text-xs font-mono text-primary">{story.category}</p>
+                  <p className="text-xs font-mono text-primary">
+                    {story.category}
+                  </p>
                 </div>
-                <span className="text-xs font-mono text-muted-foreground">{story.time}</span>
+                <span className="text-xs font-mono text-muted-foreground">
+                  {story.time}
+                </span>
               </div>
               <p className="text-sm text-foreground/80">{story.story}</p>
             </motion.div>
@@ -215,9 +253,15 @@ export default function TechMinutesDashboard({ isActive }: TechMinutesDashboardP
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
       >
-        <p className="font-mono text-xs text-muted-foreground mb-2">MISSION STATEMENT</p>
+        <p className="font-mono text-xs text-muted-foreground mb-2">
+          MISSION STATEMENT
+        </p>
         <p>
-          TechBridge Collective builds bridges of access, dignity, and opportunity through human-centered digital help. Every TechMinute represents a life changed—a parent reconnecting with their child's education, a veteran rebuilding their career, a senior accessing healthcare. We measure impact not in metrics, but in moments.
+          TechBridge Collective builds bridges of access, dignity, and
+          opportunity through human-centered digital help. Every TechMinute
+          represents a life changed—a parent reconnecting with their child's
+          education, a veteran rebuilding their career, a senior accessing
+          healthcare. We measure impact not in metrics, but in moments.
         </p>
       </motion.div>
     </motion.div>
