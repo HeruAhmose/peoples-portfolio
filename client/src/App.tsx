@@ -16,6 +16,7 @@ const MaterialsScience = lazy(() => import("./pages/MaterialsScience"));
 const CommunityImpact = lazy(() => import("./pages/CommunityImpact"));
 const ResearchLab = lazy(() => import("./pages/ResearchLab"));
 const ProjectGallery = lazy(() => import("./pages/ProjectGallery"));
+const CareerTimeline = lazy(() => import("./pages/CareerTimeline"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function pathToSection(loc: string): string {
@@ -27,7 +28,8 @@ function pathToSection(loc: string): string {
     seg === "materials" ||
     seg === "community" ||
     seg === "research" ||
-    seg === "gallery"
+    seg === "gallery" ||
+    seg === "timeline"
   )
     return seg;
   return "home";
@@ -44,6 +46,7 @@ const SECTION_TITLES: Record<string, string> = {
   community: "Community Impact | Jonathan Peoples",
   research: "Research Lab | Jonathan Peoples",
   gallery: "3D Project Gallery | Jonathan Peoples",
+  timeline: "Career Timeline | Jonathan Peoples",
 };
 
 function Router({
@@ -85,6 +88,14 @@ function Router({
       <Route path="/gallery">
         <Suspense fallback={<PageLoadFallback />}>
           <ProjectGallery
+            activeSection={activeSection}
+            onNavigate={onNavigate}
+          />
+        </Suspense>
+      </Route>
+      <Route path="/timeline">
+        <Suspense fallback={<PageLoadFallback />}>
+          <CareerTimeline
             activeSection={activeSection}
             onNavigate={onNavigate}
           />

@@ -35,9 +35,9 @@ export const ADVANCED_VISUAL_EFFECTS_MILESTONE = {
         "Live at /gallery: Project3DCard flips, search, filters, sorts. Next: modal deep-dives and richer media per card.",
     },
     {
-      title: "Interactive career timeline",
+      title: "Career timeline — shipped",
       detail:
-        "Scroll-triggered milestones, connecting spline, and markers synced to your real roles.",
+        "See /timeline: alternating cards, gradient spine, expandable milestones. Next: tie-in to résumé PDF anchors.",
     },
     {
       title: "Testimonials carousel",

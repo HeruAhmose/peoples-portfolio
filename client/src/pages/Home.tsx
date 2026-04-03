@@ -141,7 +141,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                 SECTOR MAP /// SELECT NODE
               </p>
             </ScrollReveal>
-            <div className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+            <div className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
               {[
                 {
                   id: "califia",
@@ -157,6 +157,13 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   description:
                     "Flip cards, live search, category filters, and three sort modes — six builds",
                   icon: "⎔",
+                },
+                {
+                  id: "timeline",
+                  title: "Career Timeline",
+                  description:
+                    "2018–2026 milestones · scroll reveals · expandable detail & badges",
+                  icon: "◐",
                 },
                 {
                   id: "materials",

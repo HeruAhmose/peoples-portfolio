@@ -13,9 +13,9 @@ export const PROJECT_GALLERY_MILESTONE = {
   ],
   nextSteps: [
     {
-      title: "Animated timeline",
+      title: "Career timeline — shipped",
       detail:
-        "Scroll-linked career spine with milestone nodes, connectors, and reveal choreography.",
+        "Live at /timeline: TimelineEvent rows, animated spine, expandable detail. Extend with PDF export or print stylesheet next.",
     },
     {
       title: "Testimonials carousel",

@@ -20,6 +20,7 @@ interface NavigationProps {
 const sections = [
   { id: "home", label: "HOME" },
   { id: "gallery", label: "3D GALLERY" },
+  { id: "timeline", label: "CAREER" },
   { id: "materials", label: "TAMERIAN / AMC" },
   { id: "community", label: "TECHBRIDGE" },
   { id: "research", label: "RESEARCH LAB" },
@@ -39,6 +40,9 @@ function prefetchSection(id: string) {
       break;
     case "gallery":
       void import("@/pages/ProjectGallery");
+      break;
+    case "timeline":
+      void import("@/pages/CareerTimeline");
       break;
     default:
       break;
