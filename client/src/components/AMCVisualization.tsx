@@ -177,7 +177,10 @@ export default function AMCVisualization({ isActive }: AMCVisualizationProps) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <canvas ref={canvasRef} className="block w-full h-full" />
+      <canvas
+        ref={canvasRef}
+        className="pointer-events-none block h-full w-full"
+      />
     </motion.div>
   );
 }

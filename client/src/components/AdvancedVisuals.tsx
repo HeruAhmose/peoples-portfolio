@@ -358,7 +358,10 @@ export const NeuralNetwork = () => {
       ref={wrapRef}
       className="w-full min-h-[280px] h-[min(40vh,420px)] rounded border border-primary/30 bg-card"
     >
-      <canvas ref={canvasRef} className="block w-full h-full rounded" />
+      <canvas
+        ref={canvasRef}
+        className="pointer-events-none block h-full w-full rounded"
+      />
     </div>
   );
 };

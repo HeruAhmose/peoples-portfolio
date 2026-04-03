@@ -57,18 +57,24 @@ export default function Navigation({
 
   return (
     <motion.nav
-      className="fixed top-0 left-0 right-0 z-40 border-b border-border bg-background/80 backdrop-blur-md"
+      className="cyber-nav-glow fixed top-0 right-0 left-0 z-40 border-b border-cyan-500/25 bg-background/65 backdrop-blur-xl"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
     >
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent"
+        aria-hidden
+      />
       <div className="container flex h-16 items-center justify-between">
         <motion.div
-          className="flex items-center gap-2"
-          whileHover={{ scale: 1.05 }}
+          className="flex items-center gap-3"
+          whileHover={{ scale: 1.02 }}
         >
-          <div className="text-2xl font-bold text-primary neon-text">◉</div>
-          <span className="hidden font-mono text-sm tracking-widest text-foreground sm:inline">
+          <div className="font-display text-2xl font-bold text-primary neon-text drop-shadow-[0_0_12px_oklch(0.65_0.25_45/0.55)]">
+            ◉
+          </div>
+          <span className="font-display hidden text-xs font-semibold tracking-[0.2em] text-foreground/95 sm:inline md:text-sm">
             JONATHAN PEOPLES
           </span>
         </motion.div>
@@ -82,7 +88,7 @@ export default function Navigation({
               onPointerEnter={() => prefetchSection(section.id)}
               onMouseEnter={() => setHoveredSection(section.id)}
               onMouseLeave={() => setHoveredSection(null)}
-              className="relative font-mono text-xs tracking-widest transition-colors"
+              className="relative font-mono text-[11px] tracking-[0.18em] transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -115,15 +121,18 @@ export default function Navigation({
                 type="button"
                 variant="outline"
                 size="icon"
-                className="border-border md:hidden"
+                className="border-cyan-500/30 bg-background/50 hover:border-primary/50 md:hidden"
                 aria-label="Open navigation menu"
               >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[min(100vw,20rem)]">
+            <SheetContent
+              side="right"
+              className="w-[min(100vw,20rem)] border-l border-cyan-500/20 bg-card/95 backdrop-blur-xl"
+            >
               <SheetHeader>
-                <SheetTitle className="font-mono text-xs tracking-widest">
+                <SheetTitle className="font-display text-xs font-semibold tracking-[0.28em] text-primary">
                   SECTORS
                 </SheetTitle>
               </SheetHeader>
@@ -137,10 +146,10 @@ export default function Navigation({
                     type="button"
                     onClick={() => go(section.id)}
                     onPointerEnter={() => prefetchSection(section.id)}
-                    className={`rounded-md px-4 py-3 text-left font-mono text-sm tracking-widest transition-colors ${
+                    className={`rounded-lg border px-4 py-3 text-left font-mono text-sm tracking-[0.14em] transition-colors ${
                       activeSection === section.id
-                        ? "bg-primary/15 text-primary"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "border-primary/40 bg-primary/15 text-primary shadow-[inset_0_0_20px_oklch(0.65_0.25_45/0.12)]"
+                        : "border-transparent text-muted-foreground hover:border-border hover:bg-muted/40 hover:text-foreground"
                     }`}
                   >
                     {section.label}
@@ -153,7 +162,7 @@ export default function Navigation({
           <motion.button
             type="button"
             onClick={onAudioToggle}
-            className="rounded border border-border p-2 transition-colors hover:border-primary"
+            className="rounded-lg border border-cyan-500/25 bg-background/40 p-2 transition-colors hover:border-primary/60 hover:shadow-[0_0_16px_-4px_oklch(0.65_0.25_45/0.45)]"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             title={audioEnabled ? "Mute audio" : "Unmute audio"}

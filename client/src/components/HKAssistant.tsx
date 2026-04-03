@@ -109,23 +109,25 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed bottom-4 right-4 w-96 max-w-[calc(100vw-2rem)] h-[min(24rem,50vh)] sm:h-96 bg-card border border-primary rounded-lg shadow-2xl flex flex-col z-50 neon-border"
+          className="cyber-panel fixed right-4 bottom-4 z-50 flex h-[min(24rem,50vh)] w-96 max-w-[calc(100vw-2rem)] flex-col rounded-2xl sm:h-96"
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+          <div className="flex shrink-0 items-center justify-between border-b border-cyan-500/20 bg-background/40 px-4 py-3 backdrop-blur-sm">
             <div>
-              <h3 className="font-bold text-foreground">H.K. ASSISTANT</h3>
-              <p className="text-xs text-muted-foreground font-mono">
-                Claude-powered · portfolio context
+              <h3 className="font-display text-sm font-semibold tracking-[0.2em] text-foreground">
+                H.K. ASSISTANT
+              </h3>
+              <p className="font-mono text-[10px] tracking-widest text-muted-foreground">
+                CLAUDE · PORTFOLIO CONTEXT
               </p>
             </div>
             <motion.button
               type="button"
               onClick={onClose}
-              className="p-1 hover:bg-background rounded transition-colors"
+              className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -133,7 +135,7 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
             </motion.button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-background/20 p-4">
             {messages.map((message, idx) => (
               <motion.div
                 key={message.id}
@@ -143,10 +145,10 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
                 className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] p-3 rounded text-sm leading-relaxed whitespace-pre-wrap ${
+                  className={`max-w-[85%] rounded-lg p-3 text-sm leading-relaxed whitespace-pre-wrap ${
                     message.role === "user"
-                      ? "bg-primary text-background"
-                      : "bg-background border border-border text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-[0_0_16px_-4px_oklch(0.65_0.25_45/0.5)]"
+                      : "border border-cyan-500/15 bg-card/80 text-foreground backdrop-blur-sm"
                   }`}
                 >
                   {message.content}
@@ -159,7 +161,7 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <div className="bg-background border border-border p-3 rounded">
+                <div className="rounded-lg border border-primary/20 bg-card/60 p-3 backdrop-blur-sm">
                   <div className="flex gap-2">
                     {[0, 1, 2].map(i => (
                       <motion.div
@@ -182,20 +184,20 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
 
           <form
             onSubmit={handleSendMessage}
-            className="p-4 border-t border-border flex gap-2 shrink-0"
+            className="flex shrink-0 gap-2 border-t border-cyan-500/15 bg-background/50 p-4 backdrop-blur-sm"
           >
             <input
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Ask about materials, TechBridge, Queen Califia, or research..."
-              className="flex-1 bg-background border border-border rounded px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary"
+              className="flex-1 rounded-lg border border-cyan-500/20 bg-background/80 px-3 py-2 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               disabled={loading}
             />
             <motion.button
               type="submit"
               disabled={loading || !input.trim()}
-              className="p-2 bg-primary text-background rounded hover:bg-primary/80 disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-primary p-2 text-primary-foreground shadow-[0_0_14px_-4px_oklch(0.65_0.25_45/0.55)] transition-colors hover:bg-primary/85 disabled:opacity-50"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

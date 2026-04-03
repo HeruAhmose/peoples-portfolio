@@ -123,6 +123,7 @@ export default function ManufacturingProcess() {
             return (
               <motion.button
                 key={step.id}
+                type="button"
                 onClick={() => setActiveStep(step.id)}
                 onMouseEnter={() => setHoveredStep(step.id)}
                 onMouseLeave={() => setHoveredStep(null)}

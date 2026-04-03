@@ -44,9 +44,9 @@ describe("PatentClaimsExplorer Component", () => {
         border: "border-cyan-400/30",
       },
       device: {
-        bg: "bg-magenta-500/10",
-        text: "text-magenta-400",
-        border: "border-magenta-400/30",
+        bg: "bg-fuchsia-500/10",
+        text: "text-fuchsia-400",
+        border: "border-fuchsia-400/30",
       },
     };
 
@@ -57,6 +57,6 @@ describe("PatentClaimsExplorer Component", () => {
     ]);
     expect(categoryColors.composition.text).toBe("text-yellow-400");
     expect(categoryColors.manufacturing.text).toBe("text-cyan-400");
-    expect(categoryColors.device.text).toBe("text-magenta-400");
+    expect(categoryColors.device.text).toBe("text-fuchsia-400");
   });
 });

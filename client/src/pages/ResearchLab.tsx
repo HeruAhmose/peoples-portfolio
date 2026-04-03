@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 import { HolographicText } from "@/components/AdvancedVisuals";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
+import { TAMERIAN_PATENT } from "@shared/siteFacts";
+
+/** Preprint PDF is not bundled in-repo; live narrative and updates ship on Tamerian. */
+const PREPRINT_LIVE_URL = "https://tamerian-materials.com/";
 
 interface ResearchLabProps {
   activeSection: string;
@@ -24,7 +29,7 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
           transition={{ duration: 0.6 }}
           className="space-y-6"
         >
-          <h1 className="text-5xl md:text-6xl font-bold">
+          <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl">
             <HolographicText className="font-bold">
               RESEARCH LAB
             </HolographicText>
@@ -63,8 +68,23 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
                 Architecture-Driven Emergent Behavior in Multi-Component
                 Composites
               </h3>
-              <p className="text-sm text-muted-foreground font-mono mb-4">
+              <p className="mb-4 font-mono text-sm text-muted-foreground">
                 Peoples (2026) — Preprint — Not peer reviewed
+              </p>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Patent portfolio on the public site: U.S. App. No.{" "}
+                {TAMERIAN_PATENT.applicationNo}, filed{" "}
+                {TAMERIAN_PATENT.filedDate} · {TAMERIAN_PATENT.claimCount}{" "}
+                claims · {TAMERIAN_PATENT.status} (
+                <a
+                  href="https://tamerian-materials.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline-offset-2 hover:underline"
+                >
+                  tamerian-materials.com
+                </a>
+                ).
               </p>
             </div>
 
@@ -108,10 +128,12 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
 
             <div className="flex flex-col sm:flex-row gap-4 flex-wrap">
               <a
-                href="/Peoples_2026_AMC_PREPRINT.pdf"
+                href={PREPRINT_LIVE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block px-6 py-3 bg-primary text-background hover:bg-primary/80 rounded font-mono text-sm tracking-widest transition-colors text-center"
               >
-                DOWNLOAD PREPRINT
+                VIEW PREPRINT (LIVE SITE)
               </a>
               <a
                 href="https://tamerian-materials.com/"
@@ -156,8 +178,8 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
                 level: "VALIDATION PENDING",
                 description:
                   "End-to-end transduction, sensitivity, repeatability, manufacturability TBD",
-                color: "border-magenta-400",
-                bg: "bg-magenta-500/10",
+                color: "border-fuchsia-400",
+                bg: "bg-fuchsia-500/10",
               },
             ].map((item, idx) => (
               <motion.div
@@ -177,7 +199,10 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
       </section>
 
       {/* Experimental Validation Program */}
-      <section className="container mx-auto px-4 py-16 border-t border-border">
+      <section
+        id="experimental-validation-program"
+        className="container mx-auto scroll-mt-24 px-4 py-16 border-t border-border"
+      >
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -374,49 +399,54 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
           <h2 className="text-2xl font-bold text-foreground mb-8">RESOURCES</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <a
-              href="#"
+              href={PREPRINT_LIVE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-6 rounded border border-border bg-card hover:border-primary transition-colors group"
             >
               <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                Full Preprint PDF
+                Full preprint (live site)
               </h3>
               <p className="text-sm text-muted-foreground">
-                Download the complete preprint with all figures, tables, and
-                references.
+                Read the materials narrative, figures context, and updates on
+                Tamerian Materials (opens in a new tab).
+              </p>
+            </a>
+            <Link
+              href="/materials?tab=patents"
+              className="block h-full p-6 rounded border border-border bg-card hover:border-primary transition-colors group"
+            >
+              <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                Patent claims explorer
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Open the interactive 25-claim explorer under Materials → Patent
+                Claims.
+              </p>
+            </Link>
+            <a
+              href="#experimental-validation-program"
+              className="p-6 rounded border border-border bg-card hover:border-primary transition-colors group"
+            >
+              <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                Experimental validation program
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Jump to the five-phase validation outline on this page.
               </p>
             </a>
             <a
-              href="#"
+              href="https://techbridge-collective.org/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="p-6 rounded border border-border bg-card hover:border-primary transition-colors group"
             >
               <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                Patent Applications
+                Collaboration &amp; community
               </h3>
               <p className="text-sm text-muted-foreground">
-                View all 25 patent claims organized by category.
-              </p>
-            </a>
-            <a
-              href="#"
-              className="p-6 rounded border border-border bg-card hover:border-primary transition-colors group"
-            >
-              <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                Experimental Data
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Access raw data and analysis from validation phases.
-              </p>
-            </a>
-            <a
-              href="#"
-              className="p-6 rounded border border-border bg-card hover:border-primary transition-colors group"
-            >
-              <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                Collaboration Inquiry
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Interested in collaboration? Get in touch with the research
-                team.
+                TechBridge Collective — digital equity, help desk model, and
+                partnership pathways (opens in a new tab).
               </p>
             </a>
           </div>

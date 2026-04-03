@@ -218,6 +218,7 @@ export default function SovereignAwakening({
 
           {/* Skip Button */}
           <motion.button
+            type="button"
             onClick={() => setSkipClicked(true)}
             className="px-6 py-2 border border-primary text-primary font-mono text-sm hover:bg-primary hover:text-background transition-colors"
             initial={{ opacity: 0 }}

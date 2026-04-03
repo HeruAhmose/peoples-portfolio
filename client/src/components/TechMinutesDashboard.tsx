@@ -11,18 +11,20 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { TECHBRIDGE_SPAN_IMPACT_URL } from "@shared/siteFacts";
 
 interface TechMinutesDashboardProps {
   isActive: boolean;
 }
 
+/** Illustrative trajectory only — not live hub aggregates (see /impact on TechBridge). */
 const impactData = [
-  { month: "Jan", minutes: 240, residents: 32 },
-  { month: "Feb", minutes: 380, residents: 52 },
-  { month: "Mar", minutes: 520, residents: 78 },
-  { month: "Apr", minutes: 680, residents: 95 },
-  { month: "May", minutes: 890, residents: 128 },
-  { month: "Jun", minutes: 1200, residents: 165 },
+  { month: "M1", minutes: 240, residents: 32 },
+  { month: "M2", minutes: 380, residents: 52 },
+  { month: "M3", minutes: 520, residents: 78 },
+  { month: "M4", minutes: 680, residents: 95 },
+  { month: "M5", minutes: 890, residents: 128 },
+  { month: "M6", minutes: 1200, residents: 165 },
 ];
 
 const categoryData = [
@@ -44,6 +46,7 @@ export default function TechMinutesDashboard({
   useEffect(() => {
     if (!isActive) return;
 
+    /* Demo totals only — SPAN Year 1/2 targets are on techbridge-collective.org/impact */
     const targets = {
       totalMinutes: 3710,
       residentsServed: 550,
@@ -78,21 +81,32 @@ export default function TechMinutesDashboard({
       animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
       transition={{ duration: 0.6 }}
     >
+      <p className="rounded-lg border border-cyan-500/20 bg-background/40 px-3 py-2 text-center font-mono text-[10px] leading-relaxed tracking-wide text-muted-foreground md:text-xs">
+        ILLUSTRATIVE DEMO · Not operational data · Confirm targets on{" "}
+        <a
+          href={TECHBRIDGE_SPAN_IMPACT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary underline-offset-2 hover:underline"
+        >
+          techbridge-collective.org/impact
+        </a>
+      </p>
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {[
           {
-            label: "TOTAL TECHMINUTES",
+            label: "TOTAL TECHMINUTES (SAMPLE)",
             value: animatedStats.totalMinutes,
             suffix: "",
           },
           {
-            label: "RESIDENTS SERVED",
+            label: "RESIDENTS (SAMPLE)",
             value: animatedStats.residentsServed,
             suffix: "",
           },
           {
-            label: "RESOLUTION RATE",
+            label: "RESOLUTION RATE (SAMPLE)",
             value: animatedStats.averageResolution,
             suffix: "%",
           },
@@ -124,7 +138,12 @@ export default function TechMinutesDashboard({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <h3 className="font-bold text-foreground mb-4">IMPACT TRAJECTORY</h3>
+          <h3 className="mb-1 font-bold text-foreground">
+            IMPACT TRAJECTORY (ILLUSTRATIVE)
+          </h3>
+          <p className="mb-4 text-xs text-muted-foreground">
+            Months labeled M1–M6 = demo sequence, not calendar claims.
+          </p>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={impactData}>
               <CartesianGrid
@@ -160,7 +179,9 @@ export default function TechMinutesDashboard({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
         >
-          <h3 className="font-bold text-foreground mb-4">CATEGORY BREAKDOWN</h3>
+          <h3 className="mb-4 font-bold text-foreground">
+            CATEGORY BREAKDOWN (SAMPLE MIX)
+          </h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={categoryData}>
               <CartesianGrid
@@ -190,36 +211,57 @@ export default function TechMinutesDashboard({
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
       >
-        <h3 className="font-bold text-foreground mb-4">IMPACT STORIES</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h3 className="mb-1 font-bold text-foreground">
+          IMPACT STORIES (SPAN §5.3 SCENARIOS)
+        </h3>
+        <p className="mb-4 text-xs text-muted-foreground">
+          Same vignettes and durations published on{" "}
+          <a
+            href={TECHBRIDGE_SPAN_IMPACT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline-offset-2 hover:underline"
+          >
+            techbridge-collective.org/impact
+          </a>{" "}
+          (plus Keisha on /get-help).
+        </p>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {[
             {
               name: "Maria",
               category: "EDUCATION",
               story:
-                "School portal password reset, bookmark setup, physical backup card created. Resolved.",
+                "Locked out of child’s school portal — access restored (SPAN §5.3).",
               time: "18 min",
             },
             {
               name: "James",
               category: "WORKFORCE",
               story:
-                "VA job application: account creation, draft-save strategy, DD-214 upload. Partial — follow-up scheduled.",
+                "VA job application timing out — session protocol per SPAN §5.3.",
               time: "35 min",
             },
             {
               name: "Dorothy",
               category: "HEALTH",
               story:
-                "Apple ID reset, health portal app install, first telehealth appointment booked. Resolved.",
+                "Telehealth setup / video calling — first appointment booked (SPAN §5.3).",
               time: "40 min",
             },
             {
               name: "Carlos",
               category: "HOUSING",
               story:
-                "Phone document scanner setup, housing application upload, screenshot confirmation. Resolved.",
+                "Housing document upload failing — resolved with scanner workflow (SPAN §5.3).",
               time: "22 min",
+            },
+            {
+              name: "Keisha",
+              category: "EDUCATION",
+              story:
+                "FAFSA verification stalled — guided through verification flow (TechBridge /get-help scenario).",
+              time: "45 min",
             },
           ].map((story, idx) => (
             <motion.div

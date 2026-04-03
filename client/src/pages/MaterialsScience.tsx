@@ -1,26 +1,59 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { useLocation, useSearch } from "wouter";
 import AMCVisualization from "@/components/AMCVisualization";
 import { HolographicText, NeuralNetwork } from "@/components/AdvancedVisuals";
 import PatentClaimsExplorer from "@/components/PatentClaimsExplorer";
 import ManufacturingProcess from "@/components/ManufacturingProcess";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
+import { TAMERIAN_PATENT } from "@shared/siteFacts";
 
 interface MaterialsScienceProps {
   activeSection: string;
   onNavigate: (section: string) => void;
 }
 
+const VALID_TABS = ["visualization", "patents", "manufacturing"] as const;
+type MaterialsTab = (typeof VALID_TABS)[number];
+
 export default function MaterialsScience({
   activeSection,
 }: MaterialsScienceProps) {
-  const [activeTab, setActiveTab] = useState<
-    "visualization" | "patents" | "manufacturing"
-  >("visualization");
+  const [location] = useLocation();
+  const search = useSearch();
+  const [activeTab, setActiveTab] = useState<MaterialsTab>("visualization");
   const { logSectionView } = usePortfolioAnalytics();
+
+  const applyTabFromUrl = useCallback(() => {
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    if (tab && (VALID_TABS as readonly string[]).includes(tab)) {
+      setActiveTab(tab as MaterialsTab);
+    }
+  }, []);
+
   useEffect(() => {
     logSectionView("materials");
   }, [logSectionView]);
+
+  useEffect(() => {
+    applyTabFromUrl();
+  }, [location, search, applyTabFromUrl]);
+
+  const selectTab = (id: MaterialsTab) => {
+    setActiveTab(id);
+    const url = new URL(window.location.href);
+    if (id === "visualization") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", id);
+    }
+    const qs = url.searchParams.toString();
+    window.history.replaceState(
+      null,
+      "",
+      qs ? `${url.pathname}?${qs}` : url.pathname
+    );
+  };
 
   return (
     <div className="min-h-screen">
@@ -32,14 +65,16 @@ export default function MaterialsScience({
           transition={{ duration: 0.6 }}
           className="space-y-6"
         >
-          <h1 className="text-5xl md:text-6xl font-bold">
+          <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl">
             <HolographicText className="font-bold">
               MATERIAL SCIENCE
             </HolographicText>
           </h1>
-          <p className="text-lg font-mono text-primary tracking-wide">
-            Tamerian Materials — Where Carbon Meets Crystal · Patent pending ·
-            U.S. App. No. 63/934,269
+          <p className="font-mono text-lg tracking-wide text-primary">
+            Tamerian Materials — Where Carbon Meets Crystal ·{" "}
+            {TAMERIAN_PATENT.status} · U.S. App. No.{" "}
+            {TAMERIAN_PATENT.applicationNo} · Filed {TAMERIAN_PATENT.filedDate}{" "}
+            · {TAMERIAN_PATENT.claimCount} claims
           </p>
           <p className="text-xl text-foreground/80 max-w-2xl">
             Hemp-derived carbon matrices with embedded piezoelectric,
@@ -61,34 +96,40 @@ export default function MaterialsScience({
       </section>
 
       {/* Tab Navigation */}
-      <section className="container mx-auto px-4 py-8">
-        <div className="flex gap-4 flex-wrap border-b border-border pb-4">
-          {[
-            { id: "visualization", label: "AMC VISUALIZATION" },
-            { id: "patents", label: "PATENT CLAIMS" },
-            { id: "manufacturing", label: "MANUFACTURING" },
-          ].map(tab => (
-            <motion.button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`px-4 py-2 font-mono text-sm tracking-widest transition-colors relative ${
-                activeTab === tab.id
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {tab.label}
-              {activeTab === tab.id && (
-                <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                  layoutId="tabIndicator"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-            </motion.button>
-          ))}
+      <section className="container mx-auto px-4 py-6">
+        <div className="cyber-panel rounded-xl p-4 md:p-5">
+          <p className="font-mono text-[10px] tracking-[0.35em] text-muted-foreground">
+            INTERFACE /// SELECT MODULE
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {[
+              { id: "visualization", label: "AMC VISUALIZATION" },
+              { id: "patents", label: "PATENT CLAIMS" },
+              { id: "manufacturing", label: "MANUFACTURING" },
+            ].map(tab => (
+              <motion.button
+                key={tab.id}
+                type="button"
+                onClick={() => selectTab(tab.id as MaterialsTab)}
+                className={`relative rounded-lg border px-4 py-2.5 font-mono text-[11px] tracking-[0.14em] transition-all md:text-xs ${
+                  activeTab === tab.id
+                    ? "border-primary/55 bg-primary/12 text-primary shadow-[0_0_20px_-6px_oklch(0.65_0.25_45/0.45)]"
+                    : "border-transparent text-muted-foreground hover:border-border hover:bg-muted/25 hover:text-foreground"
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <motion.span
+                    className="absolute inset-x-2 -bottom-1 h-0.5 rounded-full bg-gradient-to-r from-transparent via-primary to-transparent"
+                    layoutId="tabIndicator"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </motion.button>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -232,7 +273,10 @@ export default function MaterialsScience({
           className="grid grid-cols-2 md:grid-cols-4 gap-6"
         >
           {[
-            { label: "PATENT CLAIMS", value: "25" },
+            {
+              label: "PATENT CLAIMS",
+              value: String(TAMERIAN_PATENT.claimCount),
+            },
             { label: "CONSTITUENTS", value: "5" },
             { label: "VALIDATION PHASES", value: "5" },
             { label: "MANUFACTURING STEPS", value: "7" },

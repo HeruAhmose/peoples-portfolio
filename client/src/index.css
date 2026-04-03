@@ -40,6 +40,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --font-mono: "Share Tech Mono", ui-monospace, monospace;
+  --font-display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -80,6 +82,15 @@
   --gold: oklch(0.65 0.25 45);
   --cyan: oklch(0.6 0.2 200);
   --deep-blue: oklch(0.15 0.02 260);
+  --magenta: oklch(0.62 0.22 320);
+  --font-cyber-display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
+  --font-cyber-mono: "Share Tech Mono", ui-monospace, monospace;
+  /* Afrofuturistic palette — heritage × frontier tech (see portfolioAfrofuturism) */
+  --afro-gold: oklch(0.72 0.14 85);
+  --afro-terracotta: oklch(0.58 0.13 35);
+  --afro-emerald: oklch(0.55 0.12 155);
+  --afro-sapphire: oklch(0.48 0.14 264);
+  --afro-copper: oklch(0.58 0.12 55);
 }
 
 .dark {
@@ -122,7 +133,13 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--cyan) 45%, transparent);
+    color: oklch(0.12 0.02 260);
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -282,19 +299,23 @@
   }
 
   .holographic-text {
+    display: inline-block;
     background: linear-gradient(
       90deg,
-      #ffd700,
-      #00d9ff,
-      #e879f9,
-      #00d9ff,
-      #ffd700
+      #ffe566,
+      #00e8ff,
+      #f0abfc,
+      #22d3ee,
+      #ffe566
     );
-    background-size: 200% auto;
+    background-size: 220% auto;
+    filter: drop-shadow(
+      0 0 20px color-mix(in oklch, var(--gold) 35%, transparent)
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: holographic-shift 5s linear infinite;
+    animation: holographic-shift 6s linear infinite;
   }
 
   /* Cyber Border Glow */
@@ -312,6 +333,30 @@
     }
   }
 
+  @keyframes afro-pulse {
+    0%,
+    100% {
+      opacity: 0.88;
+      filter: brightness(1);
+    }
+    50% {
+      opacity: 1;
+      filter: brightness(1.1);
+    }
+  }
+
+  @keyframes afro-radiance {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0
+        color-mix(in oklch, var(--afro-emerald) 28%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 20px 2px
+        color-mix(in oklch, var(--afro-sapphire) 22%, transparent);
+    }
+  }
+
   /* Utility Classes */
   .glitch-text {
     animation: glitch 2s infinite;
@@ -324,13 +369,21 @@
 
   .scan-effect {
     animation: scan-lines 8s linear infinite;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(255, 215, 0, 0.03),
-      rgba(255, 215, 0, 0.03) 1px,
-      transparent 1px,
-      transparent 2px
-    );
+    background:
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 232, 255, 0.028),
+        rgba(0, 232, 255, 0.028) 1px,
+        transparent 1px,
+        transparent 3px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        rgba(255, 215, 0, 0.022),
+        rgba(255, 215, 0, 0.022) 1px,
+        transparent 1px,
+        transparent 4px
+      );
   }
 
   .digital-pulse {
@@ -360,9 +413,144 @@
     animation: cyber-border-glow 3s ease-in-out infinite;
   }
 
-  /* Deep Space Background */
+  /* Deep Space Background — layered aurora + void */
   .space-bg {
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    background:
+      radial-gradient(
+        ellipse 120% 80% at 50% -20%,
+        color-mix(in oklch, var(--cyan) 22%, transparent) 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse 90% 60% at 100% 30%,
+        color-mix(in oklch, var(--magenta) 14%, transparent) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse 70% 50% at 0% 70%,
+        color-mix(in oklch, var(--gold) 12%, transparent) 0%,
+        transparent 45%
+      ),
+      radial-gradient(ellipse at bottom, #1b2735 0%, #060818 55%, #03050f 100%);
+  }
+
+  /* Glass / HUD panels */
+  .cyber-panel {
+    border-radius: var(--radius-lg);
+    background: linear-gradient(
+      155deg,
+      color-mix(in oklch, var(--card) 82%, transparent) 0%,
+      color-mix(in oklch, var(--card) 58%, oklch(0.14 0.06 280)) 100%
+    );
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid color-mix(in oklch, var(--cyan) 32%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--gold) 22%, transparent),
+      0 12px 40px oklch(0.04 0.04 270 / 0.65),
+      inset 0 1px 0 color-mix(in oklch, white 12%, transparent);
+  }
+
+  .cyber-panel--subtle {
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--card) 72%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid color-mix(in oklch, var(--border) 80%, var(--cyan));
+    box-shadow:
+      0 4px 24px oklch(0.05 0.03 260 / 0.5),
+      inset 0 1px 0 color-mix(in oklch, white 8%, transparent);
+  }
+
+  /* Afrofuturistic craft — layers with existing cyber HUD */
+  .afro-craft-panel {
+    border-radius: var(--radius-lg);
+    background: linear-gradient(
+      160deg,
+      color-mix(in oklch, var(--card) 78%, transparent) 0%,
+      color-mix(in oklch, var(--card) 52%, oklch(0.12 0.05 145)) 100%
+    );
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid color-mix(in oklch, var(--afro-copper) 35%, var(--cyan));
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--afro-gold) 24%, transparent),
+      0 12px 44px oklch(0.04 0.04 270 / 0.55),
+      inset 0 1px 0 color-mix(in oklch, var(--afro-gold) 14%, transparent);
+  }
+
+  .afro-spectrum-bar {
+    height: 5px;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      var(--afro-gold),
+      var(--afro-terracotta),
+      var(--afro-emerald),
+      var(--afro-sapphire),
+      var(--afro-copper)
+    );
+    animation: afro-pulse 4.5s ease-in-out infinite;
+  }
+
+  .afro-pulse {
+    animation: afro-pulse 4.5s ease-in-out infinite;
+  }
+
+  .afro-radiance-hover:hover {
+    animation: afro-radiance 2.8s ease-in-out infinite;
+  }
+
+  .cyber-grid-overlay {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.4;
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in oklch, var(--cyan) 14%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklch, var(--cyan) 14%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 52px 52px;
+    mask-image: radial-gradient(
+      ellipse 88% 70% at 50% 38%,
+      black 0%,
+      transparent 75%
+    );
+  }
+
+  .cyber-vignette {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(
+      ellipse 75% 60% at 50% 45%,
+      transparent 0%,
+      oklch(0.04 0.05 270 / 0.88) 100%
+    );
+  }
+
+  .cyber-nav-glow {
+    box-shadow:
+      0 0 60px -12px color-mix(in oklch, var(--cyan) 35%, transparent),
+      0 1px 0 color-mix(in oklch, var(--gold) 45%, transparent);
+  }
+
+  .font-cyber-display {
+    font-family: var(--font-cyber-display);
+    letter-spacing: 0.06em;
+  }
+
+  .font-cyber-mono {
+    font-family: var(--font-cyber-mono);
   }
 
   /* Scrollbar Styling */
@@ -387,6 +575,7 @@
     .holographic-text {
       animation: none;
       background-position: 50% 50%;
+      filter: none;
     }
 
     .neon-text,
@@ -395,6 +584,10 @@
     .digital-pulse,
     .scan-effect {
       animation: none !important;
+    }
+
+    .cyber-grid-overlay {
+      opacity: 0.12;
     }
 
     .portfolio-route-spinner {

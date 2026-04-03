@@ -3,6 +3,11 @@ import { motion } from "framer-motion";
 import { HolographicText } from "@/components/AdvancedVisuals";
 import TechMinutesDashboard from "@/components/TechMinutesDashboard";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
+import {
+  HORACE_KING_LIFESPAN,
+  TECHBRIDGE_ROLLOUT,
+  TECHBRIDGE_SPAN_IMPACT_URL,
+} from "@shared/siteFacts";
 
 interface CommunityImpactProps {
   activeSection: string;
@@ -28,7 +33,7 @@ export default function CommunityImpact({
           transition={{ duration: 0.6 }}
           className="space-y-6"
         >
-          <h1 className="text-5xl md:text-6xl font-bold">
+          <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl">
             <HolographicText className="font-bold">
               COMMUNITY IMPACT
             </HolographicText>
@@ -59,10 +64,26 @@ export default function CommunityImpact({
             TechMinutes® impact reporting.
           </p>
           <p className="text-foreground/80 text-lg leading-relaxed">
-            We believe that the best technology in the world doesn't matter if
-            no one shows you how to use it. Our mission is to connect 1.2M North
-            Carolinians who lack adequate digital access with the tools,
-            knowledge, and human support they need to thrive.
+            Pilot-to-scale targets are published as{" "}
+            <strong>SPAN-verified projections</strong> on the live site: Year{" "}
+            {TECHBRIDGE_ROLLOUT.year1Hubs} pilot hubs (
+            {TECHBRIDGE_ROLLOUT.year1PilotSites.join(" · ")}),{" "}
+            {TECHBRIDGE_ROLLOUT.year1Navigators} paid Digital Navigators; Year{" "}
+            {TECHBRIDGE_ROLLOUT.year2Hubs} hubs and a{" "}
+            <strong>
+              ~{TECHBRIDGE_ROLLOUT.year2ResidentsSom.toLocaleString()}-resident
+            </strong>{" "}
+            serviceable-market (SOM) goal, with{" "}
+            {TECHBRIDGE_ROLLOUT.investmentNote} (per that page). See{" "}
+            <a
+              href={TECHBRIDGE_SPAN_IMPACT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              techbridge-collective.org/impact
+            </a>{" "}
+            for the source of record.
           </p>
         </motion.div>
       </section>
@@ -134,15 +155,39 @@ export default function CommunityImpact({
       </section>
 
       {/* TechMinutes Dashboard */}
-      <section className="container mx-auto px-4 py-16 border-t border-border">
+      <section className="container mx-auto border-t border-border px-4 py-16">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <h2 className="text-2xl font-bold text-foreground mb-8">
+          <h2 className="mb-2 text-2xl font-bold text-foreground">
             IMPACT DASHBOARD
           </h2>
+          <p className="mb-8 max-w-3xl text-sm text-muted-foreground">
+            The charts below are an <strong>illustrative simulation</strong> in
+            the spirit of{" "}
+            <a
+              href="https://techbridge-collective.org/dashboard"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              techbridge-collective.org/dashboard
+            </a>
+            —not aggregated live hub totals. Scenario names and minute counts
+            for Maria, James, Dorothy, and Carlos match{" "}
+            <strong>SPAN §5.3</strong> examples on{" "}
+            <a
+              href={TECHBRIDGE_SPAN_IMPACT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              /impact
+            </a>
+            .
+          </p>
           <TechMinutesDashboard isActive={isActive} />
         </motion.div>
       </section>
@@ -154,37 +199,49 @@ export default function CommunityImpact({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <h2 className="text-2xl font-bold text-foreground mb-8">
+          <h2 className="mb-2 text-2xl font-bold text-foreground">
             HUB NETWORK
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <p className="mb-8 max-w-3xl text-xs font-mono tracking-wide text-muted-foreground">
+            Partner names and phases align with{" "}
+            <a
+              href={TECHBRIDGE_SPAN_IMPACT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              techbridge-collective.org/impact
+            </a>{" "}
+            (SPAN-verified projections).
+          </p>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {[
               {
-                name: "Durham County Library",
+                name: TECHBRIDGE_ROLLOUT.year1PilotSites[0],
                 location: "Durham, NC",
-                status: "PILOT TARGET — YEAR 1",
-                hours: "4–8 hrs/wk",
+                status: "YEAR 1 PILOT",
+                hours: "4–8 hrs/wk (target)",
               },
               {
-                name: "Raleigh Digital Impact Center",
+                name: TECHBRIDGE_ROLLOUT.year1PilotSites[1],
                 location: "Raleigh, NC",
-                status: "PILOT TARGET — YEAR 1",
-                hours: "4–8 hrs/wk",
+                status: "YEAR 1 PILOT",
+                hours: "4–8 hrs/wk (target)",
               },
               {
-                name: "Durham Housing Authority",
+                name: TECHBRIDGE_ROLLOUT.year2ExpansionExamples[0],
                 location: "Durham, NC",
                 status: "YEAR 2 EXPANSION",
                 hours: "TBD",
               },
               {
-                name: "Raleigh Housing Authority",
+                name: TECHBRIDGE_ROLLOUT.year2ExpansionExamples[1],
                 location: "Raleigh, NC",
                 status: "YEAR 2 EXPANSION",
                 hours: "TBD",
               },
               {
-                name: "El Centro Hispano",
+                name: TECHBRIDGE_ROLLOUT.year2ExpansionExamples[2],
                 location: "Triangle, NC",
                 status: "YEAR 2 EXPANSION",
                 hours: "TBD",
@@ -228,8 +285,18 @@ export default function CommunityImpact({
             H.K. AI TRIAGE
           </h2>
           <p className="text-foreground/80 mb-6">
-            Named for Horace King, the enslaved master bridge builder who
-            connected communities across the American South. On the{" "}
+            Named for Horace King ({HORACE_KING_LIFESPAN}), the bridge builder
+            who connected communities across the American South — as summarized
+            on{" "}
+            <a
+              href="https://techbridge-collective.org/get-help"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              techbridge-collective.org/get-help
+            </a>
+            . On the{" "}
             <a
               href="https://techbridge-collective.org/"
               target="_blank"
