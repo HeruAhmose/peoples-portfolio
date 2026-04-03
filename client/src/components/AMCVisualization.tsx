@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 interface AMCVisualizationProps {
   isActive: boolean;
@@ -12,6 +13,7 @@ function withAlpha(hex: string, alphaHex: string): string {
 }
 
 export default function AMCVisualization({ isActive }: AMCVisualizationProps) {
+  const reduceMotion = usePrefersReducedMotion();
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -40,18 +42,10 @@ export default function AMCVisualization({ isActive }: AMCVisualizationProps) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    resize();
-    ro = new ResizeObserver(() => resize());
-    ro.observe(wrap);
-
-    const animate = () => {
-      time += 0.012;
+    const paintFrame = (t: number) => {
       const w = wrap.clientWidth;
       const h = wrap.clientHeight;
-      if (w < 2 || h < 2) {
-        animationId = requestAnimationFrame(animate);
-        return;
-      }
+      if (w < 2 || h < 2) return;
 
       ctx.fillStyle = "rgba(10, 14, 39, 0.12)";
       ctx.fillRect(0, 0, w, h);
@@ -61,13 +55,12 @@ export default function AMCVisualization({ isActive }: AMCVisualizationProps) {
       const orbitR = Math.min(w, h) * 0.22;
 
       const constituents = [
-        { label: "Hemp Carbon", color: "#ffd700", angle: time * 0.5 },
-        { label: "Quartz", color: "#00d9ff", angle: time * 0.7 + Math.PI / 2 },
-        { label: "Tourmaline", color: "#ff00ff", angle: time * 0.6 + Math.PI },
+        { color: "#ffd700", angle: t * 0.5 },
+        { color: "#00d9ff", angle: t * 0.7 + Math.PI / 2 },
+        { color: "#ff00ff", angle: t * 0.6 + Math.PI },
         {
-          label: "Magnetite",
           color: "#00ff88",
-          angle: time * 0.8 + (3 * Math.PI) / 2,
+          angle: t * 0.8 + (3 * Math.PI) / 2,
         },
       ];
 
@@ -112,7 +105,7 @@ export default function AMCVisualization({ isActive }: AMCVisualizationProps) {
       const innerR = Math.min(w, h) * 0.14;
       for (let i = 0; i < dopantCount; i++) {
         const angle =
-          (time * 1.2 + (i / dopantCount) * Math.PI * 2) % (Math.PI * 2);
+          (t * 1.2 + (i / dopantCount) * Math.PI * 2) % (Math.PI * 2);
         const x = centerX + Math.cos(angle) * innerR;
         const y = centerY + Math.sin(angle) * innerR;
 
@@ -143,7 +136,28 @@ export default function AMCVisualization({ isActive }: AMCVisualizationProps) {
         centerX,
         Math.max(46, h * 0.12)
       );
+    };
 
+    resize();
+    ro = new ResizeObserver(() => {
+      resize();
+      if (reduceMotion) {
+        paintFrame(0);
+      }
+    });
+    ro.observe(wrap);
+
+    if (reduceMotion) {
+      paintFrame(0);
+      return () => {
+        ro?.disconnect();
+        cancelAnimationFrame(animationId);
+      };
+    }
+
+    const animate = () => {
+      time += 0.012;
+      paintFrame(time);
       animationId = requestAnimationFrame(animate);
     };
 
@@ -153,7 +167,7 @@ export default function AMCVisualization({ isActive }: AMCVisualizationProps) {
       ro?.disconnect();
       cancelAnimationFrame(animationId);
     };
-  }, [isActive]);
+  }, [isActive, reduceMotion]);
 
   return (
     <motion.div

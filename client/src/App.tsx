@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Route, Switch, useLocation } from "wouter";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,12 +8,14 @@ import SovereignAwakening from "./components/SovereignAwakening";
 import Navigation from "./components/Navigation";
 import HKAssistant from "./components/HKAssistant";
 import Home from "./pages/Home";
-import MaterialsScience from "./pages/MaterialsScience";
-import CommunityImpact from "./pages/CommunityImpact";
-import ResearchLab from "./pages/ResearchLab";
-import NotFound from "./pages/NotFound";
+import PageLoadFallback from "./components/PageLoadFallback";
 import { useAudioSystem } from "./hooks/useAudioSystem";
 import { ParticleBackground } from "./components/AdvancedVisuals";
+
+const MaterialsScience = lazy(() => import("./pages/MaterialsScience"));
+const CommunityImpact = lazy(() => import("./pages/CommunityImpact"));
+const ResearchLab = lazy(() => import("./pages/ResearchLab"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 function pathToSection(loc: string): string {
   const raw = loc.split("?")[0] || "/";
@@ -30,6 +32,13 @@ function sectionToPath(section: string): string {
   return `/${section}`;
 }
 
+const SECTION_TITLES: Record<string, string> = {
+  home: "Jonathan Peoples | Portfolio",
+  materials: "Materials Science | Jonathan Peoples",
+  community: "Community Impact | Jonathan Peoples",
+  research: "Research Lab | Jonathan Peoples",
+};
+
 function Router({
   activeSection,
   onNavigate,
@@ -45,32 +54,37 @@ function Router({
           <Home activeSection={activeSection} onNavigate={onNavigate} />
         )}
       />
-      <Route
-        path="/materials"
-        component={() => (
+      <Route path="/materials">
+        <Suspense fallback={<PageLoadFallback />}>
           <MaterialsScience
             activeSection={activeSection}
             onNavigate={onNavigate}
           />
-        )}
-      />
-      <Route
-        path="/community"
-        component={() => (
+        </Suspense>
+      </Route>
+      <Route path="/community">
+        <Suspense fallback={<PageLoadFallback />}>
           <CommunityImpact
             activeSection={activeSection}
             onNavigate={onNavigate}
           />
-        )}
-      />
-      <Route
-        path="/research"
-        component={() => (
+        </Suspense>
+      </Route>
+      <Route path="/research">
+        <Suspense fallback={<PageLoadFallback />}>
           <ResearchLab activeSection={activeSection} onNavigate={onNavigate} />
-        )}
-      />
-      <Route path="/404" component={NotFound} />
-      <Route component={NotFound} />
+        </Suspense>
+      </Route>
+      <Route path="/404">
+        <Suspense fallback={<PageLoadFallback />}>
+          <NotFound />
+        </Suspense>
+      </Route>
+      <Route>
+        <Suspense fallback={<PageLoadFallback />}>
+          <NotFound />
+        </Suspense>
+      </Route>
     </Switch>
   );
 }
@@ -84,9 +98,13 @@ function App() {
   const [hkAssistantOpen, setHkAssistantOpen] = useState(false);
 
   useEffect(() => {
-    // Force dark theme
     document.documentElement.classList.add("dark");
   }, []);
+
+  useEffect(() => {
+    document.title =
+      SECTION_TITLES[activeSection] ?? SECTION_TITLES.home ?? "Portfolio";
+  }, [activeSection]);
 
   const handleNavigate = (section: string) => {
     if (pathToSection(location) !== section) {
@@ -106,12 +124,10 @@ function App() {
         <TooltipProvider>
           <Toaster />
 
-          {/* Sovereign Awakening Sequence */}
           {showAwakening && (
             <SovereignAwakening onComplete={() => setShowAwakening(false)} />
           )}
 
-          {/* Main Content */}
           {!showAwakening && (
             <>
               <Navigation
@@ -121,7 +137,7 @@ function App() {
                 onAudioToggle={toggleMute}
               />
 
-              <main className="relative z-10 overflow-x-hidden pt-16 min-h-screen space-bg">
+              <main className="relative z-10 min-h-screen space-bg overflow-x-hidden pt-16">
                 <ParticleBackground className="absolute inset-0" />
                 <div
                   className="pointer-events-none absolute inset-0 z-[1] scan-effect opacity-[0.18]"
@@ -135,16 +151,16 @@ function App() {
                 </div>
               </main>
 
-              {/* H.K. Assistant Button */}
               <button
+                type="button"
                 onClick={() => setHkAssistantOpen(!hkAssistantOpen)}
-                className="fixed bottom-4 left-4 p-4 rounded-full bg-primary text-background hover:bg-primary/80 transition-colors shadow-lg z-40"
+                className="fixed bottom-4 left-4 z-40 rounded-full bg-primary p-4 text-background shadow-lg transition-colors hover:bg-primary/80"
                 title="Open H.K. Assistant"
+                aria-label="Open H.K. Assistant"
               >
                 <span className="text-xl font-bold">◉</span>
               </button>
 
-              {/* H.K. Assistant */}
               <HKAssistant
                 isOpen={hkAssistantOpen}
                 onClose={() => setHkAssistantOpen(false)}

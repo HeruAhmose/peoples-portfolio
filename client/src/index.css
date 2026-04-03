@@ -382,4 +382,24 @@
   ::-webkit-scrollbar-thumb:hover {
     background: color-mix(in oklch, var(--gold) 85%, white);
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .holographic-text {
+      animation: none;
+      background-position: 50% 50%;
+    }
+
+    .neon-text,
+    .glitch-text,
+    .neon-border-glow,
+    .digital-pulse,
+    .scan-effect {
+      animation: none !important;
+    }
+
+    .portfolio-route-spinner {
+      animation: none !important;
+      border-top-color: var(--primary);
+    }
+  }
 }

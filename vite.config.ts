@@ -173,6 +173,19 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("framer-motion")) return "motion";
+          if (id.includes("recharts")) return "recharts";
+          if (id.includes("@tanstack/react-query")) return "query";
+          if (id.includes("@trpc")) return "trpc";
+          if (id.includes("@radix-ui")) return "radix";
+        },
+      },
+    },
   },
   server: {
     host: true,

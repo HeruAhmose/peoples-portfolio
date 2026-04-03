@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 /** 2D canvas fill/stroke from #RRGGBB */
 function hexToRgba(hex: string, alpha: number): string {
@@ -35,6 +36,7 @@ export const ParticleBackground = ({
 }: {
   className?: string;
 }) => {
+  const reduceMotion = usePrefersReducedMotion();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const animationRef = useRef<number | undefined>(undefined);
@@ -62,7 +64,29 @@ export const ParticleBackground = ({
       ro.observe(canvas.parentElement);
     }
 
-    // Initialize particles
+    const drawStaticField = () => {
+      resizeCanvas();
+      ctx.fillStyle = "rgba(10, 14, 39, 0.75)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const n = 36;
+      for (let i = 0; i < n; i++) {
+        const x = ((i * 47) % 100) / 100;
+        const y = ((i * 73) % 100) / 100;
+        ctx.fillStyle = hexToRgba(i % 2 === 0 ? "#ffd700" : "#00d9ff", 0.22);
+        ctx.beginPath();
+        ctx.arc(x * canvas.width, y * canvas.height, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    if (reduceMotion) {
+      drawStaticField();
+      return () => {
+        ro?.disconnect();
+        window.removeEventListener("resize", resizeCanvas);
+      };
+    }
+
     const initParticles = () => {
       particlesRef.current = [];
       for (let i = 0; i < 50; i++) {
@@ -82,18 +106,15 @@ export const ParticleBackground = ({
     initParticles();
 
     const animate = () => {
-      // Clear canvas with fade effect
       ctx.fillStyle = "rgba(10, 14, 39, 0.1)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Update and draw particles
       particlesRef.current = particlesRef.current.filter(p => {
         p.x += p.vx;
         p.y += p.vy;
         p.life--;
 
         if (p.life < 0) {
-          // Respawn particle
           return false;
         }
 
@@ -103,7 +124,6 @@ export const ParticleBackground = ({
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw connections between nearby particles
         particlesRef.current.forEach(p2 => {
           const dx = p2.x - p.x;
           const dy = p2.y - p.y;
@@ -122,7 +142,6 @@ export const ParticleBackground = ({
         return true;
       });
 
-      // Add new particles occasionally
       if (particlesRef.current.length < 50 && Math.random() > 0.7) {
         particlesRef.current.push({
           x: Math.random() * canvas.width,
@@ -148,7 +167,7 @@ export const ParticleBackground = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [reduceMotion]);
 
   return (
     <canvas
@@ -170,12 +189,16 @@ export const HolographicText = ({
   children: React.ReactNode;
   className?: string;
 }) => {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.span
       className={`holographic-text ${className}`}
-      initial={{ opacity: 0, filter: "blur(4px)" }}
+      initial={{
+        opacity: reduceMotion ? 1 : 0,
+        filter: reduceMotion ? "blur(0px)" : "blur(4px)",
+      }}
       animate={{ opacity: 1, filter: "blur(0px)" }}
-      transition={{ duration: 0.85 }}
+      transition={{ duration: reduceMotion ? 0 : 0.85 }}
     >
       {children}
     </motion.span>
@@ -189,17 +212,22 @@ export const GlitchText = ({
   children: React.ReactNode;
   className?: string;
 }) => {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
       className={`relative ${className}`}
-      animate={{
-        textShadow: [
-          "0 0 0 #ffd700, 0 0 0 #00d9ff",
-          "2px 2px 0 #ffd700, -2px -2px 0 #00d9ff",
-          "-2px 2px 0 #ffd700, 2px -2px 0 #00d9ff",
-          "0 0 0 #ffd700, 0 0 0 #00d9ff",
-        ],
-      }}
+      animate={
+        reduceMotion
+          ? false
+          : {
+              textShadow: [
+                "0 0 0 #ffd700, 0 0 0 #00d9ff",
+                "2px 2px 0 #ffd700, -2px -2px 0 #00d9ff",
+                "-2px 2px 0 #ffd700, 2px -2px 0 #00d9ff",
+                "0 0 0 #ffd700, 0 0 0 #00d9ff",
+              ],
+            }
+      }
       transition={{ duration: 0.3, repeat: Infinity, repeatDelay: 2 }}
     >
       {children}
@@ -208,6 +236,7 @@ export const GlitchText = ({
 };
 
 export const NeuralNetwork = () => {
+  const reduceMotion = usePrefersReducedMotion();
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const nodesRef = useRef<
@@ -246,11 +275,7 @@ export const NeuralNetwork = () => {
       if (nodesRef.current.length === 0) initNodes(w, h);
     };
 
-    resize();
-    const ro = new ResizeObserver(() => resize());
-    ro.observe(wrap);
-
-    const animate = () => {
+    const drawGraph = (move: boolean) => {
       const w = Math.max(1, wrap.clientWidth);
       const h = Math.max(280, Math.min(420, wrap.clientHeight || 320));
       if (nodesRef.current.length === 0) initNodes(w, h);
@@ -258,11 +283,12 @@ export const NeuralNetwork = () => {
       ctx.fillRect(0, 0, w, h);
 
       nodesRef.current.forEach((node, i) => {
-        node.x += node.vx;
-        node.y += node.vy;
-
-        if (node.x < 0 || node.x > w) node.vx *= -1;
-        if (node.y < 0 || node.y > h) node.vy *= -1;
+        if (move) {
+          node.x += node.vx;
+          node.y += node.vy;
+          if (node.x < 0 || node.x > w) node.vx *= -1;
+          if (node.y < 0 || node.y > h) node.vy *= -1;
+        }
 
         nodesRef.current.forEach((other, j) => {
           if (i < j) {
@@ -291,7 +317,29 @@ export const NeuralNetwork = () => {
         ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
         ctx.fill();
       });
+    };
 
+    resize();
+    const ro = new ResizeObserver(() => {
+      resize();
+      if (reduceMotion) {
+        drawGraph(false);
+      }
+    });
+    ro.observe(wrap);
+
+    if (reduceMotion) {
+      drawGraph(false);
+      return () => {
+        ro.disconnect();
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+        }
+      };
+    }
+
+    const animate = () => {
+      drawGraph(true);
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -303,7 +351,7 @@ export const NeuralNetwork = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [reduceMotion]);
 
   return (
     <div
