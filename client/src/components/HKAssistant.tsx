@@ -17,14 +17,14 @@ interface HKAssistantProps {
   onClose: () => void;
 }
 
-const initialGreeting = `Greetings. I am H.K., your bridge to understanding advanced materials science and the Architected Multi-Modal Coupling hypothesis.
+const initialGreeting = `Greetings. I am H.K., your bridge for this portfolio — materials (Tamerian / AMC), digital equity (TechBridge), and sovereign cybersecurity (Queen Califia CyberAI).
 
-When the Claude API is configured on the server, I answer with full context from the preprint framing. Otherwise you will see a short local fallback.
+When the Claude API is configured on the server, I answer with full context. Otherwise you will see a short local fallback with links to the live sites.
 
 How may I assist you today?`;
 
 const fallbackReply =
-  "The live model is offline (set ANTHROPIC_API_KEY on the server). For now: the AMC hypothesis proposes engineered coupling among hemp-derived carbon, quartz, tourmaline, magnetite, and rare-earth-doped crystallites in a polymer binder to enable multi-modal transduction—see Materials and Research sections for detail.";
+  "The live model is offline (set ANTHROPIC_API_KEY on the server). For depth on each line of work, open the live sites: Queen Califia CyberAI — https://queencalifia-cyberai.web.app/ · Tamerian Materials — https://tamerian-materials.com/ · TechBridge Collective — https://techbridge-collective.org/ . The AMC materials hypothesis is summarized under Materials and Research here.";
 
 export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
   const { logAssistantOpen } = usePortfolioAnalytics();
@@ -119,7 +119,7 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
             <div>
               <h3 className="font-bold text-foreground">H.K. ASSISTANT</h3>
               <p className="text-xs text-muted-foreground font-mono">
-                Claude-powered · AMC context
+                Claude-powered · portfolio context
               </p>
             </div>
             <motion.button
@@ -188,7 +188,7 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="Ask about AMC, materials, or research..."
+              placeholder="Ask about materials, TechBridge, Queen Califia, or research..."
               className="flex-1 bg-background border border-border rounded px-3 py-2 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary"
               disabled={loading}
             />

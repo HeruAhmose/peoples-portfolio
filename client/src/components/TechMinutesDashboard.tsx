@@ -258,10 +258,19 @@ export default function TechMinutesDashboard({
         </p>
         <p>
           TechBridge Collective builds bridges of access, dignity, and
-          opportunity through human-centered digital help. Every TechMinute
-          represents a life changed—a parent reconnecting with their child's
-          education, a veteran rebuilding their career, a senior accessing
-          healthcare. We measure impact not in metrics, but in moments.
+          opportunity through human-centered digital help at Triangle community
+          sites (
+          <a
+            href="https://techbridge-collective.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            techbridge-collective.org
+          </a>
+          ). Every TechMinute® represents a life changed — a parent
+          reconnecting with their child&apos;s education, a veteran rebuilding
+          their career, a senior accessing healthcare.
         </p>
       </motion.div>
     </motion.div>
