@@ -42,6 +42,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-mono: "Share Tech Mono", ui-monospace, monospace;
   --font-display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
+  --font-hero: "Syne", "Orbitron", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -85,6 +86,7 @@
   --magenta: oklch(0.62 0.22 320);
   --font-cyber-display: "Orbitron", ui-sans-serif, system-ui, sans-serif;
   --font-cyber-mono: "Share Tech Mono", ui-monospace, monospace;
+  --font-hero-display: "Syne", "Orbitron", ui-sans-serif, system-ui, sans-serif;
   /* Afrofuturistic palette — heritage × frontier tech (see portfolioAfrofuturism) */
   --afro-gold: oklch(0.72 0.14 85);
   --afro-terracotta: oklch(0.58 0.13 35);
@@ -318,6 +320,31 @@
     animation: holographic-shift 6s linear infinite;
   }
 
+  /* Sovereign hero: Afro palette × cyber neon — signature 1-of-1 mark */
+  .holographic-text--sovereign {
+    background: linear-gradient(
+      92deg,
+      oklch(0.76 0.16 88),
+      oklch(0.62 0.14 38),
+      oklch(0.58 0.14 158),
+      oklch(0.55 0.12 200),
+      oklch(0.52 0.16 268),
+      oklch(0.6 0.14 55),
+      oklch(0.76 0.16 88)
+    );
+    background-size: 260% auto;
+    filter: drop-shadow(
+        0 0 22px color-mix(in oklch, var(--afro-gold) 42%, transparent)
+      )
+      drop-shadow(
+        0 0 48px color-mix(in oklch, var(--afro-sapphire) 22%, transparent)
+      );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: holographic-shift 11s linear infinite;
+  }
+
   /* Cyber Border Glow */
   @keyframes cyber-border-glow {
     0%,
@@ -413,9 +440,19 @@
     animation: cyber-border-glow 3s ease-in-out infinite;
   }
 
-  /* Deep Space Background — layered aurora + void */
+  /* Deep Space Background — layered aurora + Afro wisps + void */
   .space-bg {
     background:
+      radial-gradient(
+        ellipse 100% 55% at 15% 25%,
+        color-mix(in oklch, var(--afro-emerald) 16%, transparent) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse 90% 70% at 88% 20%,
+        color-mix(in oklch, var(--afro-sapphire) 14%, transparent) 0%,
+        transparent 48%
+      ),
       radial-gradient(
         ellipse 120% 80% at 50% -20%,
         color-mix(in oklch, var(--cyan) 22%, transparent) 0%,
@@ -431,7 +468,60 @@
         color-mix(in oklch, var(--gold) 12%, transparent) 0%,
         transparent 45%
       ),
+      radial-gradient(
+        ellipse 55% 40% at 50% 100%,
+        color-mix(in oklch, var(--afro-terracotta) 10%, transparent) 0%,
+        transparent 42%
+      ),
       radial-gradient(ellipse at bottom, #1b2735 0%, #060818 55%, #03050f 100%);
+  }
+
+  /* Slow-moving aurora veil (main stack) */
+  .afro-aurora-veil {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.55;
+    background:
+      radial-gradient(
+        ellipse 80% 50% at 20% 40%,
+        color-mix(in oklch, var(--afro-gold) 8%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 70% 45% at 85% 55%,
+        color-mix(in oklch, var(--afro-copper) 7%, transparent),
+        transparent 55%
+      );
+    animation: afro-aurora-drift 28s ease-in-out infinite;
+  }
+
+  @keyframes afro-aurora-drift {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.5;
+    }
+    33% {
+      transform: translate(2%, -1%) scale(1.02);
+      opacity: 0.62;
+    }
+    66% {
+      transform: translate(-1.5%, 1%) scale(1.01);
+      opacity: 0.55;
+    }
+  }
+
+  /* Ultra-subtle grain — depth without clutter */
+  .film-grain {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   /* Glass / HUD panels */
@@ -451,6 +541,23 @@
       inset 0 1px 0 color-mix(in oklch, white 12%, transparent);
   }
 
+  .cyber-panel.cyber-panel--hero {
+    border: 1px solid color-mix(in oklch, var(--cyan) 42%, var(--afro-copper));
+    background: linear-gradient(
+      148deg,
+      color-mix(in oklch, var(--card) 78%, transparent) 0%,
+      color-mix(in oklch, var(--card) 48%, oklch(0.12 0.06 265)) 45%,
+      color-mix(in oklch, var(--card) 52%, oklch(0.11 0.05 155)) 100%
+    );
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--afro-gold) 32%, transparent),
+      0 0 60px -12px color-mix(in oklch, var(--afro-sapphire) 28%, transparent),
+      0 0 100px -24px color-mix(in oklch, var(--afro-emerald) 12%, transparent),
+      0 20px 56px oklch(0.04 0.05 270 / 0.72),
+      inset 0 1px 0 color-mix(in oklch, var(--afro-gold) 18%, transparent),
+      inset 0 -1px 0 color-mix(in oklch, var(--cyan) 8%, transparent);
+  }
+
   .cyber-panel--subtle {
     border-radius: var(--radius-md);
     background: color-mix(in oklch, var(--card) 72%, transparent);
@@ -460,6 +567,150 @@
     box-shadow:
       0 4px 24px oklch(0.05 0.03 260 / 0.5),
       inset 0 1px 0 color-mix(in oklch, white 8%, transparent);
+  }
+
+  /* Sector map nodes — Afro × cyber hover radiance */
+  .sector-node-card {
+    position: relative;
+    transition:
+      box-shadow 0.45s ease,
+      border-color 0.35s ease,
+      transform 0.35s ease;
+  }
+
+  .sector-node-card::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    background: linear-gradient(
+      125deg,
+      color-mix(in oklch, var(--afro-gold) 55%, transparent),
+      color-mix(in oklch, var(--afro-emerald) 45%, transparent),
+      color-mix(in oklch, var(--afro-sapphire) 50%, transparent),
+      color-mix(in oklch, var(--afro-copper) 45%, transparent)
+    );
+    z-index: -1;
+    filter: blur(14px);
+  }
+
+  .sector-node-card:hover::after {
+    opacity: 0.55;
+  }
+
+  .sector-node-card:hover {
+    border-color: color-mix(in oklch, var(--afro-gold) 38%, var(--cyan));
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--afro-gold) 25%, transparent),
+      0 0 36px -6px color-mix(in oklch, var(--afro-emerald) 32%, transparent),
+      0 12px 40px oklch(0.05 0.04 260 / 0.55),
+      inset 0 1px 0 color-mix(in oklch, var(--afro-gold) 12%, transparent);
+  }
+
+  /* Hero shell — outer glow + HUD corners */
+  .hero-afro-root {
+    padding-bottom: 0.5rem;
+  }
+
+  .hero-afro-chamber {
+    background:
+      radial-gradient(
+        ellipse 100% 80% at 50% 0%,
+        color-mix(in oklch, var(--afro-sapphire) 18%, transparent),
+        transparent 62%
+      ),
+      radial-gradient(
+        ellipse 80% 60% at 50% 100%,
+        color-mix(in oklch, var(--afro-gold) 12%, transparent),
+        transparent 55%
+      );
+    border: 1px solid color-mix(in oklch, var(--cyan) 18%, transparent);
+  }
+
+  .hero-hud-frame {
+    position: relative;
+    border-radius: var(--radius-lg);
+  }
+
+  .hero-hud-corner {
+    position: absolute;
+    z-index: 20;
+    width: 22px;
+    height: 22px;
+    border-color: color-mix(in oklch, var(--afro-gold) 65%, var(--cyan));
+    border-style: solid;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+
+  .hero-hud-corner--tl {
+    top: 10px;
+    left: 10px;
+    border-width: 2px 0 0 2px;
+    border-radius: 2px 0 0 0;
+    box-shadow: -1px -1px 12px
+      color-mix(in oklch, var(--afro-gold) 35%, transparent);
+  }
+
+  .hero-hud-corner--tr {
+    top: 10px;
+    right: 10px;
+    border-width: 2px 2px 0 0;
+    border-radius: 0 2px 0 0;
+    box-shadow: 1px -1px 12px color-mix(in oklch, var(--cyan) 30%, transparent);
+  }
+
+  .hero-hud-corner--bl {
+    bottom: 10px;
+    left: 10px;
+    border-width: 0 0 2px 2px;
+    border-radius: 0 0 0 2px;
+    box-shadow: -1px 1px 12px
+      color-mix(in oklch, var(--afro-emerald) 28%, transparent);
+  }
+
+  .hero-hud-corner--br {
+    bottom: 10px;
+    right: 10px;
+    border-width: 0 2px 2px 0;
+    border-radius: 0 0 2px 0;
+    box-shadow: 1px 1px 12px
+      color-mix(in oklch, var(--afro-sapphire) 30%, transparent);
+  }
+
+  .font-hero-display {
+    font-family: var(--font-hero-display);
+    letter-spacing: 0.04em;
+  }
+
+  .nav-afro-spectrum {
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--afro-gold),
+      var(--afro-emerald),
+      var(--afro-sapphire),
+      var(--afro-copper),
+      transparent
+    );
+    opacity: 0.75;
+  }
+
+  .btn-afro-primary {
+    box-shadow:
+      0 0 0 1px color-mix(in oklch, var(--afro-gold) 40%, transparent),
+      0 0 28px -4px color-mix(in oklch, var(--afro-emerald) 35%, transparent),
+      0 6px 24px oklch(0.05 0.05 260 / 0.5);
+  }
+
+  .btn-afro-outline {
+    border-color: color-mix(in oklch, var(--afro-sapphire) 45%, var(--cyan));
+    box-shadow: inset 0 0 20px
+      color-mix(in oklch, var(--afro-sapphire) 8%, transparent);
   }
 
   /* Afrofuturistic craft — layers with existing cyber HUD */
@@ -540,8 +791,9 @@
 
   .cyber-nav-glow {
     box-shadow:
-      0 0 60px -12px color-mix(in oklch, var(--cyan) 35%, transparent),
-      0 1px 0 color-mix(in oklch, var(--gold) 45%, transparent);
+      0 0 72px -10px color-mix(in oklch, var(--cyan) 32%, transparent),
+      0 0 48px -18px color-mix(in oklch, var(--afro-gold) 18%, transparent),
+      0 1px 0 color-mix(in oklch, var(--gold) 50%, transparent);
   }
 
   .font-cyber-display {
@@ -572,10 +824,15 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .holographic-text {
+    .holographic-text,
+    .holographic-text--sovereign {
       animation: none;
       background-position: 50% 50%;
       filter: none;
+    }
+
+    .afro-aurora-veil {
+      animation: none;
     }
 
     .neon-text,

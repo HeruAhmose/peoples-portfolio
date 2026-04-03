@@ -57,15 +57,18 @@ export default function Navigation({
 
   return (
     <motion.nav
-      className="cyber-nav-glow fixed top-0 right-0 left-0 z-40 border-b border-cyan-500/25 bg-background/65 backdrop-blur-xl"
+      className="cyber-nav-glow fixed top-0 right-0 left-0 z-40 border-b border-[color:color-mix(in_oklch,var(--cyan)_32%,var(--afro-copper))] bg-[color:color-mix(in_oklch,var(--background)_68%,transparent)] backdrop-blur-xl backdrop-saturate-150"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
     >
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0"
         aria-hidden
-      />
+      >
+        <div className="nav-afro-spectrum h-[3px] w-full" />
+        <div className="h-px bg-gradient-to-r from-transparent via-primary/75 to-transparent" />
+      </div>
       <div className="container flex h-16 items-center justify-between">
         <motion.div
           className="flex items-center gap-3"
@@ -74,7 +77,7 @@ export default function Navigation({
           <div className="font-display text-2xl font-bold text-primary neon-text drop-shadow-[0_0_12px_oklch(0.65_0.25_45/0.55)]">
             ◉
           </div>
-          <span className="font-display hidden text-xs font-semibold tracking-[0.2em] text-foreground/95 sm:inline md:text-sm">
+          <span className="font-hero-display hidden text-xs font-semibold tracking-[0.18em] text-foreground/95 sm:inline md:text-sm">
             JONATHAN PEOPLES
           </span>
         </motion.div>

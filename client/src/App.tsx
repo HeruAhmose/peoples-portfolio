@@ -33,7 +33,7 @@ function sectionToPath(section: string): string {
 }
 
 const SECTION_TITLES: Record<string, string> = {
-  home: "Jonathan Peoples | Portfolio",
+  home: "Jonathan Peoples | Afrofuturistic Cyber Portfolio",
   materials: "Materials Science | Jonathan Peoples",
   community: "Community Impact | Jonathan Peoples",
   research: "Research Lab | Jonathan Peoples",
@@ -140,6 +140,8 @@ function App() {
               <main className="relative z-10 min-h-screen space-bg overflow-x-hidden pt-16">
                 <ParticleBackground className="absolute inset-0" />
                 <div className="cyber-grid-overlay" aria-hidden />
+                <div className="afro-aurora-veil" aria-hidden />
+                <div className="film-grain" aria-hidden />
                 <div className="cyber-vignette" aria-hidden />
                 <div
                   className="pointer-events-none absolute inset-0 z-[1] scan-effect opacity-[0.12]"
@@ -156,7 +158,7 @@ function App() {
               <button
                 type="button"
                 onClick={() => setHkAssistantOpen(!hkAssistantOpen)}
-                className="fixed bottom-4 left-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-cyan-400/45 bg-primary text-primary-foreground shadow-[0_0_32px_-4px_oklch(0.65_0.25_45/0.7)] transition-all hover:scale-105 hover:border-cyan-300/55 hover:bg-primary/90 hover:shadow-[0_0_44px_0_oklch(0.6_0.2_200/0.35)]"
+                className="fixed bottom-4 left-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-[color:color-mix(in_oklch,var(--afro-emerald)_42%,var(--cyan))] bg-primary text-primary-foreground shadow-[0_0_36px_-4px_oklch(0.65_0.25_45/0.75),0_0_24px_-6px_color-mix(in_oklch,var(--afro-sapphire)_35%,transparent)] transition-all hover:scale-105 hover:border-cyan-300/55 hover:bg-primary/90 hover:shadow-[0_0_48px_0_oklch(0.6_0.2_200/0.38)]"
                 title="Open H.K. Assistant"
                 aria-label="Open H.K. Assistant"
               >

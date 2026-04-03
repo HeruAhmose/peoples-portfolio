@@ -87,9 +87,18 @@ export const ParticleBackground = ({
       };
     }
 
+    const PALETTE = [
+      "#ffd700",
+      "#00d9ff",
+      "#34d399",
+      "#c2704e",
+      "#6b8cff",
+      "#d4a574",
+    ] as const;
+
     const initParticles = () => {
       particlesRef.current = [];
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 56; i++) {
         particlesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -98,7 +107,7 @@ export const ParticleBackground = ({
           life: Math.random() * 100 + 50,
           maxLife: 150,
           size: Math.random() * 2 + 1,
-          color: Math.random() > 0.5 ? "#ffd700" : "#00d9ff",
+          color: PALETTE[Math.floor(Math.random() * PALETTE.length)]!,
         });
       }
     };
@@ -130,7 +139,13 @@ export const ParticleBackground = ({
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < 100) {
-            ctx.strokeStyle = `rgba(255, 215, 0, ${(1 - distance / 100) * 0.2})`;
+            const a = (1 - distance / 100) * 0.22;
+            ctx.strokeStyle =
+              p.color === "#00d9ff" || p2.color === "#00d9ff"
+                ? `rgba(0, 217, 255, ${a})`
+                : p.color === "#34d399" || p2.color === "#34d399"
+                  ? `rgba(52, 211, 153, ${a * 0.9})`
+                  : `rgba(255, 215, 0, ${a})`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
@@ -142,7 +157,7 @@ export const ParticleBackground = ({
         return true;
       });
 
-      if (particlesRef.current.length < 50 && Math.random() > 0.7) {
+      if (particlesRef.current.length < 56 && Math.random() > 0.68) {
         particlesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -151,7 +166,7 @@ export const ParticleBackground = ({
           life: 150,
           maxLife: 150,
           size: Math.random() * 2 + 1,
-          color: Math.random() > 0.5 ? "#ffd700" : "#00d9ff",
+          color: PALETTE[Math.floor(Math.random() * PALETTE.length)]!,
         });
       }
 
@@ -185,14 +200,21 @@ export const ParticleBackground = ({
 export const HolographicText = ({
   children,
   className = "",
+  variant = "cyber",
 }: {
   children: React.ReactNode;
   className?: string;
+  /** `sovereign` = Afro × cyber spectrum for the primary hero mark. */
+  variant?: "cyber" | "sovereign";
 }) => {
   const reduceMotion = useReducedMotion();
+  const variantClass =
+    variant === "sovereign"
+      ? "holographic-text holographic-text--sovereign"
+      : "holographic-text";
   return (
     <motion.span
-      className={`holographic-text ${className}`}
+      className={`${variantClass} ${className}`}
       initial={{
         opacity: reduceMotion ? 1 : 0,
         filter: reduceMotion ? "blur(0px)" : "blur(4px)",
