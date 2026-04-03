@@ -1,6 +1,6 @@
 # Peoples Portfolio - Project TODO
 
-_Checkpoint zips `peoples-portfolio (4).zip` and `peoples-portfolio (5).zip` (same byte size / Manus export) were diffed against this tree: canonical code and Drizzle schema live here (full portfolio + `visitorEvents` / `inquiries` / etc.); archives matched an older Manus template with users-only schema — do not replace `drizzle/schema.ts` or `server/portfolioRouter.ts` from those zips._
+_Checkpoint zips `peoples-portfolio (4).zip`, `(5).zip`, and `(6).zip` are the **same archive** (identical SHA-256 to `(5)` as of 2026-04-02). Diffed against this tree: canonical code and Drizzle schema live here (full portfolio + `visitorEvents` / `inquiries` / etc.); archives are an older Manus template with users-only schema — do not replace `drizzle/schema.ts` or `server/portfolioRouter.ts` from those zips._
 
 ## Core Features
 

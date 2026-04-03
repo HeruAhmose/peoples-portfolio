@@ -24,6 +24,23 @@ const sections = [
   { id: "research", label: "RESEARCH LAB" },
 ];
 
+/** Warm Vite lazy chunks (matches `App.tsx` dynamic imports). */
+function prefetchSection(id: string) {
+  switch (id) {
+    case "materials":
+      void import("@/pages/MaterialsScience");
+      break;
+    case "community":
+      void import("@/pages/CommunityImpact");
+      break;
+    case "research":
+      void import("@/pages/ResearchLab");
+      break;
+    default:
+      break;
+  }
+}
+
 export default function Navigation({
   activeSection,
   onNavigate,
@@ -62,6 +79,7 @@ export default function Navigation({
               key={section.id}
               type="button"
               onClick={() => onNavigate(section.id)}
+              onPointerEnter={() => prefetchSection(section.id)}
               onMouseEnter={() => setHoveredSection(section.id)}
               onMouseLeave={() => setHoveredSection(null)}
               className="relative font-mono text-xs tracking-widest transition-colors"
@@ -118,6 +136,7 @@ export default function Navigation({
                     key={section.id}
                     type="button"
                     onClick={() => go(section.id)}
+                    onPointerEnter={() => prefetchSection(section.id)}
                     className={`rounded-md px-4 py-3 text-left font-mono text-sm tracking-widest transition-colors ${
                       activeSection === section.id
                         ? "bg-primary/15 text-primary"
