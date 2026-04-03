@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -12,6 +12,22 @@ import MaterialsScience from "./pages/MaterialsScience";
 import CommunityImpact from "./pages/CommunityImpact";
 import ResearchLab from "./pages/ResearchLab";
 import NotFound from "./pages/NotFound";
+import { useAudioSystem } from "./hooks/useAudioSystem";
+
+function pathToSection(loc: string): string {
+  const raw = loc.split("?")[0] || "/";
+  const path = raw.replace(/\/$/, "") || "/";
+  if (path === "/" || path === "") return "home";
+  const seg = path.slice(1).split("/")[0];
+  if (seg === "materials" || seg === "community" || seg === "research")
+    return seg;
+  return "home";
+}
+
+function sectionToPath(section: string): string {
+  if (section === "home") return "/";
+  return `/${section}`;
+}
 
 function Router({
   activeSection,
@@ -59,9 +75,11 @@ function Router({
 }
 
 function App() {
+  const [location, setLocation] = useLocation();
+  const activeSection = pathToSection(location);
+  const { isMuted, toggleMute, playSectionTransition, playClickSound } =
+    useAudioSystem();
   const [showAwakening, setShowAwakening] = useState(true);
-  const [activeSection, setActiveSection] = useState("home");
-  const [audioEnabled, setAudioEnabled] = useState(true);
   const [hkAssistantOpen, setHkAssistantOpen] = useState(false);
 
   useEffect(() => {
@@ -70,9 +88,15 @@ function App() {
   }, []);
 
   const handleNavigate = (section: string) => {
-    setActiveSection(section);
-    // In a real app, you'd use wouter's navigation here
-    window.location.hash = section === "home" ? "/" : `/${section}`;
+    if (pathToSection(location) !== section) {
+      void playSectionTransition();
+    }
+    setLocation(sectionToPath(section));
+  };
+
+  const handleNavClick = (section: string) => {
+    void playClickSound();
+    handleNavigate(section);
   };
 
   return (
@@ -91,9 +115,9 @@ function App() {
             <>
               <Navigation
                 activeSection={activeSection}
-                onNavigate={handleNavigate}
-                audioEnabled={audioEnabled}
-                onAudioToggle={() => setAudioEnabled(!audioEnabled)}
+                onNavigate={handleNavClick}
+                audioEnabled={!isMuted}
+                onAudioToggle={toggleMute}
               />
 
               <main className="pt-16 min-h-screen bg-background space-bg">

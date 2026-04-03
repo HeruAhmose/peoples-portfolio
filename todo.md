@@ -1,5 +1,7 @@
 # Peoples Portfolio - Project TODO
 
+_Checkpoint zip `peoples-portfolio (4).zip` (2026-04-02) was diffed against this tree: canonical code and Drizzle schema live here (full portfolio + `visitorEvents` / `inquiries` / etc.); the archive matched an older Manus template with users-only schema._
+
 ## Core Features
 
 ### Phase 1: Foundation & Architecture
@@ -57,28 +59,28 @@
 - [x] Implement H.K. AI-inspired assistant interface
 - [x] Add natural language processing for AMC hypothesis questions
 - [x] Create step-by-step guidance aesthetic
-- [ ] Integrate Claude API for intelligent responses (backend integration)
+- [x] Integrate Claude API for intelligent responses (backend integration)
 
 ### Phase 9: Audio System
 
 - [x] Create mute/unmute controls
-- [ ] Integrate high-quality audio feedback system
-- [ ] Add state-specific audio cues
-- [ ] Implement audio for interactive elements
+- [x] Integrate high-quality audio feedback system (`useAudioSystem` — Web Audio procedural cues)
+- [x] Add state-specific audio cues (section transition + nav click wired in `App.tsx`)
+- [x] Implement audio for interactive elements (nav + section changes; extend per component as needed)
 
 ### Phase 10: Notifications & Backend
 
-- [ ] Set up email notification system for visitor interactions
-- [ ] Create database schema for portfolio interactions
-- [ ] Implement tRPC procedures for tracking events
-- [ ] Add notification triggers for key portfolio sections
+- [x] Set up email notification system for visitor interactions (`server/_core/email.ts`, inquiry flow)
+- [x] Create database schema for portfolio interactions (`drizzle/schema.ts`)
+- [x] Implement tRPC procedures for tracking events (`portfolioRouter`, `hkRouter`)
+- [x] Add notification triggers for key portfolio sections (`portfolioService` section views / inquiries)
 
 ### Phase 11: Testing & Optimization
 
 - [x] Write Vitest tests for core features
 - [x] Optimize canvas rendering performance
 - [x] Test responsive design across devices
-- [ ] Validate audio system functionality
+- [x] Validate audio system functionality (manual: unmute, navigate sections; automated tests unchanged)
 
 ### Phase 12: Final Polish & Deployment
 
