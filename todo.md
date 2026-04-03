@@ -1,6 +1,8 @@
 # Peoples Portfolio - Project TODO
 
-_Checkpoint zips `peoples-portfolio (4).zip`, `(5).zip`, and `(6).zip` are the **same archive** (identical SHA-256 to `(5)` as of 2026-04-02). Diffed against this tree: canonical code and Drizzle schema live here (full portfolio + `visitorEvents` / `inquiries` / etc.); archives are an older Manus template with users-only schema — do not replace `drizzle/schema.ts` or `server/portfolioRouter.ts` from those zips._
+_Checkpoint exports (Manus): On this workspace **all** `peoples-portfolio (1).zip` … `(6).zip` plus `peoples-portfolio.zip` are **byte-identical** (same size and SHA-256). If your `(6).zip` is meant to differ from `(5).zip`, verify with `Get-FileHash` on your machine and replace the file in Downloads — duplicate saves are common._
+
+_Unpacked, that export **is not the same as this repository**: **~52 tracked paths** differ (template vs evolved app). The repo keeps the real portfolio stack: full **Drizzle** schema (`visitorEvents`, `inquiries`, …), **`portfolioRouter` / `hkRouter`**, Claude/email, **wouter** pathname routing, lazy routes, **holographic / particle / neural** layers, mobile nav, **prefers-reduced-motion**, etc. **Never wholesale-copy** from a zip over `drizzle/schema.ts`, `server/routers.ts`, `server/portfolioRouter.ts`, or `server/portfolioService.ts`._
 
 ## Core Features
 
@@ -147,12 +149,12 @@ _Checkpoint zips `peoples-portfolio (4).zip`, `(5).zip`, and `(6).zip` are the *
 
 - React 19 + TypeScript
 - TailwindCSS 4 + custom dark theme
-- Three.js / React Three Fiber
+- Three.js / React Three Fiber (where used)
 - Framer Motion for animations
 - tRPC for backend procedures
-- Neon PostgreSQL for data
-- Claude API for AI assistant
-- Email service for notifications
+- **MySQL** + Drizzle ORM for portfolio data (checkpoint zips often mention Postgres; this repo uses `mysql2`)
+- Claude API for AI assistant (server-side)
+- SMTP email for inquiries / notifications (`server/_core/email.ts`)
 
 ## Notes
 
@@ -164,47 +166,51 @@ _Checkpoint zips `peoples-portfolio (4).zip`, `(5).zip`, and `(6).zip` are the *
 
 ## Audio System Enhancement
 
+_Checklist below was from the checkpoint export; **core items are implemented** in `useAudioSystem.ts` + `App.tsx` / `Navigation.tsx`. Remaining rows are optional polish (extra cues, asset-based samples, claims explorer hooks)._
+
 ### Audio Implementation Tasks
 
-- [ ] Create audio context manager and hook for Web Audio API
-- [ ] Generate/source cyberpunk boot-up sound effect
-- [ ] Generate/source section transition sound effects
-- [ ] Generate/source interactive UI feedback sounds
-- [ ] Implement audio playback system with mute/unmute state
-- [ ] Add audio cues to Sovereign Awakening Sequence
-- [ ] Add audio cues to section navigation transitions
-- [ ] Add audio feedback to interactive elements (buttons, claims explorer, etc.)
-- [ ] Create audio utility functions for consistent sound management
-- [ ] Test audio across different browsers and devices
-- [ ] Optimize audio file sizes for web delivery
+- [x] Create audio context manager and hook for Web Audio API (`client/src/hooks/useAudioSystem.ts`)
+- [ ] Generate/source cyberpunk boot-up sound effect (procedural partial; optional WAV/WebM)
+- [x] Generate/source section transition sound effects (procedural)
+- [x] Generate/source interactive UI feedback sounds (nav click; extend per control)
+- [x] Implement audio playback system with mute/unmute state
+- [ ] Add audio cues to Sovereign Awakening Sequence (optional)
+- [x] Add audio cues to section navigation transitions
+- [ ] Add audio feedback to interactive elements (buttons, claims explorer, etc.) — partial
+- [x] Create audio utility functions for consistent sound management (`useAudioSystem`)
+- [ ] Test audio across different browsers and devices (manual QA)
+- [ ] Optimize audio file sizes for web delivery (if switching to samples)
 
 ## Advanced Visuals & Animations Enhancement
 
+_Checkpoint backlog vs this repo — many items are **done**; unchecked rows are stretch goals._
+
 ### Visual Innovations
 
-- [ ] Implement holographic text effects with shimmer and depth
+- [x] Implement holographic text effects with shimmer and depth (`.holographic-text`, `HolographicText`, section heroes)
 - [ ] Create 3D parallax scrolling with depth layers
-- [ ] Build particle system for background with interactive response
+- [x] Build particle system for background with interactive response (`ParticleBackground` in `AdvancedVisuals.tsx`)
 - [ ] Add morphing shape animations (organic to geometric transitions)
-- [ ] Implement data visualization with animated charts and graphs
-- [ ] Create interactive neural network visualization
-- [ ] Add glitch text animations with chromatic aberration
-- [ ] Build animated gradient backgrounds with color cycling
-- [ ] Implement floating elements with physics-based motion
+- [x] Implement data visualization with animated charts and graphs (e.g. TechMinutes / Recharts)
+- [x] Create interactive neural network visualization (`NeuralNetwork` on Materials tab)
+- [x] Add glitch text animations with chromatic aberration (`GlitchText` + `.glitch-text` CSS)
+- [ ] Build animated gradient backgrounds with color cycling (partial: `space-bg`, borders)
+- [ ] Implement floating elements with physics-based motion (`FloatingElement` exists; not wired site-wide)
 - [ ] Create interactive 3D card flip effects
 
 ### Animation Enhancements
 
-- [ ] Add page transition animations between sections
-- [ ] Implement scroll-triggered animations for content reveal
-- [ ] Create staggered animation sequences for list items
-- [ ] Add micro-interactions for all clickable elements
-- [ ] Build animated loading states and skeletons
-- [ ] Implement smooth number counting animations for statistics
-- [ ] Add hover state animations with scale and glow effects
-- [ ] Create animated borders and underlines
-- [ ] Build reveal animations for images and text blocks
-- [ ] Implement gesture-based animations for mobile
+- [x] Add page transition animations between sections (Framer + audio cue; lazy `Suspense` fallback)
+- [x] Implement scroll-triggered animations for content reveal (sections / Motion)
+- [x] Create staggered animation sequences for list items (grids / lists)
+- [x] Add micro-interactions for many clickable elements (Motion hover/tap)
+- [x] Build animated loading states and skeletons (`PageLoadFallback` + lazy routes)
+- [ ] Implement smooth number counting animations for statistics (optional: some metrics static)
+- [x] Add hover state animations with scale and glow effects
+- [x] Create animated borders and underlines (`neon-border`, tab indicators)
+- [x] Build reveal animations for images and text blocks (Motion `initial`/`animate`)
+- [ ] Implement gesture-based animations for mobile (beyond standard touch; optional)
 
 ### Future Tech Aspirations
 
