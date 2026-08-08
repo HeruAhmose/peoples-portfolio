@@ -46,7 +46,7 @@ const SECTION_TITLES: Record<string, string> = {
   community: "Community Impact | Jonathan Peoples",
   research: "Research Lab | Jonathan Peoples",
   gallery: "3D Project Gallery | Jonathan Peoples",
-  timeline: "Career Timeline | Jonathan Peoples",
+  timeline: "Founder Journey | Jonathan Peoples",
 };
 
 function Router({
@@ -136,7 +136,13 @@ function App() {
     if (pathToSection(location) !== section) {
       void playSectionTransition();
     }
-    setLocation(sectionToPath(section));
+    const nextPath = sectionToPath(section);
+    const transition = (window as any).TRAIOrganismV5?.transitionInternal;
+    if (typeof transition === "function") {
+      void transition(() => setLocation(nextPath), { label: section });
+      return;
+    }
+    setLocation(nextPath);
   };
 
   const handleNavClick = (section: string) => {

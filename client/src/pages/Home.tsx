@@ -20,6 +20,7 @@ import {
 } from "@/components/AdvancedVisualEffects";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 import AboutMeSection from "@/components/AboutMeSection";
+import FounderMediaJourney from "@/components/FounderMediaJourney";
 import AfrofuturisticCraftSection from "@/components/AfrofuturisticCraftSection";
 import AdvancedVisualEffectsSection from "@/components/AdvancedVisualEffectsSection";
 import HeroAfroCyberShell from "@/components/HeroAfroCyberShell";
@@ -61,10 +62,10 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
             <div className="relative z-10">
               <div className="pointer-events-none absolute -top-px left-8 right-8 h-px bg-gradient-to-r from-transparent via-[color:color-mix(in_oklch,var(--afro-gold)_55%,var(--cyan))] to-transparent" />
               <p className="font-mono text-[10px] tracking-[0.4em] text-cyan-400/85 md:text-xs">
-                NEURAL PORTFOLIO /// 2060-READY
+                FOUNDER WORLD /// LIVING PORTFOLIO
               </p>
               <p className="font-hero-display mt-2 text-[10px] font-semibold tracking-[0.2em] text-[color:color-mix(in_oklch,var(--afro-emerald)_78%,white)] md:text-[11px] md:tracking-[0.26em]">
-                AFROFUTURISTIC CRAFT · HERITAGE × FRONTIER TECH
+                SERVICE × INVENTION × SOVEREIGN SYSTEMS
               </p>
               <p className="mt-2 font-mono text-[9px] tracking-[0.18em] text-muted-foreground/90 md:text-[10px] md:tracking-[0.22em]">
                 <GlitchFlash>
@@ -82,7 +83,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   </HolographicText>
                 </h1>
                 <p className="font-hero-display text-sm font-medium tracking-[0.12em] text-foreground/88 md:text-base md:tracking-[0.14em]">
-                  Afrofuturistic cyber security · materials · digital equity
+                  Navy veteran · founder · inventor · systems builder
                 </p>
                 <p className="font-mono text-base tracking-wide text-foreground/90 md:text-xl">
                   <span className="text-primary">Queen Califia CyberAI</span>
@@ -94,7 +95,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   </span>
                 </p>
                 <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
-                  <TextReveal text="Sovereign cybersecurity intelligence, hemp-carbon composite innovation (where carbon meets crystal), and human-centered digital equity across the Triangle — with research tying the threads together. One interface: African diaspora futurism, gem-and-earth spectrum, and a neon spine engineered like a security operations HUD." />
+                  <TextReveal text="Born in Salisbury and raised in Kannapolis, Jonathan Peoples carries the discipline of football and Navy service into a connected body of work spanning advanced materials, sovereign cybersecurity, AI systems, research, and community technology infrastructure." />
                 </p>
               </div>
 
@@ -126,6 +127,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
       </section>
 
       <AboutMeSection />
+      <FounderMediaJourney />
 
       <AfrofuturisticCraftSection />
 
@@ -160,9 +162,9 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                 },
                 {
                   id: "timeline",
-                  title: "Career Timeline",
+                  title: "Founder Journey",
                   description:
-                    "2018–2026 milestones · scroll reveals · expandable detail & badges",
+                    "Kannapolis football → Navy service → materials → cyber → community systems",
                   icon: "◐",
                 },
                 {
@@ -241,7 +243,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
             Featured Highlights
           </h2>
           <p className="font-mono mb-10 text-[10px] tracking-[0.3em] text-[color:color-mix(in_oklch,var(--afro-copper)_65%,var(--muted-foreground))]">
-            DATA FEED /// LIVE NARRATIVES
+            DATA FEED /// LIVE WORK
           </p>
 
           <StaggerReveal className="space-y-5">
@@ -327,7 +329,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                 </h3>
                 <p className="text-foreground/80 text-sm">
                   Sovereign cybersecurity intelligence — interactive sovereign
-                  awakening sequence with hex mesh telemetry, audio unlock, and
+                  awakening sequence with hex mesh telemetry, cinematic transition geometry, and
                   transition matrix — matching the public experience on the live
                   Firebase app.
                 </p>

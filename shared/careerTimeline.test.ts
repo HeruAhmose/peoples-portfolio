@@ -12,47 +12,49 @@ import {
   totalAchievementCount,
 } from "./careerTimeline";
 
-describe("CAREER_MILESTONES data", () => {
-  it("stores milestones in ascending year order in the canonical export", () => {
-    const years = CAREER_MILESTONES.map(m => m.year);
+describe("CAREER_MILESTONES founder journey", () => {
+  it("stores milestones in ascending year order", () => {
+    const years = CAREER_MILESTONES.map(milestone => milestone.year);
     expect(years).toEqual([...years].sort((a, b) => a - b));
   });
 
-  it("contains exactly eight milestones", () => {
-    expect(CAREER_MILESTONES).toHaveLength(8);
+  it("contains six founder-journey milestones", () => {
+    expect(CAREER_MILESTONES).toHaveLength(6);
   });
 
   it("uses unique ids", () => {
-    const ids = CAREER_MILESTONES.map(m => m.id);
+    const ids = CAREER_MILESTONES.map(milestone => milestone.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("spans 2018 through 2026", () => {
+  it("spans 2004 through 2026", () => {
     const { min, max } = timelineYearBounds(CAREER_MILESTONES);
-    expect(min).toBe(2018);
+
+    expect(min).toBe(2004);
     expect(max).toBe(2026);
   });
 
-  it("requires non-empty org and summary on every milestone", () => {
-    for (const m of CAREER_MILESTONES) {
-      expect(m.org.trim().length).toBeGreaterThan(0);
-      expect(m.summary.trim().length).toBeGreaterThan(0);
-      expect(m.title.trim().length).toBeGreaterThan(0);
+  it("requires non-empty organization, title, and summary", () => {
+    for (const milestone of CAREER_MILESTONES) {
+      expect(milestone.org.trim().length).toBeGreaterThan(0);
+      expect(milestone.title.trim().length).toBeGreaterThan(0);
+      expect(milestone.summary.trim().length).toBeGreaterThan(0);
     }
   });
 
   it("requires at least one achievement badge each", () => {
-    for (const m of CAREER_MILESTONES) {
-      expect(m.achievements.length).toBeGreaterThanOrEqual(1);
-      for (const a of m.achievements) {
-        expect(a.label.trim().length).toBeGreaterThan(0);
+    for (const milestone of CAREER_MILESTONES) {
+      expect(milestone.achievements.length).toBeGreaterThanOrEqual(1);
+
+      for (const achievement of milestone.achievements) {
+        expect(achievement.label.trim().length).toBeGreaterThan(0);
       }
     }
   });
 
   it("uses only known marker tones", () => {
-    for (const m of CAREER_MILESTONES) {
-      expect(isValidMarkerTone(m.markerTone)).toBe(true);
+    for (const milestone of CAREER_MILESTONES) {
+      expect(isValidMarkerTone(milestone.markerTone)).toBe(true);
     }
   });
 
@@ -60,6 +62,7 @@ describe("CAREER_MILESTONES data", () => {
     expect(Object.keys(MARKER_TONE_CSS_VAR).length).toBe(
       TIMELINE_MARKER_TONES.length
     );
+
     for (const tone of TIMELINE_MARKER_TONES) {
       expect(MARKER_TONE_CSS_VAR[tone]).toMatch(/^--/);
     }
@@ -67,112 +70,105 @@ describe("CAREER_MILESTONES data", () => {
 });
 
 describe("getMilestoneById", () => {
-  it("returns Dynata row", () => {
-    const m = getMilestoneById("m2023-dynata");
-    expect(m?.org).toBe("Dynata");
+  it("returns the Navy football/service milestone", () => {
+    const milestone = getMilestoneById("m2004-navy-football");
+
+    expect(milestone?.year).toBe(2004);
+    expect(milestone?.org).toContain("Navy");
   });
 
-  it("returns undefined for unknown id", () => {
+  it("returns the Tamerian Ore milestone", () => {
+    const milestone = getMilestoneById("m2025-tamerian-ore");
+
+    expect(milestone?.year).toBe(2025);
+    expect(milestone?.title).toBe("Tamerian Ore");
+  });
+
+  it("returns the connected organism milestone", () => {
+    const milestone = getMilestoneById("m2026-organism");
+
+    expect(milestone?.year).toBe(2026);
+    expect(milestone?.achievements.length).toBe(4);
+  });
+
+  it("returns undefined for an unknown id", () => {
     expect(getMilestoneById("nope")).toBeUndefined();
-  });
-
-  it("returns 2026 portfolio milestone", () => {
-    const m = getMilestoneById("m2026-portfolio");
-    expect(m?.year).toBe(2026);
-    expect(m?.achievements.length).toBe(4);
   });
 });
 
-describe("milestoneHasExpandableDetail", () => {
-  it("is true when detail string present", () => {
-    const m = getMilestoneById("m2022-relatecare")!;
-    expect(milestoneHasExpandableDetail(m)).toBe(true);
+describe("milestone detail helpers", () => {
+  it("recognizes expandable founder milestones", () => {
+    const milestone = getMilestoneById("m2026-techbridge")!;
+    expect(milestoneHasExpandableDetail(milestone)).toBe(true);
   });
 
-  it("is false when detail absent", () => {
-    const m = getMilestoneById("m2021-nsp-peak")!;
-    expect(m.detail).toBeUndefined();
-    expect(milestoneHasExpandableDetail(m)).toBe(false);
+  it("all current founder milestones include detail", () => {
+    expect(countExpandableMilestones(CAREER_MILESTONES)).toBe(6);
   });
 });
 
 describe("aggregations", () => {
-  it("counts total achievement badges", () => {
-    expect(totalAchievementCount(CAREER_MILESTONES)).toBe(24);
+  it("counts founder-journey achievement badges", () => {
+    expect(totalAchievementCount(CAREER_MILESTONES)).toBe(22);
   });
 
-  it("counts milestones with expandable bodies", () => {
-    expect(countExpandableMilestones(CAREER_MILESTONES)).toBe(7);
+  it("uses four distinct calendar years", () => {
+    expect(new Set(CAREER_MILESTONES.map(milestone => milestone.year)).size)
+      .toBe(4);
   });
 
-  it("uses eight distinct calendar years", () => {
-    expect(new Set(CAREER_MILESTONES.map(m => m.year)).size).toBe(8);
-  });
+  it("keeps service before the materials chapter", () => {
+    const sorted = milestonesSortedChronological(CAREER_MILESTONES);
 
-  it("places 2022 healthcare after 2020 energy chronologically", () => {
-    const s = milestonesSortedChronological(CAREER_MILESTONES);
-    expect(s.findIndex(m => m.year === 2022)).toBeGreaterThan(
-      s.findIndex(m => m.year === 2020)
+    expect(
+      sorted.findIndex(milestone => milestone.id === "m2004-navy-football")
+    ).toBeLessThan(
+      sorted.findIndex(milestone => milestone.id === "m2025-tamerian-ore")
     );
   });
 
-  it("uses mYYYY-slug id convention", () => {
-    for (const m of CAREER_MILESTONES) {
-      expect(m.id).toMatch(/^m\d{4}-[a-z0-9-]+$/);
+  it("uses the mYYYY-slug id convention", () => {
+    for (const milestone of CAREER_MILESTONES) {
+      expect(milestone.id).toMatch(/^m\d{4}-[a-z0-9-]+$/);
     }
   });
 
   it("marks several milestones with highlight ribbons", () => {
-    const withH = CAREER_MILESTONES.filter(m => Boolean(m.highlight));
-    expect(withH.length).toBeGreaterThanOrEqual(3);
+    const highlighted = CAREER_MILESTONES.filter(
+      milestone => Boolean(milestone.highlight)
+    );
+
+    expect(highlighted.length).toBeGreaterThanOrEqual(3);
   });
 
   it("returns empty bounds for empty input", () => {
-    const b = timelineYearBounds([]);
-    expect(Number.isNaN(b.min)).toBe(true);
-    expect(Number.isNaN(b.max)).toBe(true);
+    const bounds = timelineYearBounds([]);
+
+    expect(Number.isNaN(bounds.min)).toBe(true);
+    expect(Number.isNaN(bounds.max)).toBe(true);
   });
 });
 
-describe("isValidMarkerTone", () => {
-  it("accepts gold", () => {
-    expect(isValidMarkerTone("gold")).toBe(true);
+describe("founder-world coverage", () => {
+  it("includes Tamerian, Queen Califia, TechBridge, and the organism", () => {
+    const ids = new Set(CAREER_MILESTONES.map(milestone => milestone.id));
+
+    expect(ids.has("m2025-tamerian-ore")).toBe(true);
+    expect(ids.has("m2026-queen-califia")).toBe(true);
+    expect(ids.has("m2026-techbridge")).toBe(true);
+    expect(ids.has("m2026-organism")).toBe(true);
   });
 
-  it("rejects random strings", () => {
+  it("accepts gold and rejects unknown marker tones", () => {
+    expect(isValidMarkerTone("gold")).toBe(true);
     expect(isValidMarkerTone("neon")).toBe(false);
   });
-});
 
-describe("milestonesSortedChronological", () => {
-  it("re-sorts a reversed copy into ascending years", () => {
-    const shuffled = [...CAREER_MILESTONES].reverse();
-    const s = milestonesSortedChronological(shuffled);
-    expect(s[0]!.year).toBe(2018);
-    expect(s[s.length - 1]!.year).toBe(2026);
-  });
-});
+  it("re-sorts a reversed copy chronologically", () => {
+    const reversed = [...CAREER_MILESTONES].reverse();
+    const sorted = milestonesSortedChronological(reversed);
 
-describe("coverage hooks", () => {
-  it("includes Integrity Energy 2020 milestone", () => {
-    expect(
-      CAREER_MILESTONES.some(
-        m => m.org.includes("Integrity") && m.year === 2020
-      )
-    ).toBe(true);
-  });
-
-  it("includes NPower 2025 milestone", () => {
-    expect(CAREER_MILESTONES.some(m => m.org === "NPower")).toBe(true);
-  });
-
-  it("uses emerald marker for healthcare pivot", () => {
-    const m = getMilestoneById("m2022-relatecare")!;
-    expect(m.markerTone).toBe("emerald");
-  });
-
-  it("uses terracotta for logistics milestone", () => {
-    const m = getMilestoneById("m2019-srt")!;
-    expect(m.markerTone).toBe("terracotta");
+    expect(sorted[0]!.year).toBe(2004);
+    expect(sorted[sorted.length - 1]!.year).toBe(2026);
   });
 });

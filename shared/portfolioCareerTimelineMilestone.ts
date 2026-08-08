@@ -1,31 +1,29 @@
-/**
- * Animated career timeline milestone — surfaced on Career Timeline page.
- */
 export const CAREER_TIMELINE_MILESTONE = {
-  eyebrow: "CHRONICLE /// ANIMATED CAREER TIMELINE",
-  title: "Animated career timeline — complete",
-  lead: "Scroll-triggered TimelineEvent rows with expandable detail panes, achievement badges, and tone-mapped milestone markers on a gradient spine — eight milestones from 2018 through 2026.",
+  eyebrow: "LINEAGE ENGINE /// FOUNDER JOURNEY",
+  title: "Founder journey — living system",
+  lead:
+    "The timeline now follows the story that matters: Kannapolis football and Navy service into Tamerian Materials, Queen Califia, TechBridge, and the connected TRAI organism.",
   achievements: [
-    "TimelineEvent: viewport reveal, spring easing, per-row expand/collapse, accessible toggle when detail exists.",
-    "CareerTimeline page: alternating desktop layout, animated vertical connector, mobile-first stack with left rail markers.",
-    "Eight milestones grounded in the public résumé arc (sales → logistics → energy → healthcare IT → research ops → NPower → portfolio).",
-    "Quality: 27 new unit tests for timeline data + helpers; extended monorepo CI reported at 403 passing tests — this repo’s Vitest total is smaller unless fully merged.",
+    "Removed unrelated employment-history milestones from the public narrative.",
+    "Reframed the timeline around service, invention, systems building, cybersecurity, materials, and community infrastructure.",
+    "Kept expandable detail, motion, accessible controls, and the existing timeline component architecture.",
+    "Aligned current-work language with Jonathan Peoples' LinkedIn profile and public project writing.",
   ],
   nextSteps: [
     {
-      title: "Testimonials carousel",
+      title: "Founder photography",
       detail:
-        "Client logos, star ratings, and cross-fades alongside the timeline for social proof.",
+        "Add the approved Jonathan Peoples portrait and archival football/service images when supplied.",
     },
     {
-      title: "Interactive skills matrix",
+      title: "Evidence gallery",
       detail:
-        "Proficiency grid with hover blurbs and filters (Cybersecurity, Materials, AI/ML, etc.).",
+        "Attach source documents, patents, project diagrams, and verified milestones to the relevant timeline nodes.",
     },
     {
-      title: "Blog / articles",
+      title: "Living updates",
       detail:
-        "Lightweight CMS or markdown pipeline for research notes, case studies, and dated filters.",
+        "Keep the current-work nodes synchronized with Tamerian, Queen Califia, TechBridge, and TRAI releases.",
     },
   ] as const,
 } as const;

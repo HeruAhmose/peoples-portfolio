@@ -22,11 +22,8 @@ export interface ShowcaseProject {
   categoryLabel: string;
   techStack: string[];
   links: ProjectLink[];
-  /** Human-readable impact line (e.g. users reached, $ influenced). */
   impactLabel: string;
-  /** Numeric sort key for impact ordering (higher = more prominent). */
   impactScore: number;
-  /** ISO 8601 date string for “recent” sort. */
   updatedAt: string;
 }
 
@@ -38,100 +35,141 @@ export const PROJECT_CATEGORY_LABELS: Record<ProjectCategory, string> = {
   platform: "Platform / tooling",
 };
 
-/** Six showcase projects aligned with live initiatives (verify URLs periodically). */
 export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
   {
     id: "queen-califia",
     title: "Queen Califia CyberAI",
     shortDescription:
-      "Sovereign cybersecurity experience — awakening sequence, hex telemetry, and audio-gated progression.",
+      "Sovereign cybersecurity architecture with biomimetic defense, post-quantum readiness, unified security signals, and human-controlled autonomy.",
     category: "cybersecurity",
     categoryLabel: PROJECT_CATEGORY_LABELS.cybersecurity,
-    techStack: ["React", "Firebase", "Web Audio", "Canvas", "Framer Motion"],
+    techStack: [
+      "React",
+      "Firebase Hosting",
+      "Framer Motion",
+      "Security orchestration",
+      "Post-quantum design",
+    ],
     links: [
-      { label: "Live app", href: "https://queencalifia-cyberai.web.app/" },
       {
-        label: "Portfolio home",
-        href: "https://github.com/HeruAhmose/peoples-portfolio",
+        label: "Live app",
+        href: "https://queencalifia-cyberai.web.app/",
       },
     ],
-    impactLabel: "10k+ session-ready sovereign UX prototype",
-    impactScore: 92,
-    updatedAt: "2026-03-15",
+    impactLabel: "Sovereign multi-engine security architecture",
+    impactScore: 94,
+    updatedAt: "2026-08-07",
   },
   {
     id: "tamerian-materials",
     title: "Tamerian Materials",
     shortDescription:
-      "Hemp-carbon composite narrative — patents, manufacturing story, and multi-modal coupling research tie-in.",
+      "Advanced-materials work centered on a hemp-based crystalline composite thesis spanning energy harvesting, sensing, and future information systems.",
     category: "materials",
     categoryLabel: PROJECT_CATEGORY_LABELS.materials,
-    techStack: ["Marketing site", "Patent docs", "Scientific framing", "AMC"],
+    techStack: [
+      "Materials research",
+      "Biomimetic systems",
+      "Energy harvesting",
+      "Quantum-sensing concepts",
+      "Interactive research UX",
+    ],
     links: [
-      { label: "Live site", href: "https://tamerian-materials.com/" },
       {
-        label: "Patent pending",
+        label: "Live site",
         href: "https://tamerian-materials.com/",
       },
     ],
-    impactLabel: "25-claim provisional · energy & sensing storyline",
-    impactScore: 95,
-    updatedAt: "2026-02-20",
+    impactLabel: "Materials + energy + sensing research program",
+    impactScore: 96,
+    updatedAt: "2026-08-07",
   },
   {
     id: "techbridge",
     title: "TechBridge Collective",
     shortDescription:
-      "Free digital help desks, H.K. triage, and TechMinutes® reporting — SPAN-style rollout modeling.",
+      "Community technology infrastructure combining paid Digital Navigators, H.K. AI triage, and measurable support for real-world digital tasks.",
     category: "equity",
     categoryLabel: PROJECT_CATEGORY_LABELS.equity,
     techStack: [
-      "Nonprofit web",
-      "Impact modeling",
       "Community UX",
       "AI triage",
+      "Service design",
+      "Impact measurement",
+      "Digital navigation",
     ],
     links: [
-      { label: "Organization", href: "https://techbridge-collective.org/" },
       {
-        label: "Impact playbook",
-        href: "https://techbridge-collective.org/impact",
+        label: "Organization",
+        href: "https://techbridge-collective.org/",
       },
     ],
-    impactLabel: "4-hub Year 2 SOM framing · Triangle pilots",
-    impactScore: 88,
-    updatedAt: "2026-03-01",
+    impactLabel: "Human-centered digital-equity infrastructure",
+    impactScore: 90,
+    updatedAt: "2026-08-07",
+  },
+  {
+    id: "trai-organism",
+    title: "TRAI",
+    shortDescription:
+      "The systems world connecting research, interfaces, orchestration, six-world navigation, and cinematic cross-site transport without collapsing each world's identity.",
+    category: "platform",
+    categoryLabel: PROJECT_CATEGORY_LABELS.platform,
+    techStack: [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Wouter",
+      "Framer Motion",
+      "Accessible interaction",
+    ],
+    links: [
+      {
+        label: "Enter TRAI",
+        href: "https://heruahmose.github.io/trai-portfolio/",
+      },
+    ],
+    impactLabel: "Six-world interoperable organism",
+    impactScore: 93,
+    updatedAt: "2026-08-07",
   },
   {
     id: "research-lab",
-    title: "AMC Research Lab (Portfolio)",
+    title: "Research Lab",
     shortDescription:
-      "Architected Multi-Modal Coupling — claims explorer, preprint framing, and reproducible narrative.",
+      "Interactive research surfaces for claims, figures, technical hypotheses, evidence boundaries, and reproducible systems thinking.",
     category: "research",
     categoryLabel: PROJECT_CATEGORY_LABELS.research,
-    techStack: ["TypeScript", "Vite", "tRPC", "Patent claims UI", "Charts"],
+    techStack: [
+      "TypeScript",
+      "Vite",
+      "Research UX",
+      "Charts",
+      "Evidence mapping",
+    ],
     links: [
       {
         label: "Research section",
         href: "/research",
       },
     ],
-    impactLabel: "Claims + figures surfaced in-product",
-    impactScore: 78,
-    updatedAt: "2026-03-22",
+    impactLabel: "Evidence-first research interface",
+    impactScore: 82,
+    updatedAt: "2026-08-07",
   },
   {
     id: "npower-path",
-    title: "NPower Tech Fundamentals",
+    title: "NPower Technology & Cybersecurity Training",
     shortDescription:
-      "IT support training track — AD, networking, security fundamentals, and hands-on systems labs.",
+      "Technology and cybersecurity training supporting the transition from service and operations into modern systems, security, and infrastructure work.",
     category: "platform",
     categoryLabel: PROJECT_CATEGORY_LABELS.platform,
     techStack: [
-      "Windows / Linux",
-      "Active Directory",
-      "VPN",
-      "Security basics",
+      "Windows",
+      "Linux",
+      "Networking",
+      "Security fundamentals",
+      "Systems administration",
     ],
     links: [
       {
@@ -139,27 +177,9 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
         href: "https://www.npower.org/",
       },
     ],
-    impactLabel: "Cohort completion · job-ready support stack",
+    impactLabel: "Technology and cybersecurity training",
     impactScore: 72,
-    updatedAt: "2026-02-10",
-  },
-  {
-    id: "dynata-ops",
-    title: "Dynata Research Operations",
-    shortDescription:
-      "High-volume remote interviews — VPN/proxy workflows, dialer discipline, and data-quality rigor.",
-    category: "platform",
-    categoryLabel: PROJECT_CATEGORY_LABELS.platform,
-    techStack: ["VPN", "Proxy", "Dialers", "QA metrics", "Remote IT"],
-    links: [
-      {
-        label: "Dynata",
-        href: "https://www.dynata.com/",
-      },
-    ],
-    impactLabel: "500+ interviews · 98% accuracy target",
-    impactScore: 70,
-    updatedAt: "2025-11-05",
+    updatedAt: "2026-08-07",
   },
 ];
 
@@ -172,8 +192,12 @@ export function projectMatchesSearch(
   rawQuery: string
 ): boolean {
   const q = normalizeSearchQuery(rawQuery);
-  if (!q) return true;
-  const hay = [
+
+  if (!q) {
+    return true;
+  }
+
+  const haystack = [
     project.title,
     project.shortDescription,
     project.categoryLabel,
@@ -182,15 +206,19 @@ export function projectMatchesSearch(
   ]
     .join(" ")
     .toLowerCase();
-  return hay.includes(q);
+
+  return haystack.includes(q);
 }
 
 export function filterProjectsByCategory(
   projects: ShowcaseProject[],
   category: GalleryCategoryFilter
 ): ShowcaseProject[] {
-  if (category === "all") return projects;
-  return projects.filter(p => p.category === category);
+  if (category === "all") {
+    return projects;
+  }
+
+  return projects.filter(project => project.category === category);
 }
 
 export function sortShowcaseProjects(
@@ -198,6 +226,7 @@ export function sortShowcaseProjects(
   mode: GallerySortMode
 ): ShowcaseProject[] {
   const copy = [...projects];
+
   if (mode === "impact") {
     copy.sort((a, b) => b.impactScore - a.impactScore);
   } else if (mode === "name") {
@@ -208,20 +237,22 @@ export function sortShowcaseProjects(
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
   }
+
   return copy;
 }
 
 export function queryShowcaseProjects(
   projects: readonly ShowcaseProject[],
-  opts: {
+  options: {
     search: string;
     category: GalleryCategoryFilter;
     sort: GallerySortMode;
   }
 ): ShowcaseProject[] {
-  let list = filterProjectsByCategory([...projects], opts.category);
-  list = list.filter(p => projectMatchesSearch(p, opts.search));
-  return sortShowcaseProjects(list, opts.sort);
+  let list = filterProjectsByCategory([...projects], options.category);
+  list = list.filter(project => projectMatchesSearch(project, options.search));
+
+  return sortShowcaseProjects(list, options.sort);
 }
 
 export const ALL_GALLERY_CATEGORIES: GalleryCategoryFilter[] = [

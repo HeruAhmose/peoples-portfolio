@@ -9,23 +9,32 @@ import {
 } from "./projectGallery";
 
 describe("projectGallery data", () => {
-  it("exports exactly six showcase projects", () => {
+  it("exports exactly six founder-world projects", () => {
     expect(SHOWCASE_PROJECTS).toHaveLength(6);
   });
 
   it("uses unique ids for every project", () => {
-    const ids = SHOWCASE_PROJECTS.map(p => p.id);
+    const ids = SHOWCASE_PROJECTS.map(project => project.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("requires core fields on each project", () => {
-    for (const p of SHOWCASE_PROJECTS) {
-      expect(p.title.length).toBeGreaterThan(0);
-      expect(p.shortDescription.length).toBeGreaterThan(0);
-      expect(p.techStack.length).toBeGreaterThan(0);
-      expect(p.links.length).toBeGreaterThan(0);
-      expect(p.impactScore).toBeGreaterThanOrEqual(0);
-      expect(p.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  it("contains the four connected founder systems", () => {
+    const ids = new Set(SHOWCASE_PROJECTS.map(project => project.id));
+
+    expect(ids.has("tamerian-materials")).toBe(true);
+    expect(ids.has("queen-califia")).toBe(true);
+    expect(ids.has("techbridge")).toBe(true);
+    expect(ids.has("trai-organism")).toBe(true);
+  });
+
+  it("requires core fields on every project", () => {
+    for (const project of SHOWCASE_PROJECTS) {
+      expect(project.title.trim().length).toBeGreaterThan(0);
+      expect(project.shortDescription.trim().length).toBeGreaterThan(0);
+      expect(project.techStack.length).toBeGreaterThan(0);
+      expect(project.links.length).toBeGreaterThan(0);
+      expect(project.impactScore).toBeGreaterThanOrEqual(0);
+      expect(project.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }
   });
 });
@@ -38,25 +47,31 @@ describe("normalizeSearchQuery", () => {
 
 describe("projectMatchesSearch", () => {
   it("matches all when query empty", () => {
-    const p = SHOWCASE_PROJECTS[0]!;
-    expect(projectMatchesSearch(p, "")).toBe(true);
-    expect(projectMatchesSearch(p, "   ")).toBe(true);
+    const project = SHOWCASE_PROJECTS[0]!;
+    expect(projectMatchesSearch(project, "")).toBe(true);
+    expect(projectMatchesSearch(project, "   ")).toBe(true);
   });
 
   it("matches title substring case-insensitively", () => {
-    const p = SHOWCASE_PROJECTS.find(x => x.id === "tamerian-materials")!;
-    expect(projectMatchesSearch(p, "tamer")).toBe(true);
-    expect(projectMatchesSearch(p, "TAMER")).toBe(true);
+    const project = SHOWCASE_PROJECTS.find(
+      item => item.id === "tamerian-materials"
+    )!;
+
+    expect(projectMatchesSearch(project, "tamer")).toBe(true);
+    expect(projectMatchesSearch(project, "TAMER")).toBe(true);
   });
 
-  it("matches tech stack tokens", () => {
-    const p = SHOWCASE_PROJECTS.find(x => x.id === "queen-califia")!;
-    expect(projectMatchesSearch(p, "firebase")).toBe(true);
+  it("matches technology tokens", () => {
+    const project = SHOWCASE_PROJECTS.find(
+      item => item.id === "queen-califia"
+    )!;
+
+    expect(projectMatchesSearch(project, "firebase")).toBe(true);
   });
 
-  it("returns false when no field contains query", () => {
-    const p = SHOWCASE_PROJECTS[0]!;
-    expect(projectMatchesSearch(p, "zzzznonexistent")).toBe(false);
+  it("returns false when no field contains the query", () => {
+    const project = SHOWCASE_PROJECTS[0]!;
+    expect(projectMatchesSearch(project, "zzzznonexistent")).toBe(false);
   });
 });
 
@@ -66,15 +81,20 @@ describe("filterProjectsByCategory", () => {
   });
 
   it("filters to cybersecurity only", () => {
-    const list = filterProjectsByCategory(SHOWCASE_PROJECTS, "cybersecurity");
+    const list = filterProjectsByCategory(
+      SHOWCASE_PROJECTS,
+      "cybersecurity"
+    );
+
     expect(list).toHaveLength(1);
     expect(list[0]!.id).toBe("queen-califia");
   });
 
-  it("filters platform projects", () => {
+  it("filters platform work to TRAI and NPower", () => {
     const list = filterProjectsByCategory(SHOWCASE_PROJECTS, "platform");
-    expect(list.map(p => p.id).sort()).toEqual(
-      ["dynata-ops", "npower-path"].sort()
+
+    expect(list.map(project => project.id).sort()).toEqual(
+      ["npower-path", "trai-organism"].sort()
     );
   });
 });
@@ -82,6 +102,7 @@ describe("filterProjectsByCategory", () => {
 describe("sortShowcaseProjects", () => {
   it("sorts by impact descending", () => {
     const sorted = sortShowcaseProjects(SHOWCASE_PROJECTS, "impact");
+
     expect(sorted[0]!.impactScore).toBeGreaterThanOrEqual(
       sorted[1]!.impactScore
     );
@@ -90,16 +111,18 @@ describe("sortShowcaseProjects", () => {
 
   it("sorts by title ascending", () => {
     const sorted = sortShowcaseProjects(SHOWCASE_PROJECTS, "name");
-    const titles = sorted.map(p => p.title);
+    const titles = sorted.map(project => project.title);
     const expected = [...titles].sort((a, b) => a.localeCompare(b, "en"));
+
     expect(titles).toEqual(expected);
   });
 
   it("sorts by updatedAt descending for recent", () => {
     const sorted = sortShowcaseProjects(SHOWCASE_PROJECTS, "recent");
-    const t0 = new Date(sorted[0]!.updatedAt).getTime();
-    const t1 = new Date(sorted[1]!.updatedAt).getTime();
-    expect(t0).toBeGreaterThanOrEqual(t1);
+    const first = new Date(sorted[0]!.updatedAt).getTime();
+    const second = new Date(sorted[1]!.updatedAt).getTime();
+
+    expect(first).toBeGreaterThanOrEqual(second);
   });
 });
 
@@ -110,6 +133,7 @@ describe("queryShowcaseProjects", () => {
       category: "equity",
       sort: "impact",
     });
+
     expect(result).toHaveLength(1);
     expect(result[0]!.id).toBe("techbridge");
   });
@@ -120,27 +144,30 @@ describe("queryShowcaseProjects", () => {
       category: "all",
       sort: "name",
     });
+
     expect(result).toHaveLength(0);
   });
 
-  it("narrows category then sorts by name", () => {
+  it("narrows platform category then sorts by name", () => {
     const result = queryShowcaseProjects(SHOWCASE_PROJECTS, {
       search: "",
       category: "platform",
       sort: "name",
     });
-    expect(result.map(p => p.title)).toEqual([
-      "Dynata Research Operations",
-      "NPower Tech Fundamentals",
+
+    expect(result.map(project => project.title)).toEqual([
+      "NPower Technology & Cybersecurity Training",
+      "TRAI",
     ]);
   });
 
-  it("isolates materials science row", () => {
+  it("isolates materials science", () => {
     const result = queryShowcaseProjects(SHOWCASE_PROJECTS, {
       search: "",
       category: "materials",
       sort: "recent",
     });
+
     expect(result).toHaveLength(1);
     expect(result[0]!.id).toBe("tamerian-materials");
   });
