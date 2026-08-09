@@ -316,21 +316,9 @@ export function LiquidSwipeWave({ className }: { className?: string }) {
           viewBox="0 0 1200 80"
           preserveAspectRatio="none"
         >
-          <motion.path
+                    <path
             fill="currentColor"
             d="M0,40 Q300,0 600,40 T1200,40 L1200,80 L0,80 Z"
-            animate={
-              reduce
-                ? false
-                : {
-                    d: [
-                      "M0,40 Q300,0 600,40 T1200,40 L1200,80 L0,80 Z",
-                      "M0,48 Q320,72 600,32 T1200,48 L1200,80 L0,80 Z",
-                      "M0,40 Q300,0 600,40 T1200,40 L1200,80 L0,80 Z",
-                    ],
-                  }
-            }
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
         </motion.svg>
       </motion.div>
