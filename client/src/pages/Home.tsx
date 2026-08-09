@@ -21,8 +21,6 @@ import {
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 import AboutMeSection from "@/components/AboutMeSection";
 import FounderMediaJourney from "@/components/FounderMediaJourney";
-import AfrofuturisticCraftSection from "@/components/AfrofuturisticCraftSection";
-import AdvancedVisualEffectsSection from "@/components/AdvancedVisualEffectsSection";
 import HeroAfroCyberShell from "@/components/HeroAfroCyberShell";
 import {
   TAMERIAN_PATENT,
@@ -128,10 +126,6 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
 
       <AboutMeSection />
       <FounderMediaJourney />
-
-      <AfrofuturisticCraftSection />
-
-      <AdvancedVisualEffectsSection />
 
       {/* Portfolio Sections Preview — parallax + 3D flip nodes */}
       <section className="container mx-auto px-4 py-16 md:py-20">

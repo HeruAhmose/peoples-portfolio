@@ -1,4 +1,4 @@
-# People's Portfolio media
+# Peoples Portfolio media
 
 Canonical founder portrait path:
 

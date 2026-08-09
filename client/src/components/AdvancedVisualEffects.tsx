@@ -134,25 +134,12 @@ export function CardFlip3D({
   onActivate?: () => void;
   ariaLabel?: string;
 }) {
-  const reduce = usePrefersReducedMotion();
-  const [hover, setHover] = useState(false);
-  const [focusWithin, setFocusWithin] = useState(false);
-  const flipped = !reduce && (hover || focusWithin);
-
   return (
-    <motion.div
+    <div
       className={cn(
-        "cursor-pointer rounded-xl [perspective:1400px] outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
+        "peoples-flip-card cursor-pointer rounded-xl [perspective:1400px] outline-none focus-visible:ring-2 focus-visible:ring-primary/60",
         className
       )}
-      onHoverStart={() => setHover(true)}
-      onHoverEnd={() => setHover(false)}
-      onFocusCapture={() => setFocusWithin(true)}
-      onBlurCapture={e => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
-          setFocusWithin(false);
-        }
-      }}
       onClick={() => onActivate?.()}
       onKeyDown={e => {
         if (e.key === "Enter" || e.key === " ") {
@@ -164,10 +151,8 @@ export function CardFlip3D({
       tabIndex={0}
       aria-label={ariaLabel}
     >
-      <motion.div
-        className="relative min-h-[220px] w-full [transform-style:preserve-3d]"
-        animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ type: "spring", stiffness: 260, damping: 28 }}
+      <div
+        className="peoples-flip-card__inner relative min-h-[220px] w-full [transform-style:preserve-3d]"
         style={{ transformStyle: "preserve-3d" }}
       >
         <div
@@ -182,11 +167,10 @@ export function CardFlip3D({
         >
           {back}
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
-
 /** Decorative morphing border-radius blob. */
 export function MorphingBlob({ className }: { className?: string }) {
   const reduce = usePrefersReducedMotion();

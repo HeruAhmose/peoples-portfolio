@@ -853,3 +853,21 @@
     }
   }
 }
+/* PEOPLES PORTFOLIO /// native sector-card flip */
+.peoples-flip-card__inner {
+  transform: rotateY(0deg);
+  transition: transform 500ms ease-out;
+  will-change: transform;
+}
+
+.peoples-flip-card:hover .peoples-flip-card__inner,
+.peoples-flip-card:focus .peoples-flip-card__inner,
+.peoples-flip-card:focus-within .peoples-flip-card__inner {
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peoples-flip-card__inner {
+    transition: none;
+  }
+}

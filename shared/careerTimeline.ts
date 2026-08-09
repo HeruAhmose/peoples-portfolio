@@ -150,7 +150,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     year: 2026,
     periodLabel: "NOW",
     title: "One connected organism",
-    org: "People's Portfolio + TRAI + connected worlds",
+    org: "Peoples Portfolio + TRAI + connected worlds",
     location: "Six-world digital ecosystem",
     summary:
       "The portfolio becomes an interoperable organism: founder story, materials, cybersecurity, research, AI, and community infrastructure connected without collapsing their distinct identities.",

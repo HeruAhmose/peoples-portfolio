@@ -1,4 +1,4 @@
-name: Deploy People's Portfolio
+name: Deploy Peoples Portfolio
 
 on:
   push:

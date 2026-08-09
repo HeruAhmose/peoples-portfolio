@@ -5,7 +5,7 @@
   "worlds": [
     {
       "id": "peoples",
-      "name": "People's Portfolio",
+      "name": "Peoples Portfolio",
       "short": "Portfolio",
       "role": "Human / Founder",
       "url": "https://heruahmose.github.io/peoples-portfolio/",
@@ -13,7 +13,7 @@
       "accent": "#D6A33A",
       "secondary": "#7DD3FC",
       "thesis": "The human story, research practice, work, and lineage behind the wider TRAI organism.",
-      "synopsis": "People's Portfolio is the canonical personal portfolio world. It presents Jonathan Peoples as founder, researcher, builder, and community technologist without conflating that human story with the TRAI systems architecture.",
+      "synopsis": "Peoples Portfolio is the canonical personal portfolio world. It presents Jonathan Peoples as founder, researcher, builder, and community technologist without conflating that human story with the TRAI systems architecture.",
       "transitionLine": "Golden threads converge into the human story that anchors the organism."
     },
     {

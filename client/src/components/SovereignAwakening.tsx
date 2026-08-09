@@ -139,7 +139,7 @@ export default function SovereignAwakening({
         }}
         exit={{ opacity: 0 }}
         transition={{ duration: isDeparting ? 0.9 : 0.45, ease: "easeInOut" }}
-        aria-label="People's Portfolio cinematic introduction"
+        aria-label="Peoples Portfolio cinematic introduction"
       >
         <div
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(18,196,255,0.11),transparent_28%),radial-gradient(circle_at_50%_55%,rgba(245,176,65,0.10),transparent_42%),linear-gradient(180deg,#02050b_0%,#050814_50%,#020409_100%)]"
@@ -306,7 +306,7 @@ export default function SovereignAwakening({
                       whileTap={reducedMotion ? {} : { scale: 0.97 }}
                     >
                       <span className="relative z-10">
-                        ENTER PEOPLE&apos;S PORTFOLIO
+                        ENTER PEOPLES PORTFOLIO
                       </span>
                       <motion.span
                         className="absolute inset-y-0 -left-1/3 w-1/3 bg-white/55 blur-md"
