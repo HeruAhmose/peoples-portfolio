@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import SovereignAwakening from "./components/SovereignAwakening";
+import { LatticeIgnition } from "./components/cinematic/LatticeIgnition";
 import Navigation from "./components/Navigation";
 import HKAssistant from "./components/HKAssistant";
 import Home from "./pages/Home";
@@ -120,7 +120,29 @@ function App() {
   const activeSection = pathToSection(location);
   const { isMuted, toggleMute, playSectionTransition, playClickSound } =
     useAudioSystem();
-  const [showAwakening, setShowAwakening] = useState(true);
+  // The opening sequence is an entrance, not a toll: it plays at the root,
+  // and a deep link goes straight to content.
+  const [showAwakening, setShowAwakening] = useState(() => {
+    const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+    const pathname = window.location.pathname;
+    const relativePath =
+      base &&
+      base !== "/" &&
+      (pathname === base || pathname.startsWith(`${base}/`))
+        ? pathname.slice(base.length) || "/"
+        : pathname;
+    return pathToSection(relativePath) === "home";
+  });
+  // Full cut once per session; a compressed one on reloads after that.
+  const [introBrief] = useState(() => {
+    try {
+      const seen = sessionStorage.getItem("trai_ignition_seen") === "1";
+      sessionStorage.setItem("trai_ignition_seen", "1");
+      return seen;
+    } catch {
+      return false;
+    }
+  });
   const [hkAssistantOpen, setHkAssistantOpen] = useState(false);
 
   useEffect(() => {
@@ -157,7 +179,10 @@ function App() {
           <Toaster />
 
           {showAwakening && (
-            <SovereignAwakening onComplete={() => setShowAwakening(false)} />
+            <LatticeIgnition
+              brief={introBrief}
+              onComplete={() => setShowAwakening(false)}
+            />
           )}
 
           {!showAwakening && (
