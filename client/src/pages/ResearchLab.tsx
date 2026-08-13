@@ -72,10 +72,9 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
                 Peoples (2026) — Preprint — Not peer reviewed
               </p>
               <p className="text-xs leading-relaxed text-muted-foreground">
-                Patent portfolio on the public site: U.S. App. No.{" "}
-                {TAMERIAN_PATENT.applicationNo}, filed{" "}
-                {TAMERIAN_PATENT.filedDate} · {TAMERIAN_PATENT.claimCount}{" "}
-                claims · {TAMERIAN_PATENT.status} (
+                Patent portfolio on the public site:{" "}
+                {TAMERIAN_PATENT.publicStatus} · {TAMERIAN_PATENT.filedDate} ·{" "}
+                {TAMERIAN_PATENT.claimCount} claims · {TAMERIAN_PATENT.status} (
                 <a
                   href="https://tamerian-materials.com/"
                   target="_blank"

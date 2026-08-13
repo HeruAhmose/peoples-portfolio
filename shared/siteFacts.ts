@@ -1,10 +1,12 @@
+import { publicFactFor } from "./organismFacts";
+
 /**
  * Short, citable facts aligned with live marketing sites (verify periodically).
  * TechBridge: https://techbridge-collective.org/impact · https://techbridge-collective.org/about
  * Tamerian: https://tamerian-materials.com/
  */
 export const TAMERIAN_PATENT = {
-  applicationNo: "63/934,269",
+  publicStatus: publicFactFor("tamerian").status,
   filedDate: "December 11, 2025",
   claimCount: 25,
   status: "Patent pending",

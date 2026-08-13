@@ -260,10 +260,10 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   Where carbon meets crystal: hemp-derived carbon matrices with
                   embedded piezoelectric, thermoelectric, magnetic, and
                   quantum-active phases — one composite for energy harvesting
-                  and room-temperature quantum sensing. {TAMERIAN_PATENT.status}{" "}
-                  · U.S. App. No. {TAMERIAN_PATENT.applicationNo}, filed{" "}
-                  {TAMERIAN_PATENT.filedDate} · {TAMERIAN_PATENT.claimCount}{" "}
-                  claims (source: live patents section on the site above).
+                  and room-temperature quantum sensing.{" "}
+                  {TAMERIAN_PATENT.publicStatus} · {TAMERIAN_PATENT.filedDate} ·{" "}
+                  {TAMERIAN_PATENT.claimCount} claims (source: live patents
+                  section on the site above).
                 </p>
               </motion.div>
             </StaggerItem>
@@ -323,9 +323,9 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                 </h3>
                 <p className="text-foreground/80 text-sm">
                   Sovereign cybersecurity intelligence — interactive sovereign
-                  awakening sequence with hex mesh telemetry, cinematic transition geometry, and
-                  transition matrix — matching the public experience on the live
-                  Firebase app.
+                  awakening sequence with hex mesh telemetry, cinematic
+                  transition geometry, and transition matrix — matching the
+                  public experience on the live Firebase app.
                 </p>
               </motion.div>
             </StaggerItem>

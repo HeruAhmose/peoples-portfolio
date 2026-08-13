@@ -1,3 +1,4 @@
+import { ORGAN_FACTS, type OrganKey } from "../../../shared/organismFacts";
 import { observable } from "@trpc/server/observable";
 import type { TRPCLink } from "@trpc/client";
 import type { AppRouter } from "../../../server/routers";
@@ -27,11 +28,14 @@ interface Entry {
   answer: string;
 }
 
+function organStatus(key: OrganKey): string {
+  return ORGAN_FACTS[key].status;
+}
+
 const HK_KNOWLEDGE: Entry[] = [
   {
-    match: /patent|claim|filed|63\/?934|provisional/i,
-    answer:
-      "The hemp-carbon matrix work is filed as provisional application 63/934,269 (11 December 2025, micro entity) with 25 claims. It covers a hemp-derived carbon matrix at 40-70 vol% with quartz, tourmaline, magnetite and rare-earth inclusions.",
+    match: /patent|claim|filed|provisional/i,
+    answer: `The hemp-carbon matrix work is recorded in the verified facts layer as ${organStatus("tamerian")}. Public presentation intentionally omits the application number and nonpublic filing detail.`,
   },
   {
     match: /tamerian|material|composite|carbon|pyrolysis|skeleton/i,
@@ -40,33 +44,27 @@ const HK_KNOWLEDGE: Entry[] = [
   },
   {
     match: /melange|saffron|blue.?gold|beverage|drink|\bphi\b|cbd|thc|heart/i,
-    answer:
-      "True Melange \u03a6 is the heart. First product is Blue-Gold Daily, a 12 oz can with 28 mg Affron\u00ae saffron at ISO 3632 Category I. Hemp content is hempseed oil and hemp seed protein only — no CBD, no THC. It has no internal page on this site yet; the live True Melange / Blue Gold world is at https://heruahmose.github.io/blue-gold-daily/layers.html.",
+    answer: `True Melange Φ is the heart. ${organStatus("true-melange")}. First product is Blue-Gold Daily, a 12 oz can with 28 mg Affron® saffron at ISO 3632 Category I. Hemp content is hempseed oil and hemp seed protein only — no CBD, no THC. It has no internal page on this site yet; the live True Melange / Blue Gold world is at https://heruahmose.github.io/blue-gold-daily/layers.html.`,
   },
   {
     match: /califia|cyber|secur|\bai\b|brain|threat|attack/i,
-    answer:
-      "Queen Califia is the cognitive organ — an autonomous cybersecurity platform on Flask and React with three cores: Cyber, Identity and Markets. A working demo stands at queencalifia-cyberai.web.app.",
+    answer: `Queen Califia is the cognitive organ — an autonomous cybersecurity platform on Flask and React with three cores: Cyber, Identity and Markets. ${organStatus("queen-califia")}. A working demo stands at queencalifia-cyberai.web.app.`,
   },
   {
     match: /techbridge|navigator|hub|digital divide|horace|community|hands/i,
-    answer:
-      "TechBridge Collective is designed as community technology hubs staffed by paid Digital Navigators — two hubs and four Navigators in year one. It is named for Horace King, the enslaved master bridge builder. Designed, not yet operating. See the Community Impact page.",
+    answer: `TechBridge Collective is designed as community technology hubs staffed by paid Digital Navigators — two hubs and four Navigators in year one. It is named for Horace King, the enslaved master bridge builder. ${organStatus("techbridge")}. See the Community Impact page.`,
   },
   {
     match: /foundation|nonprofit|508|charit|give|donat|lymphatic/i,
-    answer:
-      "The Peoples Foundation is the regenerative organ. Its EIN is filed and federal tax-exempt status is pending. It is designed to receive defined allocations from the ventures and return them to community programs.",
+    answer: `The Peoples Foundation is the regenerative organ. ${organStatus("peoples-foundation")}. It is designed to receive defined allocations from the ventures and return them to community programs.`,
   },
   {
     match: /mela nation|logistic|mobility|delivery|vessel/i,
-    answer:
-      "Mela Nation is the circulatory organ — last-mile logistics and supply-chain resilience for underserved routes. EIN filed; early development.",
+    answer: `Mela Nation is the circulatory organ — last-mile logistics and supply-chain resilience for underserved routes. ${organStatus("mela-nation")}.`,
   },
   {
     match: /melanina|apparel|clothing|fashion|hemp wear|\bskin\b/i,
-    answer:
-      "MeLaNiNa is the identity organ — hemp apparel and cultural expression, with employee-ownership pathways in the design. EIN filed; early development.",
+    answer: `MeLaNiNa is the identity organ — hemp apparel and cultural expression, with employee-ownership pathways in the design. ${organStatus("melanina")}.`,
   },
   {
     match:
@@ -89,7 +87,7 @@ const HK_KNOWLEDGE: Entry[] = [
 const HK_FALLBACK =
   "I hold the verified record for TRAI — the patent filing, the seven organs, entity status and contact routes. Ask me about any of those. For anything outside it, reach Jonathan directly at aitconsult22@gmail.com.";
 
-function hkAnswer(question: string): string {
+export function hkAnswer(question: string): string {
   return HK_KNOWLEDGE.find(e => e.match.test(question))?.answer ?? HK_FALLBACK;
 }
 

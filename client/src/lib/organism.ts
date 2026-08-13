@@ -1,3 +1,15 @@
+import {
+  ORGAN_FACTS,
+  type OrganKey,
+  type OrganPublicFact,
+} from "../../../shared/organismFacts";
+export type {
+  ClaimRegister,
+  EvidenceRegister,
+  VentureMaturity,
+} from "../../../shared/organismFacts";
+import type { ClaimRegister } from "../../../shared/organismFacts";
+
 /**
  * organism.ts — the canonical TRAI organ graph.
  *
@@ -21,9 +33,9 @@
  * "Vast in Vision, Exact in Claim."
  */
 
-export type ClaimRegister = "fact" | "build" | "vision";
-
-export interface Organ {
+export interface Organ extends OrganPublicFact {
+  /** Stable manifest key. */
+  key: OrganKey;
   /** Ring position, 0-indexed. Drives ignition order. */
   order: number;
   /** Zero-padded display index. */
@@ -40,14 +52,12 @@ export interface Organ {
   external: string | null;
   /** Accent used for this organ's ignition filament. */
   hex: string;
-  /** How much of this is real today. Governs type register. */
-  claim: ClaimRegister;
-  /** Short status. Must stay literally true. */
-  status: string;
 }
 
 export const ORGANS: Organ[] = [
   {
+    key: "tamerian",
+    ...ORGAN_FACTS.tamerian,
     order: 0,
     num: "01",
     role: "Skeleton",
@@ -56,10 +66,10 @@ export const ORGANS: Organ[] = [
     route: "/materials",
     external: "https://tamerian-materials.com/",
     hex: "#d6a33a",
-    claim: "fact",
-    status: "Provisional filed",
   },
   {
+    key: "true-melange",
+    ...ORGAN_FACTS["true-melange"],
     order: 1,
     num: "02",
     role: "Heart",
@@ -68,10 +78,10 @@ export const ORGANS: Organ[] = [
     route: null,
     external: "https://heruahmose.github.io/blue-gold-daily/layers.html",
     hex: "#a8522f",
-    claim: "build",
-    status: "Formulation set",
   },
   {
+    key: "queen-califia",
+    ...ORGAN_FACTS["queen-califia"],
     order: 2,
     num: "03",
     role: "Brain",
@@ -80,10 +90,10 @@ export const ORGANS: Organ[] = [
     route: null,
     external: "https://queencalifia-cyberai.web.app/",
     hex: "#6ea8da",
-    claim: "build",
-    status: "Demo standing",
   },
   {
+    key: "mela-nation",
+    ...ORGAN_FACTS["mela-nation"],
     order: 3,
     num: "04",
     role: "Vessels",
@@ -92,10 +102,10 @@ export const ORGANS: Organ[] = [
     route: null,
     external: null,
     hex: "#1f66ad",
-    claim: "build",
-    status: "EIN filed",
   },
   {
+    key: "melanina",
+    ...ORGAN_FACTS.melanina,
     order: 4,
     num: "05",
     role: "Skin",
@@ -104,10 +114,10 @@ export const ORGANS: Organ[] = [
     route: null,
     external: null,
     hex: "#d98758",
-    claim: "build",
-    status: "EIN filed",
   },
   {
+    key: "techbridge",
+    ...ORGAN_FACTS.techbridge,
     order: 5,
     num: "06",
     role: "Hands",
@@ -116,10 +126,10 @@ export const ORGANS: Organ[] = [
     route: "/community",
     external: "https://techbridge-collective.org/",
     hex: "#2f765d",
-    claim: "vision",
-    status: "Designed",
   },
   {
+    key: "peoples-foundation",
+    ...ORGAN_FACTS["peoples-foundation"],
     order: 6,
     num: "07",
     role: "Lymphatic",
@@ -128,8 +138,6 @@ export const ORGANS: Organ[] = [
     route: null,
     external: null,
     hex: "#f0cc79",
-    claim: "build",
-    status: "EIN filed",
   },
 ];
 

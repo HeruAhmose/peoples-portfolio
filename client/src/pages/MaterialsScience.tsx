@@ -72,9 +72,8 @@ export default function MaterialsScience({
           </h1>
           <p className="font-mono text-lg tracking-wide text-primary">
             Tamerian Materials — Where Carbon Meets Crystal ·{" "}
-            {TAMERIAN_PATENT.status} · U.S. App. No.{" "}
-            {TAMERIAN_PATENT.applicationNo} · Filed {TAMERIAN_PATENT.filedDate}{" "}
-            · {TAMERIAN_PATENT.claimCount} claims
+            {TAMERIAN_PATENT.publicStatus} · {TAMERIAN_PATENT.filedDate} ·{" "}
+            {TAMERIAN_PATENT.claimCount} claims
           </p>
           <p className="text-xl text-foreground/80 max-w-2xl">
             Hemp-derived carbon matrices with embedded piezoelectric,
