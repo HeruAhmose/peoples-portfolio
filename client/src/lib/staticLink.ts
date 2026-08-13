@@ -93,6 +93,27 @@ function hkAnswer(question: string): string {
   return HK_KNOWLEDGE.find(e => e.match.test(question))?.answer ?? HK_FALLBACK;
 }
 
+export function extractPrompt(input: unknown): string {
+  const q = (input ?? {}) as Record<string, unknown>;
+  const directPrompt = q.message ?? q.question ?? q.prompt ?? q.input;
+  if (typeof directPrompt === "string") return directPrompt;
+
+  if (Array.isArray(q.messages)) {
+    for (let i = q.messages.length - 1; i >= 0; i -= 1) {
+      const candidate = q.messages[i];
+      if (!candidate || typeof candidate !== "object") continue;
+
+      const message = candidate as Record<string, unknown>;
+      if (message.role !== "user" || typeof message.content !== "string")
+        continue;
+
+      return message.content;
+    }
+  }
+
+  return "";
+}
+
 function fixture(path: string, input: unknown): unknown {
   const q = (input ?? {}) as Record<string, unknown>;
   switch (path) {
@@ -104,24 +125,7 @@ function fixture(path: string, input: unknown): unknown {
 
     case "hk.chat":
     case "ai.chat": {
-      const directPrompt = q.message ?? q.question ?? q.prompt ?? q.input;
-      let prompt = typeof directPrompt === "string" ? directPrompt : "";
-
-      if (!prompt && Array.isArray(q.messages)) {
-        for (let i = q.messages.length - 1; i >= 0; i -= 1) {
-          const candidate = q.messages[i];
-          if (!candidate || typeof candidate !== "object") continue;
-
-          const message = candidate as Record<string, unknown>;
-          if (message.role !== "user" || typeof message.content !== "string")
-            continue;
-
-          prompt = message.content;
-          break;
-        }
-      }
-
-      const text = hkAnswer(prompt);
+      const text = hkAnswer(extractPrompt(q));
       return {
         answer: text,
         response: text,

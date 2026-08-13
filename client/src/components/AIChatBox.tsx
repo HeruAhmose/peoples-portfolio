@@ -64,7 +64,7 @@ export type AIChatBoxProps = {
  *
  * Features:
  * - Matches server-side Message interface for seamless integration
- * - Lightweight assistant prose rendering with Prose
+ * - Markdown rendering with Prose
  * - Auto-scrolls to latest message
  * - Loading states
  * - Uses global theme colors from index.css

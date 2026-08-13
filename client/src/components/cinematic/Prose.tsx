@@ -20,13 +20,11 @@ interface Props {
 
 const INLINE = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
 
-function safeHref(raw: string): string | null {
-  const url = raw.trim();
-  if (/^(?:https?:|mailto:|tel:)/i.test(url)) return url;
-  if (/^(?:#|\?|\.{1,2}\/)/.test(url)) return url;
-  if (/^\/(?!\/)/.test(url)) return url;
-  return null;
-}
+/**
+ * Schemes an assistant answer may link to. Anything else — most importantly
+ * `javascript:` and `data:` — is replaced with "#".
+ */
+const SAFE_URL = /^(https?:\/\/|mailto:|tel:|\/|\.\/|#)/i;
 
 function renderInline(text: string, keyPrefix: string): ReactNode[] {
   return text
@@ -62,15 +60,16 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
       if (token.startsWith("[")) {
         const close = token.indexOf("](");
         const label = token.slice(1, close);
-        const href = safeHref(token.slice(close + 2, -1));
-        if (!href) {
-          return <Fragment key={key}>{label}</Fragment>;
-        }
-        const external = /^https?:/i.test(href);
+        const raw = token.slice(close + 2, -1).trim();
+        // Allowlist the schemes rather than trusting whatever the markdown
+        // carries. Escaping HTML is not enough on its own: without this,
+        // `[x](javascript:...)` becomes a live href.
+        const url = SAFE_URL.test(raw) ? raw : "#";
+        const external = /^https?:/i.test(url);
         return (
           <a
             key={key}
-            href={href}
+            href={url}
             className="underline underline-offset-2 transition-colors hover:text-[#f0cc79]"
             style={{ color: "#d6a33a" }}
             {...(external

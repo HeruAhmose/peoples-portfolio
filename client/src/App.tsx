@@ -122,17 +122,13 @@ function App() {
     useAudioSystem();
   // The opening sequence is an entrance, not a toll: it plays at the root,
   // and a deep link goes straight to content.
-  const [showAwakening, setShowAwakening] = useState(() => {
-    const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
-    const pathname = window.location.pathname;
-    const relativePath =
-      base &&
-      base !== "/" &&
-      (pathname === base || pathname.startsWith(`${base}/`))
-        ? pathname.slice(base.length) || "/"
-        : pathname;
-    return pathToSection(relativePath) === "home";
-  });
+  // Derived from wouter's location, which is already router-relative. Reading
+  // window.location.pathname here would see "/peoples-portfolio/materials" on
+  // Pages, whose first segment is the repo name, so every deep link would look
+  // like "home" and replay the sequence.
+  const [showAwakening, setShowAwakening] = useState(
+    () => activeSection === "home"
+  );
   // Full cut once per session; a compressed one on reloads after that.
   const [introBrief] = useState(() => {
     try {
