@@ -56,6 +56,11 @@ jobs:
         shell: bash
         run: |
           cp dist/public/index.html dist/public/404.html
+          # PEOPLES PAGES /// materialize SPA routes for HTTP 200 deep links
+          for route in materials community research gallery timeline; do
+            mkdir -p "dist/public/$route"
+            cp "dist/public/index.html" "dist/public/$route/index.html"
+          done
           touch dist/public/.nojekyll
 
           if grep -Eq '(src|href)="/assets/' dist/public/index.html; then
