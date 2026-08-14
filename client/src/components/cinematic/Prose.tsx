@@ -24,7 +24,7 @@ const INLINE = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
  * Schemes an assistant answer may link to. Anything else — most importantly
  * `javascript:` and `data:` — is replaced with "#".
  */
-const SAFE_URL = /^(https?:\/\/|mailto:|tel:|\/|\.\/|#)/i;
+export const SAFE_URL = /^(https?:\/\/|mailto:|tel:|\/|\.\/|#)/i;
 
 function renderInline(text: string, keyPrefix: string): ReactNode[] {
   return text
