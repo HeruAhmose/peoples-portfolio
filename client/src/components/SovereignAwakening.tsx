@@ -88,7 +88,7 @@ export default function SovereignAwakening({
     ];
 
     return () => {
-      timers.forEach((timer) => window.clearTimeout(timer));
+      timers.forEach(timer => window.clearTimeout(timer));
     };
   }, [reducedMotion]);
 
@@ -183,7 +183,7 @@ export default function SovereignAwakening({
         />
 
         <div className="pointer-events-none absolute inset-0" aria-hidden>
-          {particles.map((particle) => (
+          {particles.map(particle => (
             <motion.span
               key={particle.id}
               className="absolute rounded-full bg-cyan-200"
@@ -386,7 +386,11 @@ export default function SovereignAwakening({
                   className="absolute inset-[18%] rounded-full border border-amber-200/25"
                   style={{ transformStyle: "preserve-3d", rotateY: 72 }}
                   animate={reducedMotion ? {} : { rotateZ: -360 }}
-                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                  transition={{
+                    duration: 15,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
                   aria-hidden
                 />
 
@@ -434,7 +438,7 @@ export default function SovereignAwakening({
                     </linearGradient>
                   </defs>
 
-                  {LINEAGE_NODES.map((node) => (
+                  {LINEAGE_NODES.map(node => (
                     <motion.line
                       key={`line-${node.label}`}
                       x1="50"
@@ -539,7 +543,11 @@ export default function SovereignAwakening({
                 <motion.div
                   className="pointer-events-none absolute inset-[3%] rounded-full border border-dashed border-cyan-100/10"
                   animate={reducedMotion ? {} : { rotate: -360 }}
-                  transition={{ duration: 38, repeat: Infinity, ease: "linear" }}
+                  transition={{
+                    duration: 38,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
                   aria-hidden
                 />
               </div>

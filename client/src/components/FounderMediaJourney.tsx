@@ -63,7 +63,10 @@ function MediaCard({
       initial={reduceMotion ? false : { opacity: 0, y: 22, rotateX: 3 }}
       whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
       viewport={{ once: true, margin: "-70px" }}
-      transition={{ duration: reduceMotion ? 0.15 : 0.62, delay: Math.min(index * 0.055, 0.28) }}
+      transition={{
+        duration: reduceMotion ? 0.15 : 0.62,
+        delay: Math.min(index * 0.055, 0.28),
+      }}
       whileHover={
         reduceMotion
           ? {}
@@ -177,7 +180,8 @@ function MediaLightbox({
       }
 
       const focusable = Array.from(
-        dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR) ?? []
+        dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR) ??
+          []
       ).filter(element => !element.hasAttribute("disabled"));
 
       if (focusable.length === 0) {
@@ -229,9 +233,13 @@ function MediaLightbox({
         aria-describedby={descriptionId}
         tabIndex={-1}
         className="relative grid max-h-[94vh] w-full max-w-6xl overflow-hidden rounded-3xl border border-cyan-300/15 bg-[#030711] shadow-[0_0_110px_-35px_rgba(34,211,238,.55)] lg:grid-cols-[1.4fr_.6fr]"
-        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.965, y: 18 }}
+        initial={
+          reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.965, y: 18 }
+        }
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.975, y: 10 }}
+        exit={
+          reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.975, y: 10 }
+        }
         transition={{ duration: reduceMotion ? 0.12 : 0.34 }}
       >
         <div className="relative min-h-[50vh] overflow-hidden bg-black">
@@ -330,10 +338,7 @@ export default function FounderMediaJourney() {
     FOUNDER_MEDIA_CHAPTERS.find(item => item.id === chapter) ??
     FOUNDER_MEDIA_CHAPTERS[0];
 
-  const assets = useMemo(
-    () => founderMediaForChapter(chapter),
-    [chapter]
-  );
+  const assets = useMemo(() => founderMediaForChapter(chapter), [chapter]);
 
   const openIndex = openAsset
     ? assets.findIndex(asset => asset.id === openAsset.id)
@@ -434,8 +439,8 @@ export default function FounderMediaJourney() {
                 Before the systems came a sequence of environments that trained
                 different forms of attention: Salisbury and Kannapolis roots;
                 football and track under pressure; Navy service; deliberate
-                technology and cybersecurity training; family, partnership,
-                and the work of building now.
+                technology and cybersecurity training; family, partnership, and
+                the work of building now.
               </p>
             </div>
 
@@ -444,7 +449,8 @@ export default function FounderMediaJourney() {
                 DOCUMENTARY PRINCIPLE
               </p>
               <p className="mt-2 text-xs leading-6 text-white/45">
-                Context first. Interpretation second. The images remain the evidence.
+                Context first. Interpretation second. The images remain the
+                evidence.
               </p>
             </div>
           </div>
@@ -484,7 +490,8 @@ export default function FounderMediaJourney() {
                         : "border-white/10 bg-[#030711] text-white/48 hover:border-white/20 hover:text-white/75"
                     }`}
                   >
-                    {String(index + 1).padStart(2, "0")} /// {item.label.toUpperCase()}
+                    {String(index + 1).padStart(2, "0")} ///{" "}
+                    {item.label.toUpperCase()}
                   </button>
                 );
               })}

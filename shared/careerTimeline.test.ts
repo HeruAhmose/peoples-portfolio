@@ -113,8 +113,9 @@ describe("aggregations", () => {
   });
 
   it("uses four distinct calendar years", () => {
-    expect(new Set(CAREER_MILESTONES.map(milestone => milestone.year)).size)
-      .toBe(4);
+    expect(
+      new Set(CAREER_MILESTONES.map(milestone => milestone.year)).size
+    ).toBe(4);
   });
 
   it("keeps service before the materials chapter", () => {
@@ -134,8 +135,8 @@ describe("aggregations", () => {
   });
 
   it("marks several milestones with highlight ribbons", () => {
-    const highlighted = CAREER_MILESTONES.filter(
-      milestone => Boolean(milestone.highlight)
+    const highlighted = CAREER_MILESTONES.filter(milestone =>
+      Boolean(milestone.highlight)
     );
 
     expect(highlighted.length).toBeGreaterThanOrEqual(3);

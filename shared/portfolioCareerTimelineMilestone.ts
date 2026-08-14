@@ -1,8 +1,7 @@
 export const CAREER_TIMELINE_MILESTONE = {
   eyebrow: "LINEAGE ENGINE /// FOUNDER JOURNEY",
   title: "Founder journey — living system",
-  lead:
-    "The timeline now follows the story that matters: Kannapolis football and Navy service into Tamerian Materials, Queen Califia, TechBridge, and the connected TRAI organism.",
+  lead: "The timeline now follows the story that matters: Kannapolis football and Navy service into Tamerian Materials, Queen Califia, TechBridge, and the connected TRAI organism.",
   achievements: [
     "Removed unrelated employment-history milestones from the public narrative.",
     "Reframed the timeline around service, invention, systems building, cybersecurity, materials, and community infrastructure.",

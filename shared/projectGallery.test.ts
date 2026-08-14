@@ -81,10 +81,7 @@ describe("filterProjectsByCategory", () => {
   });
 
   it("filters to cybersecurity only", () => {
-    const list = filterProjectsByCategory(
-      SHOWCASE_PROJECTS,
-      "cybersecurity"
-    );
+    const list = filterProjectsByCategory(SHOWCASE_PROJECTS, "cybersecurity");
 
     expect(list).toHaveLength(1);
     expect(list[0]!.id).toBe("queen-califia");
