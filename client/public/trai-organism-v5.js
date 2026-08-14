@@ -931,18 +931,23 @@ html[data-trai-v5-internal="true"]::view-transition-new(root) {
     if (!(anchor instanceof HTMLAnchorElement)) return;
 
     var raw = anchor.getAttribute("href");
+    if (!raw) return;
+
+    var normalizedRaw = raw.trim();
+    if (!normalizedRaw) return;
+
+    var explicitScheme = normalizedRaw.match(/^([a-z][a-z0-9+.-]*):/i);
     if (
-      !raw ||
-      raw.startsWith("mailto:") ||
-      raw.startsWith("tel:") ||
-      raw.startsWith("javascript:")
+      explicitScheme &&
+      explicitScheme[1].toLowerCase() !== "http" &&
+      explicitScheme[1].toLowerCase() !== "https"
     ) {
       return;
     }
 
     var url;
     try {
-      url = new URL(raw, window.location.href);
+      url = new URL(normalizedRaw, window.location.href);
     } catch {
       return;
     }
