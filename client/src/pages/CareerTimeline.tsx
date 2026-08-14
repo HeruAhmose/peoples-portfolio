@@ -16,9 +16,7 @@ interface CareerTimelineProps {
   onNavigate: (section: string) => void;
 }
 
-export default function CareerTimeline({
-  onNavigate,
-}: CareerTimelineProps) {
+export default function CareerTimeline({ onNavigate }: CareerTimelineProps) {
   const { logSectionView } = usePortfolioAnalytics();
   const reduce = usePrefersReducedMotion();
   const milestones = milestonesSortedChronological(CAREER_MILESTONES);
@@ -28,10 +26,7 @@ export default function CareerTimeline({
   }, [logSectionView]);
 
   return (
-    <div
-      className="min-h-screen pb-24"
-      data-peoples-founder-journey="v5.5.1"
-    >
+    <div className="min-h-screen pb-24" data-peoples-founder-journey="v5.5.1">
       <section className="container mx-auto px-4 py-14 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -132,10 +127,7 @@ export default function CareerTimeline({
 
               <ul className="mt-6 space-y-2 text-sm text-foreground/82">
                 {CAREER_TIMELINE_MILESTONE.achievements.map(line => (
-                  <li
-                    key={line}
-                    className="border-l-2 border-cyan-300/25 pl-3"
-                  >
+                  <li key={line} className="border-l-2 border-cyan-300/25 pl-3">
                     {line}
                   </li>
                 ))}

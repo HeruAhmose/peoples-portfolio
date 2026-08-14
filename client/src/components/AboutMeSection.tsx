@@ -17,8 +17,7 @@ import {
   founderThesis,
 } from "@shared/aboutMe";
 
-const FOUNDER_PORTRAIT_PATH =
-  `${import.meta.env.BASE_URL}media/founder/hero/founder-present-portrait.webp`;
+const FOUNDER_PORTRAIT_PATH = `${import.meta.env.BASE_URL}media/founder/hero/founder-present-portrait.webp`;
 
 export default function AboutMeSection() {
   const [portraitAvailable, setPortraitAvailable] = useState(true);

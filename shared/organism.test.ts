@@ -95,7 +95,6 @@ describe("organ graph", () => {
     );
   });
 
-
   it("places organ 0 at the top and spaces the ring evenly", () => {
     expect(RING_ANGLES[0]).toBeCloseTo(-Math.PI / 2, 10);
     for (let i = 1; i < 7; i++) {

@@ -300,7 +300,7 @@ export function LiquidSwipeWave({ className }: { className?: string }) {
           viewBox="0 0 1200 80"
           preserveAspectRatio="none"
         >
-                    <path
+          <path
             fill="currentColor"
             d="M0,40 Q300,0 600,40 T1200,40 L1200,80 L0,80 Z"
           />
