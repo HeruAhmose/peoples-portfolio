@@ -1,4 +1,5 @@
 import { ENV } from "./env";
+import { resolveTrustedForgeOrigin } from "./trustedOrigins";
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -214,10 +215,11 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
+const resolveApiUrl = () => {
+  const configured = ENV.forgeApiUrl?.trim() || "https://forge.manus.im";
+  const origin = resolveTrustedForgeOrigin(configured);
+  return `${origin}/v1/chat/completions`;
+};
 
 const assertApiKey = () => {
   if (!ENV.forgeApiKey) {

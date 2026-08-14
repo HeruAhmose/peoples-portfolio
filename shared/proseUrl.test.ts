@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { SAFE_URL } from "../client/src/components/cinematic/Prose";
 
 /**
  * Prose renders assistant output. Escaping HTML is not enough on its own:
@@ -13,17 +14,7 @@ const SOURCE = resolve(
   "../client/src/components/cinematic/Prose.tsx"
 );
 
-function safeUrlPattern(): RegExp {
-  const src = readFileSync(SOURCE, "utf8");
-  const m = src.match(/const SAFE_URL = (\/.+\/i);/);
-  if (!m) throw new Error("SAFE_URL not found in Prose.tsx");
-  // eslint-disable-next-line no-eval
-  return eval(m[1]) as RegExp;
-}
-
 describe("Prose URL allowlist", () => {
-  const SAFE_URL = safeUrlPattern();
-
   const blocked = [
     "javascript:alert(1)",
     "JaVaScRiPt:alert(1)",

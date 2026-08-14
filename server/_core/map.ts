@@ -8,6 +8,7 @@
  */
 
 import { ENV } from "./env";
+import { resolveTrustedForgeOrigin } from "./trustedOrigins";
 
 // ============================================================================
 // Configuration
@@ -29,7 +30,7 @@ function getMapsConfig(): MapsConfig {
   }
 
   return {
-    baseUrl: baseUrl.replace(/\/+$/, ""),
+    baseUrl: resolveTrustedForgeOrigin(baseUrl),
     apiKey,
   };
 }
