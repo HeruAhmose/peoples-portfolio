@@ -1,10 +1,42 @@
-import express, { type Express } from "express";
+import express, { type Express, type Request } from "express";
+import { ipKeyGenerator, rateLimit } from "express-rate-limit";
+import { isIP } from "node:net";
 import fs from "fs";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
+
+const HTML_SHELL_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const HTML_SHELL_RATE_LIMIT_MAX_REQUESTS = 120;
+
+function getHtmlShellRateLimitKey(req: Request): string {
+  if (process.env.RENDER === "true") {
+    const renderClientIp = req.get("cf-connecting-ip")?.trim();
+
+    if (renderClientIp && isIP(renderClientIp)) {
+      return ipKeyGenerator(renderClientIp);
+    }
+  }
+
+  const requestIp = req.ip?.trim();
+
+  if (requestIp && isIP(requestIp)) {
+    return ipKeyGenerator(requestIp);
+  }
+
+  return "unknown-client";
+}
+
+const htmlShellRateLimiter = rateLimit({
+  windowMs: HTML_SHELL_RATE_LIMIT_WINDOW_MS,
+  limit: HTML_SHELL_RATE_LIMIT_MAX_REQUESTS,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  keyGenerator: getHtmlShellRateLimitKey,
+  message: "Too many page requests; please try again shortly.",
+});
 
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
@@ -21,6 +53,7 @@ export async function setupVite(app: Express, server: Server) {
   });
 
   app.use(vite.middlewares);
+  app.use(htmlShellRateLimiter);
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
 
@@ -59,6 +92,7 @@ export function serveStatic(app: Express) {
   }
 
   app.use(express.static(distPath));
+  app.use(htmlShellRateLimiter);
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
