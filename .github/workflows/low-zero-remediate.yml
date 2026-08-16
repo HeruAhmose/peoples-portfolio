@@ -1,0 +1,68 @@
+name: low-zero-remediate
+
+on:
+  push:
+    branches:
+      - agent/low-security-zero-audit-20260816
+
+permissions:
+  contents: write
+
+jobs:
+  remediate-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Apply exact LOW advisory floors
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'package.json';
+          const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+          pkg.pnpm ??= {};
+          pkg.pnpm.overrides ??= {};
+          pkg.pnpm.overrides['@smithy/config-resolver'] = '4.4.0';
+          pkg.pnpm.overrides['@babel/core'] = '7.29.6';
+          pkg.pnpm.overrides['body-parser'] = '1.20.6';
+          fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + '\n');
+          NODE
+
+      - name: Regenerate lockfile
+        run: pnpm install --lockfile-only
+
+      - name: Frozen install
+        run: pnpm install --frozen-lockfile
+
+      - name: Full CI
+        run: pnpm run ci
+
+      - name: Zero-vulnerability audit gate
+        run: pnpm audit --audit-level=low
+
+      - name: Commit verified security changes
+        shell: bash
+        run: |
+          git diff -- package.json pnpm-lock.yaml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json pnpm-lock.yaml
+          if git diff --cached --quiet; then
+            echo "No security changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(security): clear remaining low dependency advisories"
+          git push origin HEAD:agent/low-security-zero-audit-20260816
