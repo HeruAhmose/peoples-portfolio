@@ -33,7 +33,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Full CI
-        run: pnpm ci
+        run: pnpm run ci
 
       - name: Audit gate — zero moderate or higher
         run: pnpm audit --audit-level=moderate
