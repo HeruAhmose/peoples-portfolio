@@ -28,26 +28,43 @@ jobs:
       - name: Materialize without lifecycle scripts
         run: pnpm install --ignore-scripts
       - name: Format generated files
-        run: pnpm exec prettier --write package.json pnpm-lock.yaml vite.config.ts server/_core/vite.ts client/public/__peoples_dev__/observer.js
-      - name: Verify Vite-only major and legacy runtime removal
+        run: pnpm exec prettier --write package.json pnpm-lock.yaml vite.config.ts server/_core/vite.ts tooling/peoples-dev-observer.js
+      - name: Verify Vite-only major and runtime replacement
         shell: bash
         run: |
           set -euo pipefail
           node - <<'NODE'
+          const fs = require('fs');
           const p = require('./package.json');
           if (p.devDependencies?.vite !== '8.1.5') throw new Error('Vite 8.1.5 must remain pinned for this migration');
           if (p.devDependencies?.['@vitejs/plugin-react'] !== '^5.0.4') throw new Error('plugin-react must remain on v5 until Vite 8 lands');
-          if (p.devDependencies?.['vite-plugin-manus-runtime']) throw new Error('Legacy runtime dependency still present');
+          if (p.devDependencies?.['vite-plugin-manus-runtime']) throw new Error('Legacy Vite runtime dependency still present');
+
+          const viteConfig = fs.readFileSync('vite.config.ts', 'utf8');
+          for (const forbidden of [
+            'vitePluginManusRuntime',
+            '/__manus__/',
+            '.manus-logs',
+            '.manuspre.computer',
+            '.manus.computer',
+            '.manus-asia.computer',
+            '.manuscomputer.ai',
+            '.manusvm.computer',
+          ]) {
+            if (viteConfig.includes(forbidden)) throw new Error(`Legacy Vite coupling remains: ${forbidden}`);
+          }
+
+          const serverVite = fs.readFileSync('server/_core/vite.ts', 'utf8');
+          if (/allowedHosts\s*:\s*true/.test(serverVite)) throw new Error('Unsafe allowedHosts:true override remains');
+          if (fs.existsSync('client/public/__manus__/debug-collector.js')) throw new Error('Legacy debug collector still exists');
+          if (fs.existsSync('client/public/__peoples_dev__/observer.js')) throw new Error('Dev observer must not live under publicDir');
+          if (!fs.existsSync('tooling/peoples-dev-observer.js')) throw new Error('First-party dev observer source missing');
           NODE
-          if git grep -nEi 'manus' -- ':!pnpm-lock.yaml' ':!README.md' ':!.github/workflows/remove-manus-runtime-lock-refresh.yml'; then
-            echo 'Unexpected legacy vendor source/config references remain.' >&2
-            exit 1
-          fi
       - name: Restrict generated dependency changes
         shell: bash
         run: |
           set -euo pipefail
-          unexpected="$(git status --porcelain --untracked-files=no | grep -Ev '^ M (package.json|pnpm-lock.yaml|vite.config.ts|server/_core/vite.ts|client/public/__peoples_dev__/observer.js)$' || true)"
+          unexpected="$(git status --porcelain --untracked-files=no | grep -Ev '^ M (package.json|pnpm-lock.yaml|vite.config.ts|server/_core/vite.ts|tooling/peoples-dev-observer.js)$' || true)"
           test -z "$unexpected"
       - name: Commit generated graph
         shell: bash
@@ -55,7 +72,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json pnpm-lock.yaml vite.config.ts server/_core/vite.ts client/public/__peoples_dev__/observer.js
+          git add package.json pnpm-lock.yaml vite.config.ts server/_core/vite.ts tooling/peoples-dev-observer.js
           git diff --cached --quiet && exit 0
-          git commit -m "build: remove legacy runtime dependency graph"
+          git commit -m "build: remove legacy Vite runtime dependency graph"
           git push
