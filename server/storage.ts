@@ -2,6 +2,7 @@
 // Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
 
 import { ENV } from "./_core/env";
+import { resolveTrustedForgeOrigin } from "./_core/trustedOrigins";
 
 type StorageConfig = { baseUrl: string; apiKey: string };
 
@@ -15,7 +16,7 @@ function getStorageConfig(): StorageConfig {
     );
   }
 
-  return { baseUrl: baseUrl.replace(/\/+$/, ""), apiKey };
+  return { baseUrl: resolveTrustedForgeOrigin(baseUrl), apiKey };
 }
 
 function buildUploadUrl(baseUrl: string, relKey: string): URL {
@@ -38,7 +39,14 @@ async function buildDownloadUrl(
     method: "GET",
     headers: buildAuthHeaders(apiKey),
   });
-  return (await response.json()).url;
+  if (!response.ok) {
+    throw new Error(`Storage download URL request failed (${response.status})`);
+  }
+  const payload = (await response.json()) as { url?: unknown };
+  if (typeof payload.url !== "string" || payload.url.length === 0) {
+    throw new Error("Storage download response did not contain a URL");
+  }
+  return payload.url;
 }
 
 function ensureTrailingSlash(value: string): string {
@@ -46,7 +54,20 @@ function ensureTrailingSlash(value: string): string {
 }
 
 function normalizeKey(relKey: string): string {
-  return relKey.replace(/^\/+/, "");
+  const key = relKey.replace(/^\/+/, "");
+  const segments = key.split("/");
+
+  if (
+    !key ||
+    key.length > 512 ||
+    key.includes("\\") ||
+    key.includes("\0") ||
+    segments.some(segment => !segment || segment === "." || segment === "..")
+  ) {
+    throw new Error("Storage key contains an invalid path segment");
+  }
+
+  return key;
 }
 
 function toFormData(
@@ -83,13 +104,15 @@ export async function storagePut(
   });
 
   if (!response.ok) {
-    const message = await response.text().catch(() => response.statusText);
     throw new Error(
-      `Storage upload failed (${response.status} ${response.statusText}): ${message}`
+      `Storage upload failed (${response.status} ${response.statusText})`
     );
   }
-  const url = (await response.json()).url;
-  return { key, url };
+  const payload = (await response.json()) as { url?: unknown };
+  if (typeof payload.url !== "string" || payload.url.length === 0) {
+    throw new Error("Storage upload response did not contain a URL");
+  }
+  return { key, url: payload.url };
 }
 
 export async function storageGet(
