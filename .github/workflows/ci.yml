@@ -35,5 +35,21 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      - name: Prevent Streamdown re-entry
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm why streamdown --json > /tmp/streamdown-why.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const graph = JSON.parse(fs.readFileSync('/tmp/streamdown-why.json', 'utf8'));
+          const serialized = JSON.stringify(graph);
+          if (/"streamdown"/.test(serialized)) {
+            console.error('Streamdown is present in the dependency graph; the hardened Prose renderer must remain the only markdown rendering path.');
+            process.exit(1);
+          }
+          console.log('Streamdown absent from dependency graph.');
+          NODE
+
       - name: Typecheck, test, format, build
         run: pnpm run ci
