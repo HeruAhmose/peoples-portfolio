@@ -24,7 +24,11 @@ jobs:
           node-version: "22"
           cache: pnpm
       - name: Upgrade plugin-react only
-        run: pnpm add -D --save-exact @vitejs/plugin-react@6.0.5
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm add -D @vitejs/plugin-react@6.0.5
+          pnpm pkg set 'devDependencies.@vitejs/plugin-react=6.0.5'
       - name: Verify Vite stays pinned
         shell: bash
         run: |
