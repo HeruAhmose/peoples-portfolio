@@ -10,7 +10,9 @@ const KNOWN_PLACEHOLDERS = new Set([
 ]);
 
 function isLocalHostname(hostname: string): boolean {
-  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+  return (
+    hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1"
+  );
 }
 
 function validateFrontendUrl(raw: string): void {
@@ -22,7 +24,9 @@ function validateFrontendUrl(raw: string): void {
   }
 
   if (url.username || url.password || url.search || url.hash) {
-    throw new Error("FRONTEND_URL must not contain credentials, query parameters, or a fragment");
+    throw new Error(
+      "FRONTEND_URL must not contain credentials, query parameters, or a fragment"
+    );
   }
 
   const isLocalHttp = url.protocol === "http:" && isLocalHostname(url.hostname);
@@ -50,16 +54,23 @@ export function validateRuntimeSecurityConfiguration(): void {
     ENV.oAuthPortalUrl,
     ENV.frontendUrl,
   ];
-  const configuredOauthValues = oauthValues.filter(value => value.trim().length > 0);
+  const configuredOauthValues = oauthValues.filter(
+    value => value.trim().length > 0
+  );
 
-  if (configuredOauthValues.length > 0 && configuredOauthValues.length !== oauthValues.length) {
+  if (
+    configuredOauthValues.length > 0 &&
+    configuredOauthValues.length !== oauthValues.length
+  ) {
     throw new Error(
       "OAuth requires VITE_APP_ID, OAUTH_SERVER_URL, VITE_OAUTH_PORTAL_URL, and FRONTEND_URL together"
     );
   }
 
   if (ENV.ownerOpenId && !ENV.appId) {
-    throw new Error("OWNER_OPEN_ID requires VITE_APP_ID so admin sessions remain application-bound");
+    throw new Error(
+      "OWNER_OPEN_ID requires VITE_APP_ID so admin sessions remain application-bound"
+    );
   }
 
   if (ENV.oAuthServerUrl) {
