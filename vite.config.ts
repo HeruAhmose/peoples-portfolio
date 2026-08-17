@@ -141,7 +141,9 @@ function peoplesDevObserverPlugin(): Plugin {
           if (receivedBytes > MAX_REQUEST_BYTES) {
             rejected = true;
             res.writeHead(413, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: "Payload too large" }));
+            res.end(
+              JSON.stringify({ success: false, error: "Payload too large" })
+            );
             return;
           }
 
@@ -153,7 +155,11 @@ function peoplesDevObserverPlugin(): Plugin {
 
           try {
             const parsed = JSON.parse(body) as unknown;
-            if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+            if (
+              !parsed ||
+              typeof parsed !== "object" ||
+              Array.isArray(parsed)
+            ) {
               throw new Error("Telemetry payload must be an object");
             }
 

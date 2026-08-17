@@ -19,7 +19,8 @@
   var MAX_CONSOLE = 250;
   var MAX_NETWORK = 150;
   var MAX_SESSION = 300;
-  var SENSITIVE_KEY = /password|passcode|token|secret|api[-_]?key|authorization|cookie|session|credential/i;
+  var SENSITIVE_KEY =
+    /password|passcode|token|secret|api[-_]?key|authorization|cookie|session|credential/i;
 
   var store = {
     consoleLogs: [],
@@ -124,7 +125,12 @@
   }
 
   function compactText(value) {
-    return truncate(String(value || "").trim().replace(/\s+/g, " "), MAX_TEXT);
+    return truncate(
+      String(value || "")
+        .trim()
+        .replace(/\s+/g, " "),
+      MAX_TEXT
+    );
   }
 
   function describeElement(target) {
@@ -148,9 +154,7 @@
       testId: truncate(testId || "", 120) || null,
       dataLoc: truncate(dataLoc || "", 240) || null,
       href:
-        tag === "a"
-          ? safeUrl(target.getAttribute("href") || "") || null
-          : null,
+        tag === "a" ? safeUrl(target.getAttribute("href") || "") || null : null,
       text: isFormControl
         ? null
         : compactText(target.textContent || target.innerText || "") || null,
@@ -390,7 +394,8 @@
     XMLHttpRequest.prototype.send = function () {
       var xhr = this;
       var meta = xhrMeta.get(xhr);
-      if (!meta || meta.internal) return Reflect.apply(originalSend, xhr, arguments);
+      if (!meta || meta.internal)
+        return Reflect.apply(originalSend, xhr, arguments);
       var startedAt = performance.now();
 
       xhr.addEventListener("loadend", function () {
@@ -401,7 +406,10 @@
           url: meta.url,
           status: xhr.status || null,
           ok: xhr.status >= 200 && xhr.status < 400,
-          contentType: truncate(xhr.getResponseHeader("content-type") || "", 160),
+          contentType: truncate(
+            xhr.getResponseHeader("content-type") || "",
+            160
+          ),
           durationMs: Math.round(performance.now() - startedAt),
         });
         prune(store.networkRequests, MAX_NETWORK);
@@ -451,15 +459,17 @@
       // Fall through to fetch.
     }
 
-    window.fetch(ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: payload,
-      keepalive: true,
-      credentials: "same-origin",
-    }).catch(function () {
-      // Development diagnostics are best-effort and must never break the app.
-    });
+    window
+      .fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        keepalive: true,
+        credentials: "same-origin",
+      })
+      .catch(function () {
+        // Development diagnostics are best-effort and must never break the app.
+      });
   }
 
   Object.defineProperty(window, "__PEOPLES_DEV_OBSERVER__", {
