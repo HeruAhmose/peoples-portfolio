@@ -38,8 +38,10 @@ jobs:
           if (p.devDependencies?.vite !== '8.1.5') throw new Error('Vite changed during plugin-react-only migration');
           if (p.devDependencies?.['@vitejs/plugin-react'] !== '6.0.5') throw new Error('plugin-react 6.0.5 not pinned');
           NODE
-      - name: Materialize without lifecycle scripts
-        run: pnpm install --ignore-scripts
+      - name: Resolve exact lockfile without lifecycle scripts
+        run: pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile
+      - name: Prove frozen materialization
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: Format generated files
         run: pnpm exec prettier --write package.json pnpm-lock.yaml
       - name: Restrict generated changes
