@@ -1,3 +1,8 @@
+import { config as loadEnv } from "dotenv";
+
+loadEnv();
+loadEnv({ path: ".env.local", override: true });
+
 export const ENV = {
   appId: process.env.VITE_APP_ID ?? "",
   cookieSecret: process.env.JWT_SECRET ?? "",
