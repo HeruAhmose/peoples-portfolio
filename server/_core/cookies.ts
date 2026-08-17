@@ -18,7 +18,9 @@ export function getSessionCookieOptions(req: Request): SecurityCookieOptions {
   };
 }
 
-export function getOAuthStateCookieOptions(req: Request): SecurityCookieOptions {
+export function getOAuthStateCookieOptions(
+  req: Request
+): SecurityCookieOptions {
   return {
     httpOnly: true,
     path: "/api/oauth",
