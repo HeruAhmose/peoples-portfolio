@@ -49,10 +49,7 @@ function getOAuthPortalUrl(): URL {
   return new URL("/app-auth", portal);
 }
 
-function statesMatch(
-  expected: string | undefined,
-  supplied: string
-): boolean {
+function statesMatch(expected: string | undefined, supplied: string): boolean {
   if (!expected) return false;
   const expectedBytes = Buffer.from(expected, "utf8");
   const suppliedBytes = Buffer.from(supplied, "utf8");
