@@ -24,7 +24,7 @@ jobs:
           node-version: "22"
           cache: pnpm
       - name: Upgrade plugin-react only
-        run: pnpm add -D @vitejs/plugin-react@6.0.4
+        run: pnpm add -D --save-exact @vitejs/plugin-react@6.0.5
       - name: Verify Vite stays pinned
         shell: bash
         run: |
@@ -32,7 +32,7 @@ jobs:
           node - <<'NODE'
           const p = require('./package.json');
           if (p.devDependencies?.vite !== '8.1.5') throw new Error('Vite changed during plugin-react-only migration');
-          if (p.devDependencies?.['@vitejs/plugin-react'] !== '6.0.4') throw new Error('plugin-react 6.0.4 not pinned');
+          if (p.devDependencies?.['@vitejs/plugin-react'] !== '6.0.5') throw new Error('plugin-react 6.0.5 not pinned');
           NODE
       - name: Materialize without lifecycle scripts
         run: pnpm install --ignore-scripts
@@ -52,5 +52,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json pnpm-lock.yaml
           git diff --cached --quiet && exit 0
-          git commit -m "build: migrate plugin-react to 6.0.4"
+          git commit -m "build: migrate plugin-react to 6.0.5"
           git push
