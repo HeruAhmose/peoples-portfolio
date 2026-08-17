@@ -39,16 +39,19 @@ const htmlShellRateLimiter = rateLimit({
 });
 
 export async function setupVite(app: Express, server: Server) {
-  const serverOptions = {
-    middlewareMode: true,
-    hmr: { server },
-    allowedHosts: true as const,
-  };
+  const configuredServer =
+    viteConfig && typeof viteConfig === "object" && "server" in viteConfig
+      ? viteConfig.server
+      : undefined;
 
   const vite = await createViteServer({
     ...viteConfig,
     configFile: false,
-    server: serverOptions,
+    server: {
+      ...(configuredServer ?? {}),
+      middlewareMode: true,
+      hmr: { server },
+    },
     appType: "custom",
   });
 
@@ -65,7 +68,7 @@ export async function setupVite(app: Express, server: Server) {
         "index.html"
       );
 
-      // always reload the index.html file from disk incase it changes
+      // Always reload index.html so development edits are reflected immediately.
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
@@ -73,9 +76,9 @@ export async function setupVite(app: Express, server: Server) {
       );
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
-    } catch (e) {
-      vite.ssrFixStacktrace(e as Error);
-      next(e);
+    } catch (error) {
+      vite.ssrFixStacktrace(error as Error);
+      next(error);
     }
   });
 }
@@ -94,7 +97,7 @@ export function serveStatic(app: Express) {
   app.use(express.static(distPath));
   app.use(htmlShellRateLimiter);
 
-  // fall through to index.html if the file doesn't exist
+  // Fall through to index.html if the file does not exist.
   app.use((_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
