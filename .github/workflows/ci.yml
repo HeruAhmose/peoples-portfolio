@@ -51,5 +51,31 @@ jobs:
           console.log('Streamdown absent from dependency graph.');
           NODE
 
+      - name: Prevent legacy Vite runtime re-entry
+        shell: bash
+        run: |
+          set -euo pipefail
+          if pnpm why vite-plugin-manus-runtime --json | grep -q 'vite-plugin-manus-runtime'; then
+            echo 'Legacy Vite runtime dependency re-entered the graph.' >&2
+            exit 1
+          fi
+          echo 'Legacy Vite runtime absent from dependency graph.'
+
       - name: Typecheck, test, format, build
         run: pnpm run ci
+
+      - name: Keep development observability out of production artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e dist/public/__peoples_dev__/observer.js
+          test ! -e dist/public/__manus__/debug-collector.js
+          if grep -RIl '/__peoples_dev__/telemetry' dist/public \
+            --include='*.html' \
+            --include='*.js' \
+            --include='*.css' \
+            --include='*.json' | grep -q .; then
+            echo 'Development telemetry reference detected in production artifact.' >&2
+            exit 1
+          fi
+          echo 'Production artifact contains no development observability payload.'
