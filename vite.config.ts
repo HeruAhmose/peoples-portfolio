@@ -12,6 +12,11 @@ import {
 
 const PROJECT_ROOT = import.meta.dirname;
 const DEV_LOG_DIR = path.join(PROJECT_ROOT, ".peoples-dev-logs");
+const OBSERVER_SOURCE = path.join(
+  PROJECT_ROOT,
+  "tooling",
+  "peoples-dev-observer.js"
+);
 const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024;
 const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6);
 const MAX_REQUEST_BYTES = 256 * 1024;
@@ -101,6 +106,26 @@ function peoplesDevObserverPlugin(): Plugin {
     },
 
     configureServer(server: ViteDevServer) {
+      server.middlewares.use(OBSERVER_SCRIPT, (req, res, next) => {
+        if (req.method !== "GET" && req.method !== "HEAD") return next();
+
+        try {
+          const source = fs.readFileSync(OBSERVER_SOURCE, "utf-8");
+          res.writeHead(200, {
+            "Content-Type": "text/javascript; charset=utf-8",
+            "Cache-Control": "no-store",
+            "X-Content-Type-Options": "nosniff",
+          });
+          res.end(req.method === "HEAD" ? undefined : source);
+        } catch (error) {
+          server.config.logger.error(
+            `Unable to serve Peoples dev observer: ${String(error)}`
+          );
+          res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+          res.end("Development observer unavailable");
+        }
+      });
+
       server.middlewares.use(OBSERVER_ENDPOINT, (req, res, next) => {
         if (req.method !== "POST") return next();
 
@@ -117,7 +142,6 @@ function peoplesDevObserverPlugin(): Plugin {
             rejected = true;
             res.writeHead(413, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ success: false, error: "Payload too large" }));
-            req.destroy();
             return;
           }
 
@@ -134,13 +158,14 @@ function peoplesDevObserverPlugin(): Plugin {
             }
 
             handleTelemetryPayload(parsed as TelemetryPayload);
-            res.writeHead(200, { "Content-Type": "application/json" });
+            res.writeHead(200, {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            });
             res.end(JSON.stringify({ success: true }));
           } catch (error) {
             res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({ success: false, error: String(error) })
-            );
+            res.end(JSON.stringify({ success: false, error: String(error) }));
           }
         });
       });
