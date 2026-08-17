@@ -1,15 +1,20 @@
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { config as loadEnv } from "dotenv";
 import express from "express";
+import { rateLimit } from "express-rate-limit";
+import { createServer } from "http";
+import net from "net";
+import { appRouter } from "../routers";
+import { createContext } from "./context";
+import { ENV } from "./env";
+import { registerOAuthRoutes } from "./oauth";
+import { validateRuntimeSecurityConfiguration } from "./runtimeSecurity";
+import { serveStatic, setupVite } from "./vite";
 
 loadEnv();
 loadEnv({ path: ".env.local", override: true });
-import { createServer } from "http";
-import net from "net";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
-import { appRouter } from "../routers";
-import { createContext } from "./context";
-import { serveStatic, setupVite } from "./vite";
+
+const API_BODY_LIMIT = "1mb";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -30,15 +35,75 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
   throw new Error(`No available port found starting from ${startPort}`);
 }
 
+function applySecurityHeaders(
+  _req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader(
+    "Permissions-Policy",
+    "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+  );
+  res.setHeader(
+    "Content-Security-Policy",
+    "base-uri 'self'; frame-ancestors 'none'; object-src 'none'"
+  );
+  if (ENV.isProduction) {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000");
+  }
+  next();
+}
+
+const apiRateLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 180,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: "Too many API requests; please try again shortly.",
+});
+
+const assistantRateLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  skip: req => !req.path.includes("hk.chat"),
+  message: "Assistant request limit reached; please try again shortly.",
+});
+
+const inquiryRateLimiter = rateLimit({
+  windowMs: 15 * 60_000,
+  limit: 8,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  skip: req => !req.path.includes("portfolio.submitInquiry"),
+  message: "Inquiry request limit reached; please try again later.",
+});
+
 async function startServer() {
+  validateRuntimeSecurityConfiguration();
+
   const app = express();
   const server = createServer(app);
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  // OAuth callback under /api/oauth/callback
+
+  app.disable("x-powered-by");
+  app.use(applySecurityHeaders);
+  app.use(express.json({ limit: API_BODY_LIMIT }));
+  app.use(
+    express.urlencoded({
+      limit: API_BODY_LIMIT,
+      extended: true,
+      parameterLimit: 100,
+    })
+  );
+  app.use("/api", apiRateLimiter);
+
   registerOAuthRoutes(app);
-  // tRPC API
+
+  app.use("/api/trpc", assistantRateLimiter, inquiryRateLimiter);
   app.use(
     "/api/trpc",
     createExpressMiddleware({
@@ -46,7 +111,7 @@ async function startServer() {
       createContext,
     })
   );
-  // development mode uses Vite, production mode uses static files
+
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
   } else {
@@ -65,4 +130,7 @@ async function startServer() {
   });
 }
 
-startServer().catch(console.error);
+startServer().catch(error => {
+  console.error("Server startup failed", error);
+  process.exitCode = 1;
+});

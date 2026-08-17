@@ -15,7 +15,7 @@ import type {
   GetUserInfoWithJwtRequest,
   GetUserInfoWithJwtResponse,
 } from "./types/manusTypes";
-// Utility function
+
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.length > 0;
 
@@ -42,20 +42,15 @@ class OAuthService {
     }
   }
 
-  private decodeState(state: string): string {
-    const redirectUri = atob(state);
-    return redirectUri;
-  }
-
   async getTokenByCode(
     code: string,
-    state: string
+    redirectUri: string
   ): Promise<ExchangeTokenResponse> {
     const payload: ExchangeTokenRequest = {
       clientId: ENV.appId,
       grantType: "authorization_code",
       code,
-      redirectUri: this.decodeState(state),
+      redirectUri,
     };
 
     const { data } = await this.client.post<ExchangeTokenResponse>(
@@ -122,23 +117,13 @@ class SDKServer {
     return first ? first.toLowerCase() : null;
   }
 
-  /**
-   * Exchange OAuth authorization code for access token
-   * @example
-   * const tokenResponse = await sdk.exchangeCodeForToken(code, state);
-   */
   async exchangeCodeForToken(
     code: string,
-    state: string
+    redirectUri: string
   ): Promise<ExchangeTokenResponse> {
-    return this.oauthService.getTokenByCode(code, state);
+    return this.oauthService.getTokenByCode(code, redirectUri);
   }
 
-  /**
-   * Get user information using access token
-   * @example
-   * const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
-   */
   async getUserInfo(accessToken: string): Promise<GetUserInfoResponse> {
     const data = await this.oauthService.getUserInfoByToken({
       accessToken,
@@ -164,15 +149,9 @@ class SDKServer {
   }
 
   private getSessionSecret() {
-    const secret = ENV.cookieSecret;
-    return new TextEncoder().encode(secret);
+    return new TextEncoder().encode(ENV.cookieSecret);
   }
 
-  /**
-   * Create a session token for a Manus user openId
-   * @example
-   * const sessionToken = await sdk.createSessionToken(userInfo.openId);
-   */
   async createSessionToken(
     openId: string,
     options: { expiresInMs?: number; name?: string } = {}
@@ -202,6 +181,7 @@ class SDKServer {
       name: payload.name,
     })
       .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+      .setIssuedAt()
       .setExpirationTime(expirationSeconds)
       .sign(secretKey);
   }
@@ -210,7 +190,6 @@ class SDKServer {
     cookieValue: string | undefined | null
   ): Promise<{ openId: string; appId: string; name: string } | null> {
     if (!cookieValue) {
-      console.warn("[Auth] Missing session cookie");
       return null;
     }
 
@@ -224,9 +203,10 @@ class SDKServer {
       if (
         !isNonEmptyString(openId) ||
         !isNonEmptyString(appId) ||
-        !isNonEmptyString(name)
+        !isNonEmptyString(name) ||
+        appId !== ENV.appId
       ) {
-        console.warn("[Auth] Session payload missing required fields");
+        console.warn("[Auth] Session payload failed application binding");
         return null;
       }
 
@@ -266,7 +246,6 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<User> {
-    // Regular authentication flow
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
     const session = await this.verifySession(sessionCookie);
@@ -279,7 +258,6 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server automatically
     if (!user) {
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");

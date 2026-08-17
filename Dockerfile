@@ -17,6 +17,8 @@ COPY --from=build /app/package.json ./
 COPY --from=build /app/pnpm-lock.yaml ./
 COPY --from=build /app/patches ./patches
 RUN corepack enable && corepack prepare pnpm@10.4.1 --activate \
-  && pnpm install --frozen-lockfile --prod
+  && pnpm install --frozen-lockfile --prod \
+  && chown -R node:node /app
+USER node
 EXPOSE 3000
 CMD ["node", "dist/index.js"]
