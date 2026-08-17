@@ -25,6 +25,8 @@ jobs:
           cache: pnpm
       - name: Remove unused Streamdown graph from lockfile
         run: pnpm install --lockfile-only --ignore-scripts
+      - name: Materialize resolved graph without lifecycle scripts
+        run: pnpm install --ignore-scripts
       - name: Format lockfile with repository policy
         run: pnpm exec prettier --write pnpm-lock.yaml
       - name: Preserve reviewed manifest
