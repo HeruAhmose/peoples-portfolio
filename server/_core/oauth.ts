@@ -8,10 +8,6 @@ import { parse as parseCookieHeader } from "cookie";
 import type { Express, Request, Response } from "express";
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import * as db from "../db";
-import {
-  getOAuthStateCookieOptions,
-  getSessionCookieOptions,
-} from "./cookies";
 import { ENV } from "./env";
 import { sdk } from "./sdk";
 
@@ -60,7 +56,7 @@ function statesMatch(expected: string | undefined, supplied: string): boolean {
 }
 
 export function registerOAuthRoutes(app: Express) {
-  app.get("/api/oauth/login", (req: Request, res: Response) => {
+  app.get("/api/oauth/login", (_req: Request, res: Response) => {
     try {
       const state = randomBytes(32).toString("base64url");
       const redirectUri = getOAuthCallbackUrl();
@@ -72,7 +68,10 @@ export function registerOAuthRoutes(app: Express) {
       portalUrl.searchParams.set("type", "signIn");
 
       res.cookie(OAUTH_STATE_COOKIE_NAME, state, {
-        ...getOAuthStateCookieOptions(req),
+        httpOnly: true,
+        path: "/api/oauth",
+        sameSite: "lax",
+        secure: true,
         maxAge: OAUTH_STATE_TTL_MS,
       });
       res.redirect(302, portalUrl.toString());
@@ -89,7 +88,12 @@ export function registerOAuthRoutes(app: Express) {
       const state = getQueryParam(req, "state");
       const cookies = parseCookieHeader(req.headers.cookie ?? "");
       const expectedState = cookies[OAUTH_STATE_COOKIE_NAME];
-      const stateCookieOptions = getOAuthStateCookieOptions(req);
+      const stateCookieOptions = {
+        httpOnly: true,
+        path: "/api/oauth",
+        sameSite: "lax" as const,
+        secure: true,
+      };
 
       res.clearCookie(OAUTH_STATE_COOKIE_NAME, stateCookieOptions);
 
@@ -122,7 +126,10 @@ export function registerOAuthRoutes(app: Express) {
         });
 
         res.cookie(COOKIE_NAME, sessionToken, {
-          ...getSessionCookieOptions(req),
+          httpOnly: true,
+          path: "/",
+          sameSite: "lax",
+          secure: true,
           maxAge: ONE_YEAR_MS,
         });
 
