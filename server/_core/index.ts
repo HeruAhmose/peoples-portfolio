@@ -93,7 +93,11 @@ async function startServer() {
   app.use(applySecurityHeaders);
   app.use(express.json({ limit: API_BODY_LIMIT }));
   app.use(
-    express.urlencoded({ limit: API_BODY_LIMIT, extended: true, parameterLimit: 100 })
+    express.urlencoded({
+      limit: API_BODY_LIMIT,
+      extended: true,
+      parameterLimit: 100,
+    })
   );
   app.use("/api", apiRateLimiter);
 
