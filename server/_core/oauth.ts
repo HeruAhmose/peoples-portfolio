@@ -81,63 +81,60 @@ export function registerOAuthRoutes(app: Express) {
     }
   });
 
-  app.get(
-    "/api/oauth/callback",
-    async (req: Request, res: Response) => {
-      const code = getQueryParam(req, "code");
-      const state = getQueryParam(req, "state");
-      const cookies = parseCookieHeader(req.headers.cookie ?? "");
-      const expectedState = cookies[OAUTH_STATE_COOKIE_NAME];
-      const stateCookieOptions = {
-        httpOnly: true,
-        path: "/api/oauth",
-        sameSite: "lax" as const,
-        secure: true,
-      };
+  app.get("/api/oauth/callback", async (req: Request, res: Response) => {
+    const code = getQueryParam(req, "code");
+    const state = getQueryParam(req, "state");
+    const cookies = parseCookieHeader(req.headers.cookie ?? "");
+    const expectedState = cookies[OAUTH_STATE_COOKIE_NAME];
+    const stateCookieOptions = {
+      httpOnly: true,
+      path: "/api/oauth",
+      sameSite: "lax" as const,
+      secure: true,
+    };
 
-      res.clearCookie(OAUTH_STATE_COOKIE_NAME, stateCookieOptions);
+    res.clearCookie(OAUTH_STATE_COOKIE_NAME, stateCookieOptions);
 
-      if (!code || !state || !statesMatch(expectedState, state)) {
-        res.status(400).json({ error: "Invalid OAuth callback state" });
+    if (!code || !state || !statesMatch(expectedState, state)) {
+      res.status(400).json({ error: "Invalid OAuth callback state" });
+      return;
+    }
+
+    try {
+      const redirectUri = getOAuthCallbackUrl();
+      const tokenResponse = await sdk.exchangeCodeForToken(code, redirectUri);
+      const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
+
+      if (!userInfo.openId) {
+        res.status(400).json({ error: "openId missing from user info" });
         return;
       }
 
-      try {
-        const redirectUri = getOAuthCallbackUrl();
-        const tokenResponse = await sdk.exchangeCodeForToken(code, redirectUri);
-        const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
+      await db.upsertUser({
+        openId: userInfo.openId,
+        name: userInfo.name || null,
+        email: userInfo.email ?? null,
+        loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
+        lastSignedIn: new Date(),
+      });
 
-        if (!userInfo.openId) {
-          res.status(400).json({ error: "openId missing from user info" });
-          return;
-        }
+      const sessionToken = await sdk.createSessionToken(userInfo.openId, {
+        name: userInfo.name || "",
+        expiresInMs: ONE_YEAR_MS,
+      });
 
-        await db.upsertUser({
-          openId: userInfo.openId,
-          name: userInfo.name || null,
-          email: userInfo.email ?? null,
-          loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
-          lastSignedIn: new Date(),
-        });
+      res.cookie(COOKIE_NAME, sessionToken, {
+        httpOnly: true,
+        path: "/",
+        sameSite: "lax",
+        secure: true,
+        maxAge: ONE_YEAR_MS,
+      });
 
-        const sessionToken = await sdk.createSessionToken(userInfo.openId, {
-          name: userInfo.name || "",
-          expiresInMs: ONE_YEAR_MS,
-        });
-
-        res.cookie(COOKIE_NAME, sessionToken, {
-          httpOnly: true,
-          path: "/",
-          sameSite: "lax",
-          secure: true,
-          maxAge: ONE_YEAR_MS,
-        });
-
-        res.redirect(302, "/");
-      } catch (error) {
-        console.error("[OAuth] Callback failed", error);
-        res.status(500).json({ error: "OAuth callback failed" });
-      }
+      res.redirect(302, "/");
+    } catch (error) {
+      console.error("[OAuth] Callback failed", error);
+      res.status(500).json({ error: "OAuth callback failed" });
     }
-  );
+  });
 }
