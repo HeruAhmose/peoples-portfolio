@@ -9,29 +9,36 @@ import {
   type PluginOption,
   type ViteDevServer,
 } from "vite";
-import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
-
-// =============================================================================
-// Manus Debug Collector - Vite Plugin
-// Writes browser logs directly to files, trimmed when exceeding size limit
-// =============================================================================
 
 const PROJECT_ROOT = import.meta.dirname;
-const LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
-const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024; // 1MB per log file
-const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6); // Trim to 60% to avoid constant re-trimming
+const DEV_LOG_DIR = path.join(PROJECT_ROOT, ".peoples-dev-logs");
+const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024;
+const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6);
+const MAX_REQUEST_BYTES = 256 * 1024;
+const OBSERVER_ENDPOINT = "/__peoples_dev__/telemetry";
+const OBSERVER_SCRIPT = "/__peoples_dev__/observer.js";
 
-type LogSource = "browserConsole" | "networkRequests" | "sessionReplay";
+type TelemetrySource = "console" | "network" | "session";
 
-function ensureLogDir() {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
+type TelemetryPayload = {
+  version?: unknown;
+  consoleLogs?: unknown;
+  networkRequests?: unknown;
+  sessionEvents?: unknown;
+};
+
+function ensureDevLogDir() {
+  if (!fs.existsSync(DEV_LOG_DIR)) {
+    fs.mkdirSync(DEV_LOG_DIR, { recursive: true });
   }
 }
 
-function trimLogFile(logPath: string, maxSize: number) {
+function trimLogFile(logPath: string) {
   try {
-    if (!fs.existsSync(logPath) || fs.statSync(logPath).size <= maxSize) {
+    if (
+      !fs.existsSync(logPath) ||
+      fs.statSync(logPath).size <= MAX_LOG_SIZE_BYTES
+    ) {
       return;
     }
 
@@ -39,63 +46,54 @@ function trimLogFile(logPath: string, maxSize: number) {
     const keptLines: string[] = [];
     let keptBytes = 0;
 
-    // Keep newest lines (from end) that fit within 60% of maxSize
-    const targetSize = TRIM_TARGET_BYTES;
     for (let i = lines.length - 1; i >= 0; i--) {
       const lineBytes = Buffer.byteLength(`${lines[i]}\n`, "utf-8");
-      if (keptBytes + lineBytes > targetSize) break;
+      if (keptBytes + lineBytes > TRIM_TARGET_BYTES) break;
       keptLines.unshift(lines[i]);
       keptBytes += lineBytes;
     }
 
     fs.writeFileSync(logPath, keptLines.join("\n"), "utf-8");
   } catch {
-    /* ignore trim errors */
+    // Development telemetry is best-effort and must not affect app execution.
   }
 }
 
-function writeToLogFile(source: LogSource, entries: unknown[]) {
+function writeTelemetry(source: TelemetrySource, entries: unknown[]) {
   if (entries.length === 0) return;
 
-  ensureLogDir();
-  const logPath = path.join(LOG_DIR, `${source}.log`);
-
-  // Format entries with timestamps
-  const lines = entries.map(entry => {
-    const ts = new Date().toISOString();
-    return `[${ts}] ${JSON.stringify(entry)}`;
-  });
-
-  // Append to log file
+  ensureDevLogDir();
+  const logPath = path.join(DEV_LOG_DIR, `${source}.jsonl`);
+  const lines = entries.map(entry =>
+    JSON.stringify({ at: new Date().toISOString(), entry })
+  );
   fs.appendFileSync(logPath, `${lines.join("\n")}\n`, "utf-8");
-
-  // Trim if exceeds max size
-  trimLogFile(logPath, MAX_LOG_SIZE_BYTES);
+  trimLogFile(logPath);
 }
 
-/**
- * Vite plugin to collect browser debug logs
- * - POST /__manus__/logs: Browser sends logs, written directly to files
- * - Files: browserConsole.log, networkRequests.log, sessionReplay.log
- * - Auto-trimmed when exceeding 1MB (keeps newest entries)
- */
-function vitePluginManusDebugCollector(): Plugin {
+function readTelemetryEntries(value: unknown): unknown[] {
+  return Array.isArray(value) ? value.slice(0, 500) : [];
+}
+
+function handleTelemetryPayload(payload: TelemetryPayload) {
+  writeTelemetry("console", readTelemetryEntries(payload.consoleLogs));
+  writeTelemetry("network", readTelemetryEntries(payload.networkRequests));
+  writeTelemetry("session", readTelemetryEntries(payload.sessionEvents));
+}
+
+function peoplesDevObserverPlugin(): Plugin {
   return {
-    name: "manus-debug-collector",
+    name: "peoples-dev-observer",
 
     transformIndexHtml(html) {
-      if (process.env.NODE_ENV === "production") {
-        return html;
-      }
+      if (process.env.NODE_ENV === "production") return html;
+
       return {
         html,
         tags: [
           {
             tag: "script",
-            attrs: {
-              src: "/__manus__/debug-collector.js",
-              defer: true,
-            },
+            attrs: { src: OBSERVER_SCRIPT, defer: true },
             injectTo: "head",
           },
         ],
@@ -103,56 +101,60 @@ function vitePluginManusDebugCollector(): Plugin {
     },
 
     configureServer(server: ViteDevServer) {
-      // POST /__manus__/logs: Browser sends logs (written directly to files)
-      server.middlewares.use("/__manus__/logs", (req, res, next) => {
-        if (req.method !== "POST") {
-          return next();
-        }
-
-        const handlePayload = (payload: any) => {
-          // Write logs directly to files
-          if (payload.consoleLogs?.length > 0) {
-            writeToLogFile("browserConsole", payload.consoleLogs);
-          }
-          if (payload.networkRequests?.length > 0) {
-            writeToLogFile("networkRequests", payload.networkRequests);
-          }
-          if (payload.sessionEvents?.length > 0) {
-            writeToLogFile("sessionReplay", payload.sessionEvents);
-          }
-
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ success: true }));
-        };
-
-        const reqBody = (req as { body?: unknown }).body;
-        if (reqBody && typeof reqBody === "object") {
-          try {
-            handlePayload(reqBody);
-          } catch (e) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: String(e) }));
-          }
-          return;
-        }
+      server.middlewares.use(OBSERVER_ENDPOINT, (req, res, next) => {
+        if (req.method !== "POST") return next();
 
         let body = "";
+        let receivedBytes = 0;
+        let rejected = false;
+
         req.on("data", chunk => {
-          body += chunk.toString();
+          if (rejected) return;
+          const text = chunk.toString();
+          receivedBytes += Buffer.byteLength(text, "utf-8");
+
+          if (receivedBytes > MAX_REQUEST_BYTES) {
+            rejected = true;
+            res.writeHead(413, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: "Payload too large" }));
+            req.destroy();
+            return;
+          }
+
+          body += text;
         });
 
         req.on("end", () => {
+          if (rejected) return;
+
           try {
-            const payload = JSON.parse(body);
-            handlePayload(payload);
-          } catch (e) {
+            const parsed = JSON.parse(body) as unknown;
+            if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+              throw new Error("Telemetry payload must be an object");
+            }
+
+            handleTelemetryPayload(parsed as TelemetryPayload);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true }));
+          } catch (error) {
             res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: String(e) }));
+            res.end(
+              JSON.stringify({ success: false, error: String(error) })
+            );
           }
         });
       });
     },
   };
+}
+
+function configuredDevHosts(): string[] {
+  const extraHosts = (process.env.PEOPLES_VITE_ALLOWED_HOSTS ?? "")
+    .split(",")
+    .map(host => host.trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(["localhost", "127.0.0.1", ...extraHosts]));
 }
 
 const isStaticPagesBuild = process.env.PEOPLES_STATIC_PAGES === "true";
@@ -161,9 +163,7 @@ const plugins: PluginOption[] = [
   react(),
   tailwindcss(),
   jsxLocPlugin(),
-  ...(isStaticPagesBuild
-    ? []
-    : [vitePluginManusRuntime(), vitePluginManusDebugCollector()]),
+  ...(isStaticPagesBuild ? [] : [peoplesDevObserverPlugin()]),
 ];
 
 export default defineConfig({
@@ -197,15 +197,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    allowedHosts: [
-      ".manuspre.computer",
-      ".manus.computer",
-      ".manus-asia.computer",
-      ".manuscomputer.ai",
-      ".manusvm.computer",
-      "localhost",
-      "127.0.0.1",
-    ],
+    allowedHosts: configuredDevHosts(),
     fs: {
       strict: true,
       deny: ["**/.*"],
