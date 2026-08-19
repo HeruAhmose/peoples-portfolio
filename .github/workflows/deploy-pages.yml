@@ -68,7 +68,10 @@ jobs:
             exit 1
           fi
 
-          grep -q '/peoples-portfolio/assets/' dist/public/index.html
+          if ! grep -Eq '(src|href)="/peoples-portfolio/assets/' dist/public/index.html; then
+            echo "::error::Expected /peoples-portfolio/-prefixed Vite asset reference not found."
+            exit 1
+          fi
 
           if grep -RIn 'manus\.computer' dist/public \
             --include='*.html' \
