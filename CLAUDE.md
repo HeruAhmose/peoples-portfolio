@@ -2,6 +2,35 @@
 
 Context for Claude Code. Read before touching anything.
 
+## The two-repo architecture — settled
+
+**`peoples-portfolio` is the entry gate. `trai-portfolio` is the estate.**
+
+A visitor lands here. The opening sequence names all seven organs; two have a
+page in the gate, five open outward into the estate. No organ is a dead end.
+
+| Organ                              | Destination                  |
+| ---------------------------------- | ---------------------------- |
+| Skeleton · Tamerian Materials      | gate `/materials`            |
+| Heart · True Melange Φ             | blue-gold-daily world        |
+| Brain · Queen Califia              | queencalifia-cyberai.web.app |
+| Vessels · Mela Nation              | estate `/mela-nation`        |
+| Skin · MeLaNiNa                    | estate `/melanina`           |
+| Hands · TechBridge Collective      | gate `/community`            |
+| Lymphatic · The Peoples Foundation | estate `/peoples-foundation` |
+
+What this means in practice:
+
+- **Keep the gate lean.** Depth belongs in the estate. Do not port estate pages
+  here; link to them. If a page here grows past the point of being an
+  introduction, that is a signal it belongs in the estate.
+- **`shared/organismFacts.ts` is canonical for the whole estate.** Claim data
+  lives here and nowhere else. If the estate needs a status string, it consumes
+  this — it does not keep a parallel copy.
+- **`client/src/lib/organism.ts` holds the routing.** `route` is a page in this
+  repo; `external` is a destination outside it. Every organ must have at least
+  one. A `null` for both is a dead end and a bug.
+
 ## What this is
 
 Jonathan Peoples' portfolio, and the front door for TRAI — the Tamerian
