@@ -6,7 +6,6 @@ import {
   buildClaimDiagramSvg,
   CLAIM_TYPE_LABELS,
   type ClaimCategory,
-  type ClaimType,
   type PatentClaim,
 } from "@shared/patentClaims";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
@@ -39,7 +38,6 @@ export default function PatentClaimsExplorer() {
   const [selectedCategory, setSelectedCategory] = useState<
     ClaimCategory | "all"
   >("all");
-  const [selectedType, setSelectedType] = useState<ClaimType | "all">("all");
   const [search, setSearch] = useState("");
 
   const categoryGroups = useMemo(
@@ -56,13 +54,12 @@ export default function PatentClaimsExplorer() {
     return PATENT_CLAIMS.filter(c => {
       if (selectedCategory !== "all" && c.category !== selectedCategory)
         return false;
-      if (selectedType !== "all" && c.claimType !== selectedType) return false;
       if (!q) return true;
       const blob =
         `${c.number} ${c.title} ${c.description} ${c.technicalSpecs.join(" ")} ${c.claimType}`.toLowerCase();
       return blob.includes(q);
     });
-  }, [search, selectedCategory, selectedType]);
+  }, [search, selectedCategory]);
 
   const toggleExpand = (claim: PatentClaim) => {
     const next = expandedClaim === claim.number ? null : claim.number;
@@ -72,7 +69,7 @@ export default function PatentClaimsExplorer() {
 
   useEffect(() => {
     setExpandedClaim(null);
-  }, [search, selectedCategory, selectedType]);
+  }, [search, selectedCategory]);
 
   return (
     <motion.div
@@ -109,27 +106,6 @@ export default function PatentClaimsExplorer() {
               onClick={() => setSelectedCategory(cat)}
               label={`${cat.toUpperCase()} (${categoryGroups[cat].length})`}
               activeClassName={`${categoryColors[cat].bg} ${categoryColors[cat].text} ${categoryColors[cat].border} border-current`}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-        <span className="text-xs font-mono text-muted-foreground tracking-widest">
-          TYPE
-        </span>
-        <div className="flex gap-2 flex-wrap">
-          <FilterChip
-            active={selectedType === "all"}
-            onClick={() => setSelectedType("all")}
-            label="ALL TYPES"
-          />
-          {(Object.keys(CLAIM_TYPE_LABELS) as ClaimType[]).map(t => (
-            <FilterChip
-              key={t}
-              active={selectedType === t}
-              onClick={() => setSelectedType(t)}
-              label={CLAIM_TYPE_LABELS[t].toUpperCase()}
             />
           ))}
         </div>
