@@ -35,6 +35,8 @@ uniform vec3  u_col[7];
 uniform float u_core;
 uniform float u_beat;
 uniform float u_fade;
+/* 1.0 = this organ has a page in the gate, 0.0 = it opens into the estate. */
+uniform float u_gate[7];
 
 out vec4 fragColor;
 
@@ -135,7 +137,21 @@ void main(){
     float halo  = exp(-d * 9.0) * g * 0.30;
     float ringD = abs(d - 0.028 - 0.010 * g);
     float ring  = smoothstep(0.0030, 0.0, ringD) * g;
-    col += u_col[i] * (flare * 1.25 + halo + ring * 0.9);
+
+    /* A doorway is a ring with a gap in it. Organs that live in the gate close
+       their ring; organs that open into the estate carry an aperture facing
+       radially outward, away from the core — the opening points where the
+       visitor would travel. */
+    vec2  outward = normalize(p);
+    vec2  rel     = normalize(uv - p + vec2(1e-6));
+    float facing  = dot(rel, outward);          /* 1.0 directly outward */
+    float aperture = smoothstep(0.72, 0.95, facing);
+    ring *= mix(1.0 - aperture, 1.0, u_gate[i]);
+
+    /* The aperture glows: light spills out of the opening. */
+    float spill = aperture * exp(-d * 16.0) * g * (1.0 - u_gate[i]);
+
+    col += u_col[i] * (flare * 1.25 + halo + ring * 0.9 + spill * 0.55);
   }
 
   /* Core: the flywheel. */
@@ -318,6 +334,7 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
       fade: uloc("u_fade"),
       ignite: uloc("u_ignite"),
       col: uloc("u_col"),
+      gate: uloc("u_gate"),
     };
 
     const colors = new Float32Array(21);
@@ -328,6 +345,11 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
       colors[i * 3 + 2] = b;
     });
     gl.uniform3fv(U.col, colors);
+
+    // Static for the life of the sequence: an organ either has a page here or
+    // it opens outward. Set once rather than per frame.
+    const gateFlags = new Float32Array(ORGANS.map(o => (o.route ? 1 : 0)));
+    gl.uniform1fv(U.gate, gateFlags);
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const resize = () => {
@@ -471,6 +493,9 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
                 }}
               >
                 {o.num} · {o.role.toUpperCase()}
+                {!o.route && (
+                  <span style={{ opacity: 0.75 }}> · OPENS OUT</span>
+                )}
               </div>
               <div
                 style={{
