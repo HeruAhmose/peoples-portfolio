@@ -100,7 +100,7 @@ export const ORGANS: Organ[] = [
     name: "Mela Nation",
     domain: "Mobility sovereignty",
     route: null,
-    external: null,
+    external: "https://heruahmose.github.io/trai-portfolio/mela-nation",
     hex: "#1f66ad",
   },
   {
@@ -112,7 +112,7 @@ export const ORGANS: Organ[] = [
     name: "MeLaNiNa",
     domain: "Identity sovereignty",
     route: null,
-    external: null,
+    external: "https://heruahmose.github.io/trai-portfolio/melanina",
     hex: "#d98758",
   },
   {
@@ -136,7 +136,7 @@ export const ORGANS: Organ[] = [
     name: "The Peoples Foundation",
     domain: "Regenerative return",
     route: null,
-    external: null,
+    external: "https://heruahmose.github.io/trai-portfolio/peoples-foundation",
     hex: "#f0cc79",
   },
 ];

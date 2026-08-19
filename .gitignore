@@ -111,3 +111,5 @@ temp/
 
 # Local first-party development telemetry
 .peoples-dev-logs/
+
+.claude/
