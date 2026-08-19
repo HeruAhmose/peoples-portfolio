@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { HolographicText } from "@/components/AdvancedVisuals";
+import { CompositeConfigurator } from "@/components/CompositeConfigurator";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 import { TAMERIAN_PATENT } from "@shared/siteFacts";
 
@@ -362,6 +363,20 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
               </motion.div>
             ))}
           </div>
+        </motion.div>
+      </section>
+
+      {/* Composite Configurator */}
+      <section className="container mx-auto px-4 py-16 border-t border-border">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.75 }}
+        >
+          <h2 className="text-2xl font-bold text-foreground mb-8">
+            DESIGN ENVELOPE
+          </h2>
+          <CompositeConfigurator />
         </motion.div>
       </section>
 
