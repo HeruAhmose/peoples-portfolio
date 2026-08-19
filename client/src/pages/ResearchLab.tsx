@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { HolographicText } from "@/components/AdvancedVisuals";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
 import { TAMERIAN_PATENT } from "@shared/siteFacts";
+import CompositeConfigurator from "@/components/CompositeConfigurator";
 
 /** Preprint PDF is not bundled in-repo; live narrative and updates ship on Tamerian. */
 const PREPRINT_LIVE_URL = "https://tamerian-materials.com/";
@@ -36,8 +37,8 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
           </h1>
           <p className="text-xl text-foreground/80 max-w-2xl">
             Preprint publications, experimental validation frameworks, and
-            scientific hypothesis development — companion to the public Tamerian
-            Materials narrative at{" "}
+            scientific hypothesis development â€” companion to the public
+            Tamerian Materials narrative at{" "}
             <a
               href="https://tamerian-materials.com/"
               target="_blank"
@@ -69,12 +70,13 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
                 Composites
               </h3>
               <p className="mb-4 font-mono text-sm text-muted-foreground">
-                Peoples (2026) — Preprint — Not peer reviewed
+                Peoples (2026) â€” Preprint â€” Not peer reviewed
               </p>
               <p className="text-xs leading-relaxed text-muted-foreground">
                 Patent portfolio on the public site:{" "}
-                {TAMERIAN_PATENT.publicStatus} · {TAMERIAN_PATENT.filedDate} ·{" "}
-                {TAMERIAN_PATENT.claimCount} claims · {TAMERIAN_PATENT.status} (
+                {TAMERIAN_PATENT.publicStatus} Â· {TAMERIAN_PATENT.filedDate} Â·{" "}
+                {TAMERIAN_PATENT.claimCount} claims Â· {TAMERIAN_PATENT.status}{" "}
+                (
                 <a
                   href="https://tamerian-materials.com/"
                   target="_blank"
@@ -104,9 +106,9 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
               <h4 className="font-bold text-foreground mb-3">HYPOTHESIS</h4>
               <p className="text-foreground/80 leading-relaxed">
                 A structured composite integrating five functional
-                constituents—a hemp-derived carbonaceous matrix, quartz,
+                constituentsâ€”a hemp-derived carbonaceous matrix, quartz,
                 tourmaline, magnetite, and rare-earth-doped crystalline
-                particles within a polymer binder—may exhibit system-level
+                particles within a polymer binderâ€”may exhibit system-level
                 multi-modal transduction (mechanical, thermal, magnetic, and
                 optical) that is not available from any single constituent,
                 provided that the coupling geometry is deliberately engineered.
@@ -195,6 +197,13 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
             ))}
           </div>
         </motion.div>
+      </section>
+      {/* Interactive design-envelope instrument */}
+      <section
+        id="composite-configurator"
+        className="container mx-auto scroll-mt-24 px-4 py-16 border-t border-border"
+      >
+        <CompositeConfigurator />
       </section>
 
       {/* Experimental Validation Program */}
@@ -285,14 +294,14 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
               {
                 name: "Hemp-Derived Carbonaceous Matrix",
                 properties: [
-                  "Pyrolysis at 700–1400°C",
-                  "Conductivity: 10²–10⁶ S/m",
-                  "Surface area: >1500 m²/g",
-                  "Tunable sp²/sp³ bonding",
+                  "Pyrolysis at 700â€“1400Â°C",
+                  "Conductivity: 10Â²â€“10â¶ S/m",
+                  "Surface area: >1500 mÂ²/g",
+                  "Tunable spÂ²/spÂ³ bonding",
                 ],
               },
               {
-                name: "Quartz (SiO₂)",
+                name: "Quartz (SiOâ‚‚)",
                 properties: [
                   "Direct piezoelectric effect",
                   "High mechanical Q-factor",
@@ -310,9 +319,9 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
                 ],
               },
               {
-                name: "Magnetite (Fe₃O₄)",
+                name: "Magnetite (Feâ‚ƒOâ‚„)",
                 properties: [
-                  "Ferrimagnetic order (T_C ≈ 850–860 K)",
+                  "Ferrimagnetic order (T_C â‰ˆ 850â€“860 K)",
                   "Half-metallic properties",
                   "Spin-orbit coupling dominant",
                   "~21% spin-to-lattice conversion",
@@ -354,7 +363,7 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
                       key={pidx}
                       className="flex gap-2 text-sm text-foreground/80"
                     >
-                      <span className="text-primary">•</span>
+                      <span className="text-primary">â€¢</span>
                       <span>{prop}</span>
                     </li>
                   ))}
@@ -419,8 +428,8 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
                 Patent claims explorer
               </h3>
               <p className="text-sm text-muted-foreground">
-                Open the interactive 25-claim explorer under Materials → Patent
-                Claims.
+                Open the interactive 25-claim explorer under Materials â†’
+                Patent Claims.
               </p>
             </Link>
             <a
@@ -444,7 +453,7 @@ export default function ResearchLab({ activeSection }: ResearchLabProps) {
                 Collaboration &amp; community
               </h3>
               <p className="text-sm text-muted-foreground">
-                TechBridge Collective — digital equity, help desk model, and
+                TechBridge Collective â€” digital equity, help desk model, and
                 partnership pathways (opens in a new tab).
               </p>
             </a>
