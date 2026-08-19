@@ -15,10 +15,10 @@ import { ORGANS, RING_ANGLES } from "@/lib/organism";
  * visible control.
  */
 
-const FULL_MS = 8200;
-const SHORT_MS = 3400;
-const NODE_GAP = 600;
-const FIRST_NODE_AT = 700;
+const FULL_MS = 3800;
+const SHORT_MS = 1600;
+const NODE_GAP = 200;
+const FIRST_NODE_AT = 220;
 
 const VERT = `#version 300 es
 in vec2 a_pos;
@@ -121,17 +121,15 @@ void main(){
     col += ec * smoothstep(0.010, 0.0, d) * sig * 1.6;
   }
 
-  /* Spokes to the core: the return path. Only after the circuit closes. */
-  for (int i = 0; i < 7; i++){
-    vec2 a = nodePos(i);
-    float d = sdSeg(uv, a, vec2(0.0));
-    col += u_col[i] * smoothstep(0.0030, 0.0, d) * u_core * 0.30;
-  }
-
-  /* Nodes. */
+  /* Nodes, and the spokes that carry the return path back to the core.
+     Folded into one pass: two loops over the same seven positions cost twice
+     the trigonometry for no visual difference. */
   for (int i = 0; i < 7; i++){
     vec2 p = nodePos(i);
     float d = length(uv - p);
+
+    float ds = sdSeg(uv, p, vec2(0.0));
+    col += u_col[i] * smoothstep(0.0030, 0.0, ds) * u_core * 0.30;
     float g = u_ignite[i];
     float flare = exp(-d * 44.0) * g;
     float halo  = exp(-d * 9.0) * g * 0.30;
@@ -351,7 +349,9 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
     const gateFlags = new Float32Array(ORGANS.map(o => (o.route ? 1 : 0)));
     gl.uniform1fv(U.gate, gateFlags);
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // 2x on an integrated GPU is the usual cause of a soft frame rate here, and
+    // the lattice is line work — it costs little visually to render at 1.5x.
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const resize = () => {
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
@@ -374,7 +374,7 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
 
       for (let i = 0; i < 7; i++) {
         const at = (FIRST_NODE_AT + i * NODE_GAP) * scale;
-        const dur = 520 * scale;
+        const dur = 360 * scale;
         ignite[i] = easeOutCubic(Math.max(0, Math.min((t - at) / dur, 1)));
       }
 
@@ -386,20 +386,20 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
 
       const coreAt = (FIRST_NODE_AT + 7 * NODE_GAP) * scale;
       const core = easeOutCubic(
-        Math.max(0, Math.min((t - coreAt) / (700 * scale), 1))
+        Math.max(0, Math.min((t - coreAt) / (420 * scale), 1))
       );
       const beat = easeInOutCubic(
-        Math.max(0, Math.min((t - coreAt - 180 * scale) / (1500 * scale), 1))
+        Math.max(0, Math.min((t - coreAt - 120 * scale) / (900 * scale), 1))
       );
 
-      const wordAt = coreAt + 800 * scale;
+      const wordAt = coreAt + 460 * scale;
       if (t > wordAt && stageRef.current === "lattice") {
         stageRef.current = "wordmark";
         setStage("wordmark");
       }
 
-      const outAt = total - 1000 * scale;
-      const fade = t > outAt ? Math.max(0, 1 - (t - outAt) / (900 * scale)) : 1;
+      const outAt = total - 900 * scale;
+      const fade = t > outAt ? Math.max(0, 1 - (t - outAt) / (800 * scale)) : 1;
 
       gl!.uniform1f(U.time, t / 1000);
       gl!.uniform1f(U.prog, p);
