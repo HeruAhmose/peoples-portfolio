@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
 /**
  * CompositeConfigurator — the Research Lab's working instrument.
@@ -80,6 +81,7 @@ function fmtSI(v: number): string {
 }
 
 export function CompositeConfigurator() {
+  const reduceMotion = !!useReducedMotion();
   const [tempC, setTempC] = useState(1050);
   const [loading, setLoading] = useState(55); // vol% carbon matrix, 40–70
   const [active, setActive] = useState<Record<Constituent, boolean>>({
@@ -167,6 +169,7 @@ export function CompositeConfigurator() {
               onChange={e => setTempC(Number(e.target.value))}
               className="w-full accent-[#d6a33a]"
               aria-describedby="pyrolysis-range"
+              aria-valuetext={`${tempC} degrees Celsius`}
             />
             <p id="pyrolysis-range" className="mt-1 text-[11px] text-white/35">
               700–1400 °C, the range stated in the filing
@@ -203,6 +206,7 @@ export function CompositeConfigurator() {
               onChange={e => setLoading(Number(e.target.value))}
               className="w-full accent-[#d6a33a]"
               aria-describedby="loading-range"
+              aria-valuetext={`${loading} percent by volume`}
             />
             <p id="loading-range" className="mt-1 text-[11px] text-white/35">
               40–70 vol%, per claim 1
@@ -259,18 +263,21 @@ export function CompositeConfigurator() {
             value={`${fmtSI(derived.sigma)} S/m`}
             note="log-interpolated across 10²–10⁶ S/m"
             fill={(Math.log10(derived.sigma) - 2) / 4}
+            reduceMotion={reduceMotion}
           />
           <Readout
             label="sp² / sp³ bonding ratio"
             value={`${(derived.sp2 * 100).toFixed(0)}% sp²`}
             note="graphitic ordering rises with temperature"
             fill={derived.sp2}
+            reduceMotion={reduceMotion}
           />
           <Readout
             label="Specific surface area"
             value={`${derived.ssa.toFixed(0)} m²/g`}
             note="peaks mid-range; densifies above ~1200 °C"
             fill={derived.ssa / 1700}
+            reduceMotion={reduceMotion}
           />
           <Readout
             label="Transduction modes enabled"
@@ -281,6 +288,7 @@ export function CompositeConfigurator() {
                 : "no inclusions selected"
             }
             fill={derived.modes / 4}
+            reduceMotion={reduceMotion}
           />
 
           <div className="rounded border border-white/10 bg-white/[0.03] p-3">
@@ -312,11 +320,13 @@ function Readout({
   value,
   note,
   fill,
+  reduceMotion,
 }: {
   label: string;
   value: string;
   note: string;
   fill: number;
+  reduceMotion: boolean;
 }) {
   const pct = Math.max(0, Math.min(1, fill)) * 100;
   return (
@@ -335,7 +345,11 @@ function Readout({
         role="presentation"
       >
         <div
-          className="h-full rounded-full transition-[width] duration-300 ease-out"
+          className={
+            reduceMotion
+              ? "h-full rounded-full"
+              : "h-full rounded-full transition-[width] duration-300 ease-out"
+          }
           style={{
             width: `${pct}%`,
             background: "linear-gradient(90deg,#a8522f,#d6a33a,#f0cc79)",

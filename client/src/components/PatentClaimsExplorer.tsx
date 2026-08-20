@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ChevronDown, Search } from "lucide-react";
 import {
   PATENT_CLAIMS,
@@ -33,6 +33,7 @@ const categoryColors: Record<
 };
 
 export default function PatentClaimsExplorer() {
+  const reduceMotion = !!useReducedMotion();
   const { logPatentClaimExpand } = usePortfolioAnalytics();
   const [expandedClaim, setExpandedClaim] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<
@@ -89,6 +90,11 @@ export default function PatentClaimsExplorer() {
         />
       </div>
 
+      <p className="sr-only" role="status" aria-live="polite">
+        {filteredClaims.length} claim{filteredClaims.length === 1 ? "" : "s"}{" "}
+        match{filteredClaims.length === 1 ? "es" : ""} the current filters.
+      </p>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <span className="text-xs font-mono text-muted-foreground tracking-widest">
           CATEGORY
@@ -98,6 +104,7 @@ export default function PatentClaimsExplorer() {
             active={selectedCategory === "all"}
             onClick={() => setSelectedCategory("all")}
             label={`ALL (${PATENT_CLAIMS.length})`}
+            reduceMotion={reduceMotion}
           />
           {(Object.keys(categoryColors) as ClaimCategory[]).map(cat => (
             <FilterChip
@@ -106,6 +113,7 @@ export default function PatentClaimsExplorer() {
               onClick={() => setSelectedCategory(cat)}
               label={`${cat.toUpperCase()} (${categoryGroups[cat].length})`}
               activeClassName={`${categoryColors[cat].bg} ${categoryColors[cat].text} ${categoryColors[cat].border} border-current`}
+              reduceMotion={reduceMotion}
             />
           ))}
         </div>
@@ -125,13 +133,15 @@ export default function PatentClaimsExplorer() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                transition={{ delay: idx * 0.02 }}
+                transition={{ delay: reduceMotion ? 0 : idx * 0.02 }}
               >
                 <motion.button
                   type="button"
                   onClick={() => toggleExpand(claim)}
+                  aria-expanded={isExpanded}
+                  aria-controls={`claim-${claim.number}-details`}
                   className={`w-full p-4 rounded border text-left transition-all ${colors.bg} ${colors.border} hover:border-primary`}
-                  whileHover={{ x: 4 }}
+                  whileHover={reduceMotion ? undefined : { x: 4 }}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -157,7 +167,7 @@ export default function PatentClaimsExplorer() {
                     </div>
                     <motion.div
                       animate={{ rotate: isExpanded ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: reduceMotion ? 0 : 0.2 }}
                     >
                       <ChevronDown
                         className={`w-5 h-5 shrink-0 ${colors.text}`}
@@ -168,10 +178,11 @@ export default function PatentClaimsExplorer() {
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div
+                        id={`claim-${claim.number}-details`}
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: reduceMotion ? 0 : 0.3 }}
                         className="mt-4 pt-4 border-t border-current border-opacity-20 space-y-4"
                       >
                         <div>
@@ -247,11 +258,13 @@ function FilterChip({
   active,
   onClick,
   activeClassName,
+  reduceMotion,
 }: {
   label: string;
   active: boolean;
   onClick: () => void;
   activeClassName?: string;
+  reduceMotion: boolean;
 }) {
   const activeStyles = active
     ? (activeClassName ?? "bg-primary text-background border-primary")
@@ -260,9 +273,10 @@ function FilterChip({
     <motion.button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`px-3 py-1.5 rounded border font-mono text-[10px] sm:text-xs tracking-widest transition-all ${activeStyles}`}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
+      whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+      whileTap={reduceMotion ? undefined : { scale: 0.97 }}
     >
       {label}
     </motion.button>
