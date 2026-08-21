@@ -86,11 +86,11 @@ describe("organ graph", () => {
     }
   });
 
-  it("pins the verified live Tamerian and True Melange worlds", () => {
+  it("pins the verified live Tamerian and True Mélange worlds", () => {
     expect(ORGANS.find(o => o.name === "Tamerian Materials")?.external).toBe(
       "https://tamerian-materials.com/"
     );
-    expect(ORGANS.find(o => o.name === "True Melange Φ")?.external).toBe(
+    expect(ORGANS.find(o => o.name === "True Mélange Φ")?.external).toBe(
       "https://heruahmose.github.io/blue-gold-daily/layers.html"
     );
   });
