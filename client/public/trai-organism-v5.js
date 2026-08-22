@@ -1032,7 +1032,10 @@ html[data-trai-v5-internal="true"]::view-transition-new(root) {
     button.style.setProperty("--world-accent", world.accent || "#d6a33a");
     button.innerHTML =
       '<span class="trai-v5-world__index">' +
-      String(index + 1).padStart(2, "0") +
+      // Canonical organ number from the manifest. Falls back to position only
+      // for a world with no index, so numbering no longer shifts depending on
+      // which site the portal is opened from.
+      escapeHtml(world.index || String(index + 1).padStart(2, "0")) +
       (world.id === SELF ? " · CURRENT" : "") +
       "</span>" +
       "<strong>" +

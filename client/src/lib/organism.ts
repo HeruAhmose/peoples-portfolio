@@ -73,7 +73,7 @@ export const ORGANS: Organ[] = [
     order: 1,
     num: "02",
     role: "Heart",
-    name: "True Melange \u03a6",
+    name: "True Mélange \u03a6",
     domain: "Biological sovereignty",
     route: null,
     external: "https://heruahmose.github.io/blue-gold-daily/layers.html",
