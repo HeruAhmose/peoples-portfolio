@@ -44,7 +44,7 @@ const HK_KNOWLEDGE: Entry[] = [
   },
   {
     match: /melange|saffron|blue.?gold|beverage|drink|\bphi\b|cbd|thc|heart/i,
-    answer: `True Melange Φ is the heart. ${organStatus("true-melange")}. First product is Blue-Gold Daily, a 12 oz can with 28 mg Affron® saffron at ISO 3632 Category I. Hemp content is hempseed oil and hemp seed protein only — no CBD, no THC. It has no internal page on this site yet; the live True Melange / Blue Gold world is at https://heruahmose.github.io/blue-gold-daily/layers.html.`,
+    answer: `True Mélange Φ is the heart. ${organStatus("true-melange")}. First product is Blue-Gold Daily, a 12 oz can with 28 mg Affron® saffron at ISO 3632 Category I. Hemp content is hempseed oil and hemp seed protein only — no CBD, no THC. It has no internal page on this site yet; the live True Mélange / Blue Gold world is at https://heruahmose.github.io/blue-gold-daily/layers.html.`,
   },
   {
     match: /califia|cyber|secur|\bai\b|brain|threat|attack/i,

@@ -12,7 +12,7 @@ page in the gate, five open outward into the estate. No organ is a dead end.
 | Organ                              | Destination                  |
 | ---------------------------------- | ---------------------------- |
 | Skeleton · Tamerian Materials      | gate `/materials`            |
-| Heart · True Melange Φ             | blue-gold-daily world        |
+| Heart · True Mélange Φ             | blue-gold-daily world        |
 | Brain · Queen Califia              | queencalifia-cyberai.web.app |
 | Vessels · Mela Nation              | estate `/mela-nation`        |
 | Skin · MeLaNiNa                    | estate `/melanina`           |
