@@ -12,13 +12,13 @@ This branch is a **Vite 7 + React 19** client, **Express** server, **tRPC** API,
 
 Copy `.env.example` to `.env` and set values. The server loads `.env` then `.env.local` (override).
 
-| Area            | Variables (see `.env.example`)                    |
-| --------------- | ------------------------------------------------- |
-| Server          | `PORT`, `NODE_ENV`, `DATABASE_URL`                |
-| OAuth / session | As in `.env.example` if you use Manus/OAuth flows |
-| Anthropic       | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`            |
-| Email           | `SMTP_*`, `OWNER_EMAIL`                           |
-| S3 (optional)   | `S3_*` for asset uploads if enabled               |
+| Area            | Variables (see `.env.example`)                  |
+| --------------- | ----------------------------------------------- |
+| Server          | `PORT`, `NODE_ENV`, `DATABASE_URL`              |
+| OAuth / session | As in `.env.example` if you use the OAuth flows |
+| Anthropic       | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`          |
+| Email           | `SMTP_*`, `OWNER_EMAIL`                         |
+| S3 (optional)   | `S3_*` for asset uploads if enabled             |
 
 Never commit real secrets.
 
