@@ -1,10 +1,5 @@
 export type FounderMediaChapter =
-  | "hero"
-  | "origins"
-  | "football"
-  | "track"
-  | "navy"
-  | "present";
+  "hero" | "origins" | "football" | "track" | "navy" | "present";
 
 export interface FounderMediaAsset {
   id: string;
