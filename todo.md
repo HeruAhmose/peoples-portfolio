@@ -1,6 +1,6 @@
 # Peoples Portfolio - Project TODO
 
-_Checkpoint exports (Manus): On this workspace **all** `peoples-portfolio (1).zip` … `(6).zip` plus `peoples-portfolio.zip` are **byte-identical** (same size and SHA-256). If your `(6).zip` is meant to differ from `(5).zip`, verify with `Get-FileHash` on your machine and replace the file in Downloads — duplicate saves are common._
+_Checkpoint exports: On this workspace **all** `peoples-portfolio (1).zip` … `(6).zip` plus `peoples-portfolio.zip` are **byte-identical** (same size and SHA-256). If your `(6).zip` is meant to differ from `(5).zip`, verify with `Get-FileHash` on your machine and replace the file in Downloads — duplicate saves are common._
 
 _Unpacked, that export **is not the same as this repository**: **~52 tracked paths** differ (template vs evolved app). The repo keeps the real portfolio stack: full **Drizzle** schema (`visitorEvents`, `inquiries`, …), **`portfolioRouter` / `hkRouter`**, Claude/email, **wouter** pathname routing, lazy routes, **holographic / particle / neural** layers, mobile nav, **prefers-reduced-motion**, etc. **Never wholesale-copy** from a zip over `drizzle/schema.ts`, `server/routers.ts`, `server/portfolioRouter.ts`, or `server/portfolioService.ts`._
 
