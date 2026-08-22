@@ -60,7 +60,7 @@ This is a production-ready, full-stack cyberpunk portfolio with AI-powered recom
 - Node.js 22.13.0+
 - npm or pnpm
 - MySQL/TiDB database
-- Manus OAuth credentials
+- OAuth credentials (only if the OAuth block is configured)
 - Claude API key (for AI recommendations)
 
 ### Installation
@@ -152,9 +152,11 @@ peoples-portfolio/
 DATABASE_URL=mysql://user:password@host:3306/peoples_portfolio
 
 # OAuth
-VITE_APP_ID=your_manus_app_id
-OAUTH_SERVER_URL=https://api.manus.im
-VITE_OAUTH_PORTAL_URL=https://portal.manus.im
+# The approved origins for OAUTH_SERVER_URL and BUILT_IN_FORGE_API_URL are
+# enforced in server/_core/trustedOrigins.ts — that file is the source of truth.
+VITE_APP_ID=your_oauth_app_id
+OAUTH_SERVER_URL=
+VITE_OAUTH_PORTAL_URL=
 
 # API Keys
 CLAUDE_API_KEY_HL=sk-claude-...
@@ -168,9 +170,9 @@ JWT_SECRET=your_jwt_secret_key
 OWNER_NAME=Jonathan Peoples
 OWNER_OPEN_ID=your_open_id
 
-# URLs
-BUILT_IN_FORGE_API_URL=https://api.manus.im
-VITE_FRONTEND_FORGE_API_URL=https://api.manus.im
+# URLs (see server/_core/trustedOrigins.ts for the approved origins)
+BUILT_IN_FORGE_API_URL=
+VITE_FRONTEND_FORGE_API_URL=
 ```
 
 ## 📝 Database Setup
@@ -228,16 +230,7 @@ pnpm test server/__tests__/aiRecommendations.test.ts
 
 ## 🚢 Deployment Options
 
-### Option 1: Manus Platform (Recommended)
-
-```bash
-# Create checkpoint
-pnpm run checkpoint
-
-# Click Publish in Management UI
-```
-
-### Option 2: Vercel
+### Option 1: Vercel
 
 ```bash
 # Install Vercel CLI
@@ -249,7 +242,7 @@ vercel
 # Set environment variables in Vercel dashboard
 ```
 
-### Option 3: Railway
+### Option 2: Railway
 
 ```bash
 # Install Railway CLI
@@ -262,7 +255,7 @@ railway login
 railway up
 ```
 
-### Option 4: Docker
+### Option 3: Docker
 
 ```bash
 # Build image
@@ -384,11 +377,6 @@ docker run -p 3000:3000 \
 ### Monitoring
 
 ```bash
-# View logs
-tail -f .manus-logs/devserver.log
-tail -f .manus-logs/browserConsole.log
-tail -f .manus-logs/networkRequests.log
-
 # Check database
 pnpm run db:studio
 
