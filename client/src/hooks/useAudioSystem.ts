@@ -26,8 +26,9 @@ export const useAudioSystem = () => {
   // Initialize Web Audio API context
   const initAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
+      const audioContext = new (
+        window.AudioContext || (window as any).webkitAudioContext
+      )();
       audioContextRef.current = audioContext;
     }
     return audioContextRef.current;
