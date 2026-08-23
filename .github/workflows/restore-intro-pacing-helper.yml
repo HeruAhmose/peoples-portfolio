@@ -1,0 +1,51 @@
+name: Restore Intro Pacing Helper
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    if: github.head_ref == 'fix/gallery-show-dont-tell-20260822'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Restore exact main intro implementation and adjust only pacing constants
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --depth=1
+          git show origin/main:client/src/components/cinematic/LatticeIgnition.tsx > /tmp/LatticeIgnition.tsx
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('/tmp/LatticeIgnition.tsx')
+          s = p.read_text()
+          replacements = {
+              'const FULL_MS = 3800;': 'const FULL_MS = 4600;',
+              'const SHORT_MS = 1600;': 'const SHORT_MS = 1950;',
+              'const NODE_GAP = 200;': 'const NODE_GAP = 235;',
+              'const FIRST_NODE_AT = 220;': 'const FIRST_NODE_AT = 280;',
+          }
+          for old, new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'missing expected constant: {old}')
+              s = s.replace(old, new, 1)
+          p.write_text(s)
+          PY
+          cp /tmp/LatticeIgnition.tsx client/src/components/cinematic/LatticeIgnition.tsx
+          git diff -- client/src/components/cinematic/LatticeIgnition.tsx
+          test "$(git diff --numstat origin/main -- client/src/components/cinematic/LatticeIgnition.tsx | awk '{print $1+$2}')" -le 8
+      - name: Commit surgical pacing repair
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add client/src/components/cinematic/LatticeIgnition.tsx
+          git commit -m 'style(intro): slow organism ignition pacing only'
+          git push origin HEAD:${{ github.head_ref }}
