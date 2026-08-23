@@ -310,9 +310,9 @@ export default function TechMinutesDashboard({
           >
             techbridge-collective.org
           </a>
-          ). Every TechMinute® represents a life changed — a parent
-          reconnecting with their child&apos;s education, a veteran rebuilding
-          their career, a senior accessing healthcare.
+          ). Every TechMinute® represents a life changed — a parent reconnecting
+          with their child&apos;s education, a veteran rebuilding their career,
+          a senior accessing healthcare.
         </p>
       </motion.div>
     </motion.div>
