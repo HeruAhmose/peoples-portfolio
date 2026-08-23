@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: ac4ba67f27e2959c1f12153ecb81286a6f3b6d78
+          ref: 778b3b5ba73094b9abe345f41e29d08541ba6536
 
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
         with:
@@ -37,8 +37,8 @@ jobs:
           set -euo pipefail
           pnpm exec vite build --base /peoples-portfolio/
           sed -i 's/data-trai-static="false"/data-trai-static="true"/' dist/public/index.html
-          sed -i 's/__DEPLOY_COMMIT__/ac4ba67f27e2959c1f12153ecb81286a6f3b6d78/g' dist/public/index.html
-          printf '%s\n' 'ac4ba67f27e2959c1f12153ecb81286a6f3b6d78' > dist/public/deploy-commit.txt
+          sed -i 's/__DEPLOY_COMMIT__/778b3b5ba73094b9abe345f41e29d08541ba6536/g' dist/public/index.html
+          printf '%s\n' '778b3b5ba73094b9abe345f41e29d08541ba6536' > dist/public/deploy-commit.txt
           cp dist/public/index.html dist/public/404.html
           for route in materials community research gallery timeline; do
             mkdir -p "dist/public/$route"
@@ -48,7 +48,7 @@ jobs:
 
           test -s dist/public/index.html
           test -s dist/public/deploy-commit.txt
-          grep -Fq 'ac4ba67f27e2959c1f12153ecb81286a6f3b6d78' dist/public/index.html
+          grep -Fq '778b3b5ba73094b9abe345f41e29d08541ba6536' dist/public/index.html
           grep -Fq 'id="peoples-boot-fallback"' dist/public/index.html
           grep -Fq 'data-trai-static="true"' dist/public/index.html
           if grep -Eq '(src|href)="/assets/' dist/public/index.html; then exit 1; fi
@@ -72,15 +72,7 @@ jobs:
           done
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$chrome"
-          "$chrome" \
-            --headless \
-            --no-sandbox \
-            --disable-gpu \
-            --enable-logging=stderr \
-            --virtual-time-budget=12000 \
-            --dump-dom \
-            http://127.0.0.1:4173/peoples-portfolio/ \
-            > /tmp/local-dom.html 2>/tmp/chrome-stderr.log
+          "$chrome" --headless --no-sandbox --disable-gpu --enable-logging=stderr --virtual-time-budget=12000 --dump-dom http://127.0.0.1:4173/peoples-portfolio/ > /tmp/local-dom.html 2>/tmp/chrome-stderr.log
 
           {
             echo '=== DOM MARKERS ==='
@@ -124,7 +116,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected="ac4ba67f27e2959c1f12153ecb81286a6f3b6d78"
+          expected="778b3b5ba73094b9abe345f41e29d08541ba6536"
           base="https://heruahmose.github.io/peoples-portfolio"
           status="$(curl --silent --location --output /tmp/deploy-commit --write-out '%{http_code}' "${base}/deploy-commit.txt")"
           printf 'DEPLOY_COMMIT_HTTP_STATUS=%s\n' "$status"
@@ -148,8 +140,7 @@ jobs:
           url="https://heruahmose.github.io/peoples-portfolio/"
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$chrome"
-          "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=12000 --dump-dom "$url" \
-            > /tmp/public-peoples-dom.html
+          "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=12000 --dump-dom "$url" > /tmp/public-peoples-dom.html
           grep -Fq 'data-peoples-app-mounted="true"' /tmp/public-peoples-dom.html
           grep -Fq 'JONATHAN PEOPLES' /tmp/public-peoples-dom.html
           if grep -Fq 'id="peoples-boot-fallback"' /tmp/public-peoples-dom.html; then
