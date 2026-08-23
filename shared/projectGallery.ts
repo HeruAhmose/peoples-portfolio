@@ -1,9 +1,5 @@
 export type ProjectCategory =
-  | "cybersecurity"
-  | "materials"
-  | "equity"
-  | "research"
-  | "platform";
+  "cybersecurity" | "materials" | "equity" | "research" | "platform";
 
 export type GallerySortMode = "impact" | "name" | "recent";
 
