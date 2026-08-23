@@ -1,0 +1,155 @@
+name: Current Six-Repo Fleet Certification
+
+on:
+  push:
+    branches: [probe/current-fleet-post-hk-qc-20260823]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Require exact current Pages deployment identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          check_sha() {
+            local url="$1" expected="$2" label="$3" observed=''
+            for _ in $(seq 1 50); do
+              observed="$(curl --fail --silent --show-error --location "$url" 2>/dev/null | tr -d '\r\n' || true)"
+              [ "$observed" = "$expected" ] && break
+              sleep 6
+            done
+            printf '%s expected=%s observed=%s\n' "$label" "$expected" "$observed"
+            test "$observed" = "$expected"
+          }
+          check_sha 'https://heruahmose.github.io/peoples-portfolio/deploy-commit.txt' 'bfae70472a81842890b505c1a4d3cdcd6f531525' PEOPLES
+          check_sha 'https://heruahmose.github.io/blue-gold-daily/deploy-commit.txt' 'bd6b7f05a0418fd532103b6c7b04d643ad1b896d' BLUE_GOLD
+          check_sha 'https://heruahmose.github.io/trai-portfolio/deploy-commit.txt' 'b06c6c803dae9b21a56353b3666ca43ed51455a1' TRAI
+          check_sha 'https://heruahmose.github.io/QueenCalifia-CyberAI/deploy-commit.txt' '3f305b005e8e9c52c229250ee0238626647d3640' QUEEN_CALIFIA
+          echo 'FLEET_PAGES_IDENTITY=PASS'
+
+  peoples:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Founder narrative browser gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom 'https://heruahmose.github.io/peoples-portfolio/timeline/' > /tmp/site.html
+          grep -Fq 'LINEAGE ENGINE' /tmp/site.html
+          grep -Fq 'FOUNDER JOURNEY' /tmp/site.html
+          grep -Fq 'SERVICE' /tmp/site.html
+          grep -Fq 'INVENTION' /tmp/site.html
+          echo 'PEOPLES_CURRENT_PUBLIC=PASS'
+
+  blue_gold:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Phi formulation browser gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=15000 --dump-dom 'https://heruahmose.github.io/blue-gold-daily/layers.html' > /tmp/site.html
+          grep -Fq 'Φ ARCHITECTURE' /tmp/site.html
+          grep -Fq 'LIVING INDEX' /tmp/site.html
+          grep -Fq 'Sovereignty Loop' /tmp/site.html
+          echo 'BLUE_GOLD_CURRENT_PUBLIC=PASS'
+
+  trai:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Estate and civilization browser gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 45s "$chrome" --headless --no-sandbox --disable-gpu --disable-webgl --disable-software-rasterizer --virtual-time-budget=12000 --dump-dom 'https://heruahmose.github.io/trai-portfolio/' > /tmp/site.html
+          test -s /tmp/site.html
+          grep -Eiq 'Seven regions|Seven functions|one memory|TRAI' /tmp/site.html
+          echo 'TRAI_CURRENT_PUBLIC=PASS'
+
+  techbridge:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Digital equity and H.K. runtime gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom 'https://techbridge-collective.org/' > /tmp/site.html
+          grep -Eiq 'TechBridge|Digital Equity' /tmp/site.html
+          grep -Eiq 'ACCESS|NAVIGATION|SKILLS|TRUST|OPPORTUNITY' /tmp/site.html
+
+          html="$(curl -fsSL 'https://techbridge-collective.org/')"
+          asset="$(printf '%s' "$html" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -n1)"
+          test -n "$asset"
+          curl -fsSL "https://techbridge-collective.org${asset}" > /tmp/techbridge.js
+          grep -Fq 'Male AI guide' /tmp/techbridge.js
+          grep -Fq 'deterministic triage' /tmp/techbridge.js
+          if grep -Fq 'Powered by Claude AI' /tmp/techbridge.js; then
+            echo 'False Claude runtime label survived production bundle.' >&2
+            exit 1
+          fi
+          if grep -Fq '/api/hk-chat' /tmp/techbridge.js; then
+            echo 'Dead H.K. API route survived production bundle.' >&2
+            exit 1
+          fi
+          echo 'TECHBRIDGE_HK_CURRENT_PUBLIC=PASS'
+
+  tamerian:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Material intelligence browser gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 75s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=22000 --dump-dom 'https://tamerian-materials.com/' > /tmp/site.html
+          grep -Fq 'MATERIAL ATLAS' /tmp/site.html
+          grep -Fq 'LIVE PHASE MAP' /tmp/site.html
+          grep -Eiq 'TRANSFORMATION|DEVICE ARCHITECTURE|Material System' /tmp/site.html
+          grep -Fq '0/7 missions' /tmp/site.html
+          echo 'TAMERIAN_CURRENT_PUBLIC=PASS'
+
+  queen_califia:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Queen Califia exact SHA and browser gate
+        shell: bash
+        env:
+          EXPECTED_SHA: 3f305b005e8e9c52c229250ee0238626647d3640
+          BASE_URL: https://heruahmose.github.io/QueenCalifia-CyberAI/
+        run: |
+          set -euo pipefail
+          observed=''
+          for _ in $(seq 1 50); do
+            observed="$(curl -fsSL "${BASE_URL}deploy-commit.txt" 2>/dev/null | tr -d '\r\n' || true)"
+            [ "$observed" = "$EXPECTED_SHA" ] && break
+            sleep 6
+          done
+          echo "QC_PUBLIC_EXPECTED_SHA=$EXPECTED_SHA"
+          echo "QC_PUBLIC_OBSERVED_SHA=$observed"
+          test "$observed" = "$EXPECTED_SHA"
+
+          html="$(curl -fsSL "$BASE_URL")"
+          asset="$(printf '%s' "$html" | grep -oE '/QueenCalifia-CyberAI/assets/index-[A-Za-z0-9_-]+\.js' | head -n1)"
+          test -n "$asset"
+          curl -fsSL "https://heruahmose.github.io${asset}" > /tmp/qc-live.js
+          grep -Fq 'qc.tamerian-materials.com' /tmp/qc-live.js
+
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 70s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom "$BASE_URL" > /tmp/qc-live.html
+          grep -Fqi 'Queen Califia' /tmp/qc-live.html
+          grep -Fqi 'SOVEREIGN COGNITIVE DEFENSE' /tmp/qc-live.html
+          grep -Fqi 'HUMAN AUTHORITY' /tmp/qc-live.html
+          echo 'QC_CURRENT_PUBLIC=PASS'
