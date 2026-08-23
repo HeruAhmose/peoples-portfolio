@@ -11,6 +11,7 @@
       content="Jonathan Peoples — Afrofuturistic cyber security portfolio: Queen Califia CyberAI, Tamerian Materials, TechBridge Collective, and AMC research."
     />
     <meta name="theme-color" content="#060818" />
+    <meta name="peoples-deploy-commit" content="__DEPLOY_COMMIT__" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -37,7 +38,21 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main
+        id="peoples-boot-fallback"
+        style="min-height:100vh;display:grid;place-items:center;background:#050607;color:#f3eddf;font-family:system-ui,sans-serif;padding:2rem;text-align:center"
+      >
+        <div>
+          <p style="letter-spacing:.28em;font-size:.72rem;color:#d6a33a">TRAI /// FOUNDER WORLD</p>
+          <h1 style="font-size:clamp(2rem,7vw,4.5rem);margin:.8rem 0">Jonathan Peoples</h1>
+          <p style="max-width:46rem;line-height:1.65;color:#c8c3b8">
+            Loading the sovereign portfolio. If the cinematic layer cannot initialize,
+            the site will automatically fail open to the portfolio.
+          </p>
+        </div>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
 
     <script
