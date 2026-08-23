@@ -1,28 +1,29 @@
 export const CAREER_TIMELINE_MILESTONE = {
   eyebrow: "LINEAGE ENGINE /// FOUNDER JOURNEY",
-  title: "Founder journey — living system",
-  lead: "The timeline now follows the story that matters: Kannapolis football and Navy service into Tamerian Materials, Queen Califia, TechBridge, and the connected TRAI organism.",
+  title:
+    "A life organized around service, systems, and civilization-scale design.",
+  lead: "From Kannapolis football and Navy service to materials research, sovereign AI, digital equity, and regenerative infrastructure, Jonathan Peoples' work forms a connected operating vision: build systems that expand agency, resilience, and future-building capacity for people and communities.",
   achievements: [
-    "Removed unrelated employment-history milestones from the public narrative.",
-    "Reframed the timeline around service, invention, systems building, cybersecurity, materials, and community infrastructure.",
-    "Kept expandable detail, motion, accessible controls, and the existing timeline component architecture.",
-    "Aligned current-work language with Jonathan Peoples' LinkedIn profile and public project writing.",
+    "Discipline became systems thinking: competition, service, technical training, and invention are treated as one continuous formation rather than disconnected résumé entries.",
+    "Tamerian Materials advances the material layer — a research and manufacturing vision for programmable, multifunctional matter.",
+    "Queen Califia advances the intelligence layer — sovereign cybersecurity, research orchestration, and defensible human-in-the-loop decision systems.",
+    "TechBridge Collective and TRAI carry the work into civic infrastructure, linking digital access, venture building, mobility, identity, and regenerative return.",
   ],
   nextSteps: [
     {
-      title: "Founder photography",
+      title: "Tamerian Materials",
       detail:
-        "Add the approved Jonathan Peoples portrait and archival football/service images when supplied.",
+        "Advanced matter, material memory, sensing, energy, and manufacturing pathways organized as a research platform rather than a single product claim.",
     },
     {
-      title: "Evidence gallery",
+      title: "Queen Califia + TechBridge",
       detail:
-        "Attach source documents, patents, project diagrams, and verified milestones to the relevant timeline nodes.",
+        "Sovereign intelligence and community technology infrastructure: one protects and interprets systems; the other makes digital capability practical at neighborhood scale.",
     },
     {
-      title: "Living updates",
+      title: "TRAI organism",
       detail:
-        "Keep the current-work nodes synchronized with Tamerian, Queen Califia, TechBridge, and TRAI releases.",
+        "The parent systems architecture connects invention, governance, mobility, identity, community reach, and regenerative benefit into one portfolio of interdependent ventures.",
     },
   ] as const,
 } as const;
