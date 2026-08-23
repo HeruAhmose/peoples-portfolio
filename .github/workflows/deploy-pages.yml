@@ -52,16 +52,29 @@ jobs:
           PEOPLES_STATIC_PAGES: "true"
         run: pnpm exec vite build --base /peoples-portfolio/
 
-      - name: Validate Pages artifact
+      - name: Materialize and validate Pages artifact
         shell: bash
         run: |
+          set -euo pipefail
+
+          # The deployed shell is a static world. Keep server-hosted builds free
+          # to use SPA transitions while making Pages navigation explicit.
+          sed -i 's/data-trai-static="false"/data-trai-static="true"/' dist/public/index.html
+          sed -i "s/__DEPLOY_COMMIT__/${GITHUB_SHA}/g" dist/public/index.html
+          printf '%s\n' "$GITHUB_SHA" > dist/public/deploy-commit.txt
+
           cp dist/public/index.html dist/public/404.html
-          # PEOPLES PAGES /// materialize SPA routes for HTTP 200 deep links
           for route in materials community research gallery timeline; do
             mkdir -p "dist/public/$route"
             cp "dist/public/index.html" "dist/public/$route/index.html"
           done
           touch dist/public/.nojekyll
+
+          test -s dist/public/index.html
+          test -s dist/public/deploy-commit.txt
+          grep -Fq "$GITHUB_SHA" dist/public/index.html
+          grep -Fq 'id="peoples-boot-fallback"' dist/public/index.html
+          grep -Fq 'data-trai-static="true"' dist/public/index.html
 
           if grep -Eq '(src|href)="/assets/' dist/public/index.html; then
             echo "::error::Root-relative Vite asset reference detected."
@@ -82,6 +95,47 @@ jobs:
             exit 1
           fi
 
+      - name: Execute static site in headless Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/peoples-pages-root
+          mkdir -p /tmp/peoples-pages-root/peoples-portfolio
+          cp -a dist/public/. /tmp/peoples-pages-root/peoples-portfolio/
+
+          python3 -m http.server 4173 --directory /tmp/peoples-pages-root >/tmp/peoples-pages-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+
+          for _ in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/peoples-portfolio/ >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME_BIN" ]; then
+            echo "::error::Headless Chrome/Chromium is unavailable on the runner."
+            exit 1
+          fi
+
+          "$CHROME_BIN" \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --virtual-time-budget=9000 \
+            --dump-dom \
+            http://127.0.0.1:4173/peoples-portfolio/ \
+            > /tmp/peoples-pages-dom.html
+
+          grep -Fq 'data-peoples-app-mounted="true"' /tmp/peoples-pages-dom.html
+          grep -Fq 'JONATHAN PEOPLES' /tmp/peoples-pages-dom.html
+          if grep -Fq 'id="peoples-boot-fallback"' /tmp/peoples-pages-dom.html; then
+            echo "::error::React never replaced the boot fallback."
+            exit 1
+          fi
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
@@ -99,3 +153,27 @@ jobs:
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128
+
+      - name: Verify public deployment identity
+        shell: bash
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          base="${PAGE_URL%/}/"
+
+          for _ in $(seq 1 30); do
+            observed="$(curl --fail --silent --show-error "${base}deploy-commit.txt" 2>/dev/null || true)"
+            if [ "$observed" = "$GITHUB_SHA" ]; then
+              printf 'PUBLIC_DEPLOY_COMMIT=%s\n' "$observed"
+              break
+            fi
+            sleep 2
+          done
+
+          observed="$(curl --fail --silent --show-error "${base}deploy-commit.txt")"
+          test "$observed" = "$GITHUB_SHA"
+
+          html="$(curl --fail --silent --show-error "$base")"
+          printf '%s' "$html" | grep -Fq "$GITHUB_SHA"
+          printf '%s' "$html" | grep -Fq 'id="peoples-boot-fallback"'
