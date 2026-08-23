@@ -214,12 +214,35 @@ function App() {
               <button
                 type="button"
                 onClick={() => setHkAssistantOpen(!hkAssistantOpen)}
-                className="fixed bottom-4 left-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-[color:color-mix(in_oklch,var(--afro-emerald)_42%,var(--cyan))] bg-primary text-primary-foreground shadow-[0_0_36px_-4px_oklch(0.65_0.25_45/0.75),0_0_24px_-6px_color-mix(in_oklch,var(--afro-sapphire)_35%,transparent)] transition-all hover:scale-105 hover:border-cyan-300/55 hover:bg-primary/90 hover:shadow-[0_0_48px_0_oklch(0.6_0.2_200/0.38)]"
-                title="Open H.K. Assistant"
-                aria-label="Open H.K. Assistant"
+                className="group fixed bottom-4 left-4 z-40 flex items-center gap-3 rounded-full border border-[color:color-mix(in_oklch,var(--afro-emerald)_42%,var(--cyan))] bg-background/90 px-2.5 py-2.5 text-left text-foreground shadow-[0_0_36px_-4px_oklch(0.65_0.25_45/0.75),0_0_24px_-6px_color-mix(in_oklch,var(--afro-sapphire)_35%,transparent)] backdrop-blur-md transition-all hover:scale-[1.02] hover:border-cyan-300/55 hover:shadow-[0_0_48px_0_oklch(0.6_0.2_200/0.38)] sm:px-3"
+                title={
+                  hkAssistantOpen
+                    ? "Close H.K. Assistant"
+                    : "Open H.K. Assistant"
+                }
+                aria-label={
+                  hkAssistantOpen
+                    ? "Close H.K. Assistant"
+                    : "Open H.K. Assistant"
+                }
+                aria-expanded={hkAssistantOpen}
               >
-                <span className="font-display text-lg font-bold drop-shadow-[0_0_8px_oklch(0.1_0.02_260/0.9)]">
-                  ◉
+                <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-primary text-primary-foreground shadow-[0_0_18px_-2px_oklch(0.65_0.25_45/0.7)]">
+                  <span
+                    className="absolute inset-1 rounded-full border border-white/10"
+                    aria-hidden
+                  />
+                  <span className="font-display text-xs font-bold tracking-[0.08em]">
+                    HK
+                  </span>
+                </span>
+                <span className="hidden pr-2 sm:block">
+                  <span className="block font-display text-xs font-semibold tracking-[0.22em] text-foreground">
+                    H.K.
+                  </span>
+                  <span className="mt-0.5 block font-mono text-[9px] tracking-[0.18em] text-cyan-200/75">
+                    PORTFOLIO GUIDE
+                  </span>
                 </span>
               </button>
 
