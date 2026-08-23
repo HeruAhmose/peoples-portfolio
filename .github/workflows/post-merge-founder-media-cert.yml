@@ -81,15 +81,28 @@ jobs:
             "$BASE_URL" \
             > /tmp/peoples-founder-media-dom.html
 
-          grep -Fq 'data-peoples-app-mounted="true"' /tmp/peoples-founder-media-dom.html
-          grep -Fq 'data-founder-media-journey="v5.5.4"' /tmp/peoples-founder-media-dom.html
-          grep -Fq '>Origins<' /tmp/peoples-founder-media-dom.html
-          grep -Fq '>Football<' /tmp/peoples-founder-media-dom.html
-          grep -Fq '>Track<' /tmp/peoples-founder-media-dom.html
-          grep -Fq '>Navy<' /tmp/peoples-founder-media-dom.html
-          grep -Fq '>Founder Present<' /tmp/peoples-founder-media-dom.html
-          grep -Fq 'Early creative recognition' /tmp/peoples-founder-media-dom.html
-          grep -Fq 'Student years' /tmp/peoples-founder-media-dom.html
-          grep -Fq '/peoples-portfolio/media/founder/origins/young-authors-clipping.webp' /tmp/peoples-founder-media-dom.html
-          grep -Fq '/peoples-portfolio/media/founder/origins/newspaper-feature.webp' /tmp/peoples-founder-media-dom.html
+          printf 'DOM_BYTES=%s\n' "$(wc -c < /tmp/peoples-founder-media-dom.html | tr -d ' ')"
+
+          assert_marker() {
+            label="$1"
+            needle="$2"
+            if grep -Fq "$needle" /tmp/peoples-founder-media-dom.html; then
+              printf '%s=PASS\n' "$label"
+            else
+              printf '%s=FAIL needle=%s\n' "$label" "$needle"
+              return 1
+            fi
+          }
+
+          assert_marker PUBLIC_APP_MOUNTED 'data-peoples-app-mounted="true"'
+          assert_marker PUBLIC_FOUNDER_GALLERY_ROOT 'data-founder-media-journey="v5.5.4"'
+          assert_marker PUBLIC_FOUNDER_ORIGINS_LABEL 'Origins'
+          assert_marker PUBLIC_FOUNDER_FOOTBALL_LABEL 'Football'
+          assert_marker PUBLIC_FOUNDER_TRACK_LABEL 'Track'
+          assert_marker PUBLIC_FOUNDER_NAVY_LABEL 'Navy'
+          assert_marker PUBLIC_FOUNDER_PRESENT_LABEL 'Founder Present'
+          assert_marker PUBLIC_FOUNDER_ORIGINS_CARD_1 'Early creative recognition'
+          assert_marker PUBLIC_FOUNDER_ORIGINS_CARD_2 'Student years'
+          assert_marker PUBLIC_FOUNDER_ORIGINS_IMAGE_1 'media/founder/origins/young-authors-clipping.webp'
+          assert_marker PUBLIC_FOUNDER_ORIGINS_IMAGE_2 'media/founder/origins/newspaper-feature.webp'
           printf 'PUBLIC_FOUNDER_MEDIA_DOM=PASS\n'
