@@ -15,10 +15,10 @@ import { ORGANS, RING_ANGLES } from "@/lib/organism";
  * visible control.
  */
 
-const FULL_MS = 3800;
-const SHORT_MS = 1600;
-const NODE_GAP = 200;
-const FIRST_NODE_AT = 220;
+const FULL_MS = 4600;
+const SHORT_MS = 1950;
+const NODE_GAP = 235;
+const FIRST_NODE_AT = 280;
 
 const VERT = `#version 300 es
 in vec2 a_pos;
@@ -260,350 +260,199 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    let gl: WebGL2RenderingContext | WebGLRenderingContext | null =
-      canvas.getContext("webgl2", {
+    let gl = canvas.getContext("webgl2", {
+      antialias: false,
+      alpha: false,
+      powerPreference: "high-performance",
+    }) as WebGL2RenderingContext | WebGLRenderingContext | null;
+    let webgl2 = Boolean(gl);
+    if (!gl) {
+      gl = canvas.getContext("webgl", {
         antialias: false,
         alpha: false,
         powerPreference: "high-performance",
       });
-    let isGL2 = !!gl;
-    if (!gl) {
-      gl = canvas.getContext("webgl", { antialias: false, alpha: false });
-      isGL2 = false;
+      webgl2 = false;
     }
     if (!gl) {
       setGlFailed(true);
-      const t = window.setTimeout(finish, 2400);
-      return () => window.clearTimeout(t);
+      return;
     }
 
     const compile = (type: number, src: string) => {
-      const s = gl!.createShader(type)!;
-      gl!.shaderSource(s, src);
-      gl!.compileShader(s);
-      if (!gl!.getShaderParameter(s, gl!.COMPILE_STATUS)) {
-        console.warn("[LatticeIgnition]", gl!.getShaderInfoLog(s));
-        return null;
+      const shader = gl!.createShader(type)!;
+      gl!.shaderSource(shader, src);
+      gl!.compileShader(shader);
+      if (!gl!.getShaderParameter(shader, gl!.COMPILE_STATUS)) {
+        throw new Error(gl!.getShaderInfoLog(shader) ?? "Shader compilation failed");
       }
-      return s;
+      return shader;
     };
 
-    const vs = compile(gl.VERTEX_SHADER, isGL2 ? VERT : VERT1);
-    const fs = compile(gl.FRAGMENT_SHADER, isGL2 ? FRAG : FRAG1);
-    if (!vs || !fs) {
-      setGlFailed(true);
-      const t = window.setTimeout(finish, 2400);
-      return () => window.clearTimeout(t);
-    }
-
-    const prog = gl.createProgram()!;
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-      setGlFailed(true);
-      const t = window.setTimeout(finish, 2400);
-      return () => window.clearTimeout(t);
-    }
-    gl.useProgram(prog);
-
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 3, -1, -1, 3]),
-      gl.STATIC_DRAW
-    );
-    const loc = gl.getAttribLocation(prog, "a_pos");
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-
-    // Some drivers only expose array uniforms under name[0]; ask for both.
-    const uloc = (name: string) =>
-      gl!.getUniformLocation(prog, name) ??
-      gl!.getUniformLocation(prog, `${name}[0]`);
-
-    const U = {
-      res: uloc("u_res"),
-      time: uloc("u_time"),
-      prog: uloc("u_prog"),
-      core: uloc("u_core"),
-      beat: uloc("u_beat"),
-      fade: uloc("u_fade"),
-      ignite: uloc("u_ignite"),
-      col: uloc("u_col"),
-      gate: uloc("u_gate"),
-    };
-
-    const colors = new Float32Array(21);
-    ORGANS.forEach((o, i) => {
-      const [r, g, b] = hexToRgb(o.hex);
-      colors[i * 3] = r;
-      colors[i * 3 + 1] = g;
-      colors[i * 3 + 2] = b;
-    });
-    gl.uniform3fv(U.col, colors);
-
-    // Static for the life of the sequence: an organ either has a page here or
-    // it opens outward. Set once rather than per frame.
-    const gateFlags = new Float32Array(ORGANS.map(o => (o.route ? 1 : 0)));
-    gl.uniform1fv(U.gate, gateFlags);
-
-    // 2x on an integrated GPU is the usual cause of a soft frame rate here, and
-    // the lattice is line work — it costs little visually to render at 1.5x.
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const resize = () => {
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
-      gl!.viewport(0, 0, canvas.width, canvas.height);
-      gl!.uniform2f(U.res, canvas.width, canvas.height);
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const ignite = new Float32Array(7);
-    let start = 0;
-    let lastLit = -1;
-
-    const draw = (ts: number) => {
-      if (!start) start = ts;
-      const t = ts - start;
-      const p = Math.min(t / total, 1);
-
-      for (let i = 0; i < 7; i++) {
-        const at = (FIRST_NODE_AT + i * NODE_GAP) * scale;
-        const dur = 360 * scale;
-        ignite[i] = easeOutCubic(Math.max(0, Math.min((t - at) / dur, 1)));
+    try {
+      const program = gl.createProgram()!;
+      gl.attachShader(program, compile(gl.VERTEX_SHADER, webgl2 ? VERT : VERT1));
+      gl.attachShader(program, compile(gl.FRAGMENT_SHADER, webgl2 ? FRAG : FRAG1));
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        throw new Error(gl.getProgramInfoLog(program) ?? "Program link failed");
       }
+      gl.useProgram(program);
 
-      const nowLit = ignite.reduce((acc, v, i) => (v > 0.55 ? i : acc), -1);
-      if (nowLit !== lastLit) {
-        lastLit = nowLit;
-        setLit(nowLit);
-      }
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const aPos = gl.getAttribLocation(program, "a_pos");
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
-      const coreAt = (FIRST_NODE_AT + 7 * NODE_GAP) * scale;
-      const core = easeOutCubic(
-        Math.max(0, Math.min((t - coreAt) / (420 * scale), 1))
-      );
-      const beat = easeInOutCubic(
-        Math.max(0, Math.min((t - coreAt - 120 * scale) / (900 * scale), 1))
-      );
+      const uRes = gl.getUniformLocation(program, "u_res");
+      const uTime = gl.getUniformLocation(program, "u_time");
+      const uProg = gl.getUniformLocation(program, "u_prog");
+      const uIgnite = gl.getUniformLocation(program, "u_ignite[0]");
+      const uCol = gl.getUniformLocation(program, "u_col[0]");
+      const uCore = gl.getUniformLocation(program, "u_core");
+      const uBeat = gl.getUniformLocation(program, "u_beat");
+      const uFade = gl.getUniformLocation(program, "u_fade");
+      const uGate = gl.getUniformLocation(program, "u_gate[0]");
 
-      const wordAt = coreAt + 460 * scale;
-      if (t > wordAt && stageRef.current === "lattice") {
-        stageRef.current = "wordmark";
-        setStage("wordmark");
-      }
+      const colors = ORGANS.flatMap(o => hexToRgb(o.color));
+      const gates = ORGANS.map(o => (o.internalPath ? 1 : 0));
+      const start = performance.now();
 
-      const outAt = total - 900 * scale;
-      const fade = t > outAt ? Math.max(0, 1 - (t - outAt) / (800 * scale)) : 1;
+      const resize = () => {
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        canvas.width = Math.floor(innerWidth * dpr);
+        canvas.height = Math.floor(innerHeight * dpr);
+        canvas.style.width = `${innerWidth}px`;
+        canvas.style.height = `${innerHeight}px`;
+        gl!.viewport(0, 0, canvas.width, canvas.height);
+      };
+      resize();
+      window.addEventListener("resize", resize);
 
-      gl!.uniform1f(U.time, t / 1000);
-      gl!.uniform1f(U.prog, p);
-      gl!.uniform1f(U.core, core);
-      gl!.uniform1f(U.beat, beat);
-      gl!.uniform1f(U.fade, fade);
-      gl!.uniform1fv(U.ignite, ignite);
-      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+      const draw = (now: number) => {
+        const elapsed = now - start;
+        const prog = Math.min(elapsed / total, 1);
+        const ignites = ORGANS.map((_, i) =>
+          Math.max(0, Math.min(1, (elapsed - (FIRST_NODE_AT + i * NODE_GAP) * scale) / (360 * scale)))
+        );
+        const newestLit = ignites.reduce((highest, value, i) => (value > 0.65 ? i : highest), -1);
+        setLit(current => (current === newestLit ? current : newestLit));
 
-      if (t >= total) {
-        finish();
-        return;
-      }
+        const coreStart = (FIRST_NODE_AT + 6 * NODE_GAP + 330) * scale;
+        const core = Math.max(0, Math.min(1, (elapsed - coreStart) / (460 * scale)));
+        const beatStart = coreStart + 420 * scale;
+        const beat = Math.max(0, Math.min(1, (elapsed - beatStart) / (820 * scale)));
+        const wordmarkStart = total * 0.68;
+        if (elapsed >= wordmarkStart && stageRef.current === "lattice") {
+          stageRef.current = "wordmark";
+          setStage("wordmark");
+        }
+        const fade = prog < 0.86 ? 1 : 1 - easeInOutCubic((prog - 0.86) / 0.14);
+
+        gl!.uniform2f(uRes, canvas.width, canvas.height);
+        gl!.uniform1f(uTime, elapsed / 1000);
+        gl!.uniform1f(uProg, prog);
+        gl!.uniform1fv(uIgnite, new Float32Array(ignites));
+        gl!.uniform3fv(uCol, new Float32Array(colors));
+        gl!.uniform1f(uCore, easeOutCubic(core));
+        gl!.uniform1f(uBeat, beat);
+        gl!.uniform1f(uFade, fade);
+        gl!.uniform1fv(uGate, new Float32Array(gates));
+        gl!.drawArrays(gl.TRIANGLES, 0, 3);
+
+        if (prog < 1 && !doneRef.current) rafRef.current = requestAnimationFrame(draw);
+        else if (!doneRef.current) finish();
+      };
       rafRef.current = requestAnimationFrame(draw);
-    };
-    rafRef.current = requestAnimationFrame(draw);
 
+      return () => {
+        cancelAnimationFrame(rafRef.current);
+        window.removeEventListener("resize", resize);
+      };
+    } catch {
+      setGlFailed(true);
+    }
+  }, [finish, reduced, scale, total]);
+
+  useEffect(() => {
+    if (!glFailed || reduced) return;
+    const timers = ORGANS.map((_, i) =>
+      window.setTimeout(() => setLit(i), (FIRST_NODE_AT + i * NODE_GAP) * scale)
+    );
+    const wordmark = window.setTimeout(() => {
+      stageRef.current = "wordmark";
+      setStage("wordmark");
+    }, total * 0.68);
+    const complete = window.setTimeout(finish, total);
     return () => {
-      cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("resize", resize);
-      gl?.getExtension("WEBGL_lose_context")?.loseContext();
+      timers.forEach(window.clearTimeout);
+      window.clearTimeout(wordmark);
+      window.clearTimeout(complete);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduced, total, scale, finish]);
-
-  const current = lit >= 0 ? ORGANS[lit] : null;
+  }, [finish, glFailed, reduced, scale, total]);
 
   return (
     <div
-      className="fixed inset-0 z-[200] overflow-hidden"
-      style={{
-        background: "#050607",
-        opacity: stage === "out" ? 0 : 1,
-        transition: "opacity 600ms cubic-bezier(0.4, 0, 0.2, 1)",
-      }}
+      className={`fixed inset-0 z-[9999] overflow-hidden bg-[#03060b] transition-opacity duration-[620ms] ${stage === "out" ? "pointer-events-none opacity-0" : "opacity-100"}`}
       role="dialog"
       aria-modal="true"
-      aria-label="Opening sequence"
+      aria-label="TRAI organism ignition"
     >
-      {!glFailed && (
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0"
-          aria-hidden="true"
-        />
-      )}
+      {!glFailed && !reduced && <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />}
 
-      {/* CSS-only fallback if the GPU refuses the context. */}
-      {glFailed && (
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          aria-hidden="true"
-        >
-          <div className="lattice-fallback-core" />
+      {(glFailed || reduced) && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative h-[min(78vw,620px)] w-[min(78vw,620px)]">
+            <div className="absolute left-1/2 top-1/2 h-[72%] w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-300/10" />
+            {ORGANS.map((organ, i) => {
+              const angle = (RING_ANGLES[i] * Math.PI) / 180;
+              const radius = 36;
+              const left = 50 + Math.cos(angle) * radius;
+              const top = 50 + Math.sin(angle) * radius;
+              const active = i <= lit;
+              return (
+                <div
+                  key={organ.id}
+                  className="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-all duration-500"
+                  style={{
+                    left: `${left}%`,
+                    top: `${top}%`,
+                    borderColor: active ? organ.color : "rgba(255,255,255,.12)",
+                    background: active ? `${organ.color}55` : "rgba(255,255,255,.02)",
+                    boxShadow: active ? `0 0 28px ${organ.color}55` : "none",
+                  }}
+                />
+              );
+            })}
+          </div>
         </div>
       )}
 
-      {/* Organ labels, pinned to their node on the ring. */}
-      <div
-        className="absolute inset-0 pointer-events-none hidden sm:block"
-        aria-hidden="true"
-      >
-        {ORGANS.map((o, i) => {
-          const angle = RING_ANGLES[i];
-          const rr = 0.62;
-          const x = 50 + Math.cos(angle) * rr * 42;
-          const y = 50 + Math.sin(angle) * rr * 42;
-          const on = lit >= i;
-          const right = Math.cos(angle) > 0.15;
-          const centered = Math.abs(Math.cos(angle)) <= 0.15;
-          return (
-            <div
-              key={o.num}
-              className="absolute"
-              style={{
-                left: `${x}%`,
-                top: `${y}%`,
-                transform: `translate(${centered ? "-50%" : right ? "18px" : "calc(-100% - 18px)"}, -50%)`,
-                textAlign: centered ? "center" : right ? "left" : "right",
-                opacity: on ? 1 : 0,
-                filter: on ? "blur(0px)" : "blur(3px)",
-                transition: "opacity 520ms ease-out, filter 520ms ease-out",
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  letterSpacing: "0.22em",
-                  color: `${o.hex}aa`,
-                }}
-              >
-                {o.num} · {o.role.toUpperCase()}
-                {!o.route && (
-                  <span style={{ opacity: 0.75 }}> · OPENS OUT</span>
-                )}
-              </div>
-              <div
-                style={{
-                  fontFamily: "var(--font-hero, system-ui, sans-serif)",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  letterSpacing: "0.02em",
-                  color: "#f3eddf",
-                  marginTop: 2,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {o.name}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Small screens: one organ at a time, centered under the lattice. */}
-      <div
-        className="absolute inset-x-0 bottom-32 sm:hidden text-center px-8"
-        aria-hidden="true"
-      >
-        {current && (
-          <>
-            <div
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                letterSpacing: "0.22em",
-                color: `${current.hex}cc`,
-              }}
-            >
-              {current.num} · {current.role.toUpperCase()}
-            </div>
-            <div
-              style={{
-                fontFamily: "var(--font-hero, system-ui, sans-serif)",
-                fontSize: 15,
-                color: "#f3eddf",
-                marginTop: 4,
-              }}
-            >
-              {current.name}
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Wordmark resolves once the circuit closes. */}
-      <div
-        className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6"
-        aria-hidden="true"
-        style={{
-          opacity: stage === "lattice" ? 0 : 1,
-          transform: stage === "lattice" ? "translateY(10px)" : "none",
-          transition:
-            "opacity 900ms ease-out, transform 900ms cubic-bezier(0.16, 1, 0.3, 1)",
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(3.2rem, 11vw, 7.5rem)",
-            fontWeight: 300,
-            letterSpacing: "0.24em",
-            lineHeight: 1,
-            color: "#f3eddf",
-            textShadow: "0 0 60px rgba(214,163,58,0.35)",
-            marginRight: "-0.24em",
-          }}
-        >
-          TRAI
-        </div>
-        <div
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "clamp(0.6rem, 1.5vw, 0.72rem)",
-            letterSpacing: "0.4em",
-            color: "rgba(214,163,58,0.75)",
-            marginTop: 22,
-            marginRight: "-0.4em",
-            textAlign: "center",
-          }}
-        >
-          ONE REGENERATIVE ORGANISM
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="relative mt-[min(56vw,430px)] text-center">
+          <div
+            className={`transition-all duration-700 ${stage === "wordmark" ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
+          >
+            <p className="font-mono text-[9px] tracking-[0.44em] text-cyan-200/60 md:text-[10px]">
+              SEVEN ORGANS /// ONE REGENERATIVE SYSTEM
+            </p>
+            <p className="mt-2 font-display text-xl font-semibold tracking-[0.12em] text-white/90 md:text-2xl">
+              TRAI ORGANISM
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Skip. Always reachable, never in the way. */}
       <button
         ref={skipRef}
+        type="button"
         onClick={finish}
-        className="absolute bottom-8 right-8 z-10 px-4 py-2 text-[10px] tracking-[0.28em] uppercase transition-colors"
-        style={{
-          fontFamily: "var(--font-mono)",
-          color: "rgba(243,237,223,0.4)",
-          border: "1px solid rgba(214,163,58,0.22)",
-          background: "rgba(5,6,7,0.4)",
-          backdropFilter: "blur(6px)",
-        }}
-        aria-label="Skip the opening sequence"
+        className="absolute bottom-6 right-6 z-20 rounded-md border border-white/15 bg-black/35 px-3 py-2 font-mono text-[9px] tracking-[0.22em] text-white/60 backdrop-blur-sm transition-colors hover:border-cyan-300/35 hover:text-cyan-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/50"
       >
-        Skip
+        SKIP INTRO
       </button>
     </div>
   );
 }
-
-export default LatticeIgnition;
