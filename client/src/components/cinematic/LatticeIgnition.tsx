@@ -15,10 +15,10 @@ import { ORGANS, RING_ANGLES } from "@/lib/organism";
  * visible control.
  */
 
-const FULL_MS = 3800;
-const SHORT_MS = 1600;
-const NODE_GAP = 200;
-const FIRST_NODE_AT = 220;
+const FULL_MS = 4600;
+const SHORT_MS = 1950;
+const NODE_GAP = 235;
+const FIRST_NODE_AT = 280;
 
 const VERT = `#version 300 es
 in vec2 a_pos;
