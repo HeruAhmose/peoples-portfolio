@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 6b3e735ac79d4bc183629287ce581cbe212aca2c
+          ref: ac4ba67f27e2959c1f12153ecb81286a6f3b6d78
 
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
         with:
@@ -37,8 +37,8 @@ jobs:
           set -euo pipefail
           pnpm exec vite build --base /peoples-portfolio/
           sed -i 's/data-trai-static="false"/data-trai-static="true"/' dist/public/index.html
-          sed -i 's/__DEPLOY_COMMIT__/6b3e735ac79d4bc183629287ce581cbe212aca2c/g' dist/public/index.html
-          printf '%s\n' '6b3e735ac79d4bc183629287ce581cbe212aca2c' > dist/public/deploy-commit.txt
+          sed -i 's/__DEPLOY_COMMIT__/ac4ba67f27e2959c1f12153ecb81286a6f3b6d78/g' dist/public/index.html
+          printf '%s\n' 'ac4ba67f27e2959c1f12153ecb81286a6f3b6d78' > dist/public/deploy-commit.txt
           cp dist/public/index.html dist/public/404.html
           for route in materials community research gallery timeline; do
             mkdir -p "dist/public/$route"
@@ -48,7 +48,7 @@ jobs:
 
           test -s dist/public/index.html
           test -s dist/public/deploy-commit.txt
-          grep -Fq '6b3e735ac79d4bc183629287ce581cbe212aca2c' dist/public/index.html
+          grep -Fq 'ac4ba67f27e2959c1f12153ecb81286a6f3b6d78' dist/public/index.html
           grep -Fq 'id="peoples-boot-fallback"' dist/public/index.html
           grep -Fq 'data-trai-static="true"' dist/public/index.html
           if grep -Eq '(src|href)="/assets/' dist/public/index.html; then exit 1; fi
@@ -124,7 +124,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          expected="6b3e735ac79d4bc183629287ce581cbe212aca2c"
+          expected="ac4ba67f27e2959c1f12153ecb81286a6f3b6d78"
           base="https://heruahmose.github.io/peoples-portfolio"
           status="$(curl --silent --location --output /tmp/deploy-commit --write-out '%{http_code}' "${base}/deploy-commit.txt")"
           printf 'DEPLOY_COMMIT_HTTP_STATUS=%s\n' "$status"
