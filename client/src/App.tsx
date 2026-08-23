@@ -216,10 +216,14 @@ function App() {
                 onClick={() => setHkAssistantOpen(!hkAssistantOpen)}
                 className="group fixed bottom-4 left-4 z-40 flex items-center gap-3 rounded-full border border-[color:color-mix(in_oklch,var(--afro-emerald)_42%,var(--cyan))] bg-background/90 px-2.5 py-2.5 text-left text-foreground shadow-[0_0_36px_-4px_oklch(0.65_0.25_45/0.75),0_0_24px_-6px_color-mix(in_oklch,var(--afro-sapphire)_35%,transparent)] backdrop-blur-md transition-all hover:scale-[1.02] hover:border-cyan-300/55 hover:shadow-[0_0_48px_0_oklch(0.6_0.2_200/0.38)] sm:px-3"
                 title={
-                  hkAssistantOpen ? "Close H.K. Assistant" : "Open H.K. Assistant"
+                  hkAssistantOpen
+                    ? "Close H.K. Assistant"
+                    : "Open H.K. Assistant"
                 }
                 aria-label={
-                  hkAssistantOpen ? "Close H.K. Assistant" : "Open H.K. Assistant"
+                  hkAssistantOpen
+                    ? "Close H.K. Assistant"
+                    : "Open H.K. Assistant"
                 }
                 aria-expanded={hkAssistantOpen}
               >
