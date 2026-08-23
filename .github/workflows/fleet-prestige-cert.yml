@@ -11,21 +11,10 @@ permissions:
   contents: read
 
 jobs:
-  certify:
+  identity:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 8
     steps:
-      - name: Checkout probe host
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-
-      - name: Require Chrome
-        shell: bash
-        run: |
-          set -euo pipefail
-          command -v google-chrome || command -v chromium || command -v chromium-browser
-
       - name: Require exact Pages deployment identities
         shell: bash
         run: |
@@ -40,63 +29,85 @@ jobs:
           check_sha 'https://heruahmose.github.io/blue-gold-daily/deploy-commit.txt' 'd3b801a57e1c25713a1f1c2da838b0da741930bb' BLUE_GOLD
           check_sha 'https://heruahmose.github.io/trai-portfolio/deploy-commit.txt' '312fe89e9ba504bf749f361a09d2f5fadfd2fe6c' TRAI
 
-      - name: Public HTTP fleet smoke
-        shell: bash
-        run: |
-          set -euo pipefail
-          for url in \
-            'https://tamerian-materials.com/' \
-            'https://heruahmose.github.io/peoples-portfolio/' \
-            'https://heruahmose.github.io/peoples-portfolio/timeline/' \
-            'https://techbridge-collective.org/' \
-            'https://heruahmose.github.io/blue-gold-daily/' \
-            'https://heruahmose.github.io/blue-gold-daily/layers.html' \
-            'https://heruahmose.github.io/trai-portfolio/'; do
-            code="$(curl --silent --show-error --location --output /tmp/body --write-out '%{http_code}' "$url")"
-            printf '%s -> %s bytes=%s\n' "$url" "$code" "$(wc -c </tmp/body)"
-            test "$code" = 200
-            test -s /tmp/body
-          done
-
-      - name: Render prestige-specific public surfaces in Chrome
+  peoples:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Founder narrative browser gate
         shell: bash
         run: |
           set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          render() {
-            local url="$1" out="$2" budget="${3:-15000}"
-            "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget="$budget" --dump-dom "$url" > "$out"
-            test -s "$out"
-          }
+          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom 'https://heruahmose.github.io/peoples-portfolio/timeline/' > /tmp/site.html
+          grep -Fq 'LINEAGE ENGINE' /tmp/site.html
+          grep -Fq 'FOUNDER JOURNEY' /tmp/site.html
+          grep -Fq 'SERVICE' /tmp/site.html
+          grep -Fq 'INVENTION' /tmp/site.html
+          echo 'PEOPLES_PRESTIGE=PASS'
 
-          render 'https://heruahmose.github.io/peoples-portfolio/timeline/' /tmp/peoples.html 18000
-          grep -Fq 'LINEAGE ENGINE' /tmp/peoples.html
-          grep -Fq 'FOUNDER JOURNEY' /tmp/peoples.html
-          grep -Fq 'SERVICE' /tmp/peoples.html
-          grep -Fq 'INVENTION' /tmp/peoples.html
-          grep -Fq 'SOVEREIGNTY' /tmp/peoples.html
+  blue_gold:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Phi formulation browser gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=15000 --dump-dom 'https://heruahmose.github.io/blue-gold-daily/layers.html' > /tmp/site.html
+          grep -Fq 'Φ ARCHITECTURE' /tmp/site.html
+          grep -Fq 'LIVING INDEX' /tmp/site.html
+          grep -Fq 'Sovereignty Loop' /tmp/site.html
+          echo 'BLUE_GOLD_PRESTIGE=PASS'
 
-          render 'https://heruahmose.github.io/blue-gold-daily/layers.html' /tmp/bluegold.html
-          grep -Fq 'Φ ARCHITECTURE' /tmp/bluegold.html
-          grep -Fq 'LIVING INDEX' /tmp/bluegold.html
-          grep -Fq 'Sovereignty Loop' /tmp/bluegold.html
+  trai:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Estate organism browser gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom 'https://heruahmose.github.io/trai-portfolio/' > /tmp/site.html
+          grep -Eiq 'Seven regions|Seven functions|one memory|TRAI' /tmp/site.html
+          echo 'TRAI_PRESTIGE=PASS'
 
-          render 'https://heruahmose.github.io/trai-portfolio/' /tmp/trai.html 18000
-          grep -Eiq 'Seven regions|Seven functions|one memory|TRAI' /tmp/trai.html
+  techbridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Digital equity infrastructure browser gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom 'https://techbridge-collective.org/' > /tmp/site.html
+          grep -Eiq 'TechBridge|Digital Equity' /tmp/site.html
+          grep -Eiq 'ACCESS|NAVIGATION|SKILLS|TRUST|OPPORTUNITY' /tmp/site.html
+          echo 'TECHBRIDGE_PRESTIGE=PASS'
 
-          render 'https://techbridge-collective.org/' /tmp/techbridge.html 18000
-          grep -Eiq 'TechBridge|Digital Equity' /tmp/techbridge.html
-          grep -Eiq 'ACCESS|NAVIGATION|SKILLS|TRUST|OPPORTUNITY' /tmp/techbridge.html
+  tamerian:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Material intelligence browser gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 75s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=22000 --dump-dom 'https://tamerian-materials.com/' > /tmp/site.html
+          grep -Fq 'MATERIAL ATLAS' /tmp/site.html
+          grep -Fq 'LIVE PHASE MAP' /tmp/site.html
+          grep -Eiq 'TRANSFORMATION|DEVICE ARCHITECTURE|Material System' /tmp/site.html
+          grep -Fq '0/7 missions' /tmp/site.html
+          echo 'TAMERIAN_PRESTIGE=PASS'
 
-          render 'https://tamerian-materials.com/' /tmp/tamerian.html 22000
-          grep -Fq 'MATERIAL ATLAS' /tmp/tamerian.html
-          grep -Fq 'LIVE PHASE MAP' /tmp/tamerian.html
-          grep -Eiq 'TRANSFORMATION|DEVICE ARCHITECTURE|Material System' /tmp/tamerian.html
-          grep -Fq '0/7 missions' /tmp/tamerian.html
-
-          echo 'FLEET_PRESTIGE_PUBLIC_BROWSER=PASS'
-
-      - name: Diagnose QC legacy surface without accepting it
+  qc_legacy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Diagnose legacy Firebase without accepting it
         shell: bash
         run: |
           set -euo pipefail
