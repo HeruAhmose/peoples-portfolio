@@ -47,7 +47,10 @@ export default function CareerTimeline({ onNavigate }: CareerTimelineProps) {
   }, [logSectionView]);
 
   return (
-    <div className="min-h-screen pb-24" data-peoples-founder-journey="v6-prestige">
+    <div
+      className="min-h-screen pb-24"
+      data-peoples-founder-journey="v6-prestige"
+    >
       <section className="container mx-auto px-4 py-14 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -163,7 +166,11 @@ export default function CareerTimeline({ onNavigate }: CareerTimelineProps) {
           />
           <div className="relative z-[1]">
             {milestones.map((milestone, index) => (
-              <TimelineEvent key={milestone.id} milestone={milestone} index={index} />
+              <TimelineEvent
+                key={milestone.id}
+                milestone={milestone}
+                index={index}
+              />
             ))}
           </div>
         </div>
@@ -172,7 +179,10 @@ export default function CareerTimeline({ onNavigate }: CareerTimelineProps) {
       <section className="container mx-auto px-4 pb-12">
         <ScrollReveal>
           <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] border border-cyan-300/14 bg-[linear-gradient(145deg,rgba(8,14,22,.94),rgba(4,7,12,.98))] px-6 py-10 shadow-[0_30px_100px_rgba(0,0,0,.34)] md:px-10 lg:px-12">
-            <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full border border-amber-300/12" aria-hidden />
+            <div
+              className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full border border-amber-300/12"
+              aria-hidden
+            />
             <div className="relative">
               <p className="font-mono text-[10px] tracking-[0.32em] text-cyan-300/80">
                 {CAREER_TIMELINE_MILESTONE.eyebrow}
@@ -215,8 +225,9 @@ export default function CareerTimeline({ onNavigate }: CareerTimelineProps) {
                     </h3>
                   </div>
                   <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-                    The portfolio is designed as an ecosystem: matter, intelligence,
-                    community infrastructure, and governance reinforce one another.
+                    The portfolio is designed as an ecosystem: matter,
+                    intelligence, community infrastructure, and governance
+                    reinforce one another.
                   </p>
                 </div>
                 <div className="mt-6 grid gap-3 lg:grid-cols-3">
