@@ -62,14 +62,7 @@ jobs:
           echo 'Legacy Vite runtime absent from dependency graph.'
 
       - name: Typecheck, test, format, build
-        shell: bash
-        run: |
-          if ! pnpm run ci; then
-            echo '=== PRETTIER_CLIENT_INDEX_BEGIN ==='
-            pnpm exec prettier client/index.html
-            echo '=== PRETTIER_CLIENT_INDEX_END ==='
-            exit 1
-          fi
+        run: pnpm run ci
 
       - name: Keep development observability out of production artifacts
         shell: bash
