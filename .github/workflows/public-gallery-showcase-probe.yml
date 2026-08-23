@@ -1,0 +1,134 @@
+name: Public Gallery Showcase Probe
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    if: github.head_ref == 'probe/public-gallery-showcase-cert-20260822'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ebb10f41ca4dde5be2f6bcfdc49fc7a31997eb30
+          persist-credentials: false
+
+      - name: Wait for exact Pages revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='ebb10f41ca4dde5be2f6bcfdc49fc7a31997eb30'
+          marker='https://heruahmose.github.io/peoples-portfolio/deploy-commit.txt'
+          matched=0
+          for attempt in $(seq 1 36); do
+            actual="$(curl --fail --silent --show-error --location "$marker" 2>/dev/null | tr -d '\r\n' || true)"
+            echo "ATTEMPT=$attempt EXPECTED=$expected PUBLIC=$actual"
+            if [ "$actual" = "$expected" ]; then
+              matched=1
+              break
+            fi
+            sleep 10
+          done
+          test "$matched" = 1
+          echo 'PEOPLES_PAGES_EXACT_SHA=PASS'
+
+      - name: Certify public gallery in Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$chrome"
+          "$chrome" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
+            --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-gallery about:blank \
+            >/tmp/chrome.log 2>&1 &
+          chrome_pid=$!
+          trap 'kill $chrome_pid 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:9222/json/version >/tmp/version.json 2>/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          cat > /tmp/gallery-cert.mjs <<'NODE'
+          const target = 'https://heruahmose.github.io/peoples-portfolio/gallery';
+          const list = await (await fetch('http://127.0.0.1:9222/json/list')).json();
+          const page = list.find(item => item.type === 'page');
+          if (!page?.webSocketDebuggerUrl) throw new Error('No Chrome page target');
+          const ws = new WebSocket(page.webSocketDebuggerUrl);
+          let id = 0;
+          const pending = new Map();
+          ws.onmessage = event => {
+            const msg = JSON.parse(event.data);
+            if (msg.id && pending.has(msg.id)) {
+              const { resolve, reject } = pending.get(msg.id);
+              pending.delete(msg.id);
+              msg.error ? reject(new Error(JSON.stringify(msg.error))) : resolve(msg.result);
+            }
+          };
+          await new Promise((resolve, reject) => {
+            ws.onopen = resolve;
+            ws.onerror = reject;
+          });
+          const send = (method, params = {}) => new Promise((resolve, reject) => {
+            const callId = ++id;
+            pending.set(callId, { resolve, reject });
+            ws.send(JSON.stringify({ id: callId, method, params }));
+          });
+          await send('Page.enable');
+          await send('Runtime.enable');
+          await send('Page.navigate', { url: target });
+
+          let result;
+          for (let attempt = 0; attempt < 45; attempt++) {
+            await new Promise(r => setTimeout(r, 500));
+            const evaluation = await send('Runtime.evaluate', {
+              expression: `(() => {
+                const text = document.body?.innerText || '';
+                const labels = [
+                  'HEMP-CARBON LATTICE · ENERGY FLOW',
+                  'MULTI-ENGINE DEFENSE · HUMAN CONTROL',
+                  'INTEROPERABLE ORGANISM · CROSS-SITE ROUTING',
+                  'NAVIGATOR FLOW · TECHMINUTES IMPACT',
+                  'CLAIM → EVIDENCE → BOUNDARY TRACE',
+                  'HANDS-ON SYSTEMS · SECURITY TRAINING'
+                ];
+                return {
+                  mounted: document.documentElement.dataset.peoplesAppMounted === 'true',
+                  title: document.title,
+                  heading: text.includes('PROJECT GALLERY'),
+                  liveField: text.includes('LIVE SYSTEMS /// INTERACTIVE PROJECT FIELD'),
+                  labels: labels.map(label => [label, text.includes(label)]),
+                  oldMilestoneAbsent: !text.includes('3D Project Gallery with flip animations — complete'),
+                  oldImplementationAbsent: !text.includes('Project3DCard: 3D perspective'),
+                  cards: document.querySelectorAll('article[aria-label*="live feature preview"]').length,
+                  search: Boolean(document.querySelector('input[aria-label="Search projects"]')),
+                  category: Boolean(Array.from(document.querySelectorAll('select')).find(el => el.value === 'all'))
+                };
+              })()`,
+              returnByValue: true
+            });
+            result = evaluation.result?.result?.value;
+            if (result?.mounted && result?.heading && result?.cards === 6) break;
+          }
+          console.log(JSON.stringify(result, null, 2));
+          if (!result?.mounted) throw new Error('React application did not mount');
+          if (!result?.heading || !result?.liveField) throw new Error('Gallery heading/showcase framing missing');
+          if (result.cards !== 6) throw new Error(`Expected 6 gallery cards, got ${result.cards}`);
+          for (const [label, present] of result.labels || []) {
+            if (!present) throw new Error(`Missing project demo surface: ${label}`);
+          }
+          if (!result.oldMilestoneAbsent || !result.oldImplementationAbsent) {
+            throw new Error('Old implementation-narration copy is still public');
+          }
+          if (!result.search || !result.category) throw new Error('Gallery controls missing');
+          console.log('PEOPLES_PUBLIC_GALLERY_SHOWCASE=PASS');
+          ws.close();
+          NODE
+          node /tmp/gallery-cert.mjs
