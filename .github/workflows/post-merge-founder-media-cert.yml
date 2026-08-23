@@ -1,0 +1,95 @@
+name: Post-merge founder media certification
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      EXPECTED_SHA: d7ac3872aed0774dee551285e5bed0ae27b5ca5b
+      BASE_URL: https://heruahmose.github.io/peoples-portfolio/
+
+    steps:
+      - name: Verify exact public deployment identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          observed="$(curl --fail --silent --show-error "${BASE_URL}deploy-commit.txt")"
+          printf 'EXPECTED_SHA=%s\nOBSERVED_SHA=%s\n' "$EXPECTED_SHA" "$observed"
+          test "$observed" = "$EXPECTED_SHA"
+          printf 'PUBLIC_FOUNDER_MEDIA_SHA=PASS\n'
+
+      - name: Verify representative founder media assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          assets=(
+            'media/founder/hero/founder-present-portrait.webp'
+            'media/founder/origins/young-authors-clipping.webp'
+            'media/founder/origins/newspaper-feature.webp'
+            'media/founder/football/kannapolis-action.webp'
+            'media/founder/football/kannapolis-ranking.webp'
+            'media/founder/track/kannapolis-relay.webp'
+            'media/founder/navy/academy-yearbook.webp'
+            'media/founder/present/npower-podium.webp'
+            'media/founder/present/wedding-family.webp'
+          )
+
+          for asset in "${assets[@]}"; do
+            headers="$(mktemp)"
+            body="$(mktemp)"
+            curl --fail --silent --show-error --location \
+              --dump-header "$headers" \
+              --output "$body" \
+              "${BASE_URL}${asset}"
+            bytes="$(wc -c < "$body" | tr -d ' ')"
+            content_type="$(awk 'BEGIN{IGNORECASE=1} /^content-type:/ {gsub(/\r/,""); print $2; exit}' "$headers")"
+            printf 'ASSET=%s BYTES=%s CONTENT_TYPE=%s\n' "$asset" "$bytes" "$content_type"
+            test "$bytes" -gt 1000
+            case "$content_type" in
+              image/webp*|application/octet-stream*) ;;
+              *) echo "::error::Unexpected content type for $asset: $content_type"; exit 1 ;;
+            esac
+            rm -f "$headers" "$body"
+          done
+          printf 'PUBLIC_FOUNDER_MEDIA_ASSETS=PASS\n'
+
+      - name: Execute public home and prove documentary gallery is rendered
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME_BIN" ]; then
+            echo '::error::Headless Chrome/Chromium is unavailable on the runner.'
+            exit 1
+          fi
+
+          "$CHROME_BIN" \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --virtual-time-budget=12000 \
+            --dump-dom \
+            "$BASE_URL" \
+            > /tmp/peoples-founder-media-dom.html
+
+          grep -Fq 'data-peoples-app-mounted="true"' /tmp/peoples-founder-media-dom.html
+          grep -Fq 'data-founder-media-journey="v5.5.4"' /tmp/peoples-founder-media-dom.html
+          grep -Fq '>Origins<' /tmp/peoples-founder-media-dom.html
+          grep -Fq '>Football<' /tmp/peoples-founder-media-dom.html
+          grep -Fq '>Track<' /tmp/peoples-founder-media-dom.html
+          grep -Fq '>Navy<' /tmp/peoples-founder-media-dom.html
+          grep -Fq '>Founder Present<' /tmp/peoples-founder-media-dom.html
+          grep -Fq 'Early creative recognition' /tmp/peoples-founder-media-dom.html
+          grep -Fq 'Student years' /tmp/peoples-founder-media-dom.html
+          grep -Fq '/peoples-portfolio/media/founder/origins/young-authors-clipping.webp' /tmp/peoples-founder-media-dom.html
+          grep -Fq '/peoples-portfolio/media/founder/origins/newspaper-feature.webp' /tmp/peoples-founder-media-dom.html
+          printf 'PUBLIC_FOUNDER_MEDIA_DOM=PASS\n'
