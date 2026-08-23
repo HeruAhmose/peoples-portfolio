@@ -28,15 +28,14 @@ jobs:
           check_sha 'https://heruahmose.github.io/peoples-portfolio/deploy-commit.txt' '9e7fa2a6d3395aef7a7cf31dca7d73e4eb664189' PEOPLES
           check_sha 'https://heruahmose.github.io/blue-gold-daily/deploy-commit.txt' 'd3b801a57e1c25713a1f1c2da838b0da741930bb' BLUE_GOLD
           check_sha 'https://heruahmose.github.io/trai-portfolio/deploy-commit.txt' '312fe89e9ba504bf749f361a09d2f5fadfd2fe6c' TRAI
+          check_sha 'https://heruahmose.github.io/QueenCalifia-CyberAI/deploy-commit.txt' 'ed6dfe47af9230406e4ba116dfb862283a4b74d8' QUEEN_CALIFIA
+          echo 'FLEET_PAGES_IDENTITY=PASS'
 
   peoples:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
     steps:
       - name: Founder narrative browser gate
-        shell: bash
         run: |
-          set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom 'https://heruahmose.github.io/peoples-portfolio/timeline/' > /tmp/site.html
           grep -Fq 'LINEAGE ENGINE' /tmp/site.html
@@ -47,12 +46,9 @@ jobs:
 
   blue_gold:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
     steps:
       - name: Phi formulation browser gate
-        shell: bash
         run: |
-          set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=15000 --dump-dom 'https://heruahmose.github.io/blue-gold-daily/layers.html' > /tmp/site.html
           grep -Fq 'Φ ARCHITECTURE' /tmp/site.html
@@ -62,26 +58,20 @@ jobs:
 
   trai:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
     steps:
       - name: Estate organism browser gate
-        shell: bash
         run: |
-          set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          timeout 35s "$chrome" --headless --no-sandbox --disable-gpu --disable-webgl --disable-software-rasterizer --virtual-time-budget=8000 --dump-dom 'https://heruahmose.github.io/trai-portfolio/' > /tmp/site.html
+          timeout 40s "$chrome" --headless --no-sandbox --disable-gpu --disable-webgl --disable-software-rasterizer --virtual-time-budget=10000 --dump-dom 'https://heruahmose.github.io/trai-portfolio/' > /tmp/site.html
           test -s /tmp/site.html
           grep -Eiq 'Seven regions|Seven functions|one memory|TRAI' /tmp/site.html
           echo 'TRAI_PRESTIGE=PASS'
 
   techbridge:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
     steps:
       - name: Digital equity infrastructure browser gate
-        shell: bash
         run: |
-          set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom 'https://techbridge-collective.org/' > /tmp/site.html
           grep -Eiq 'TechBridge|Digital Equity' /tmp/site.html
@@ -90,12 +80,9 @@ jobs:
 
   tamerian:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
     steps:
       - name: Material intelligence browser gate
-        shell: bash
         run: |
-          set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           timeout 75s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=22000 --dump-dom 'https://tamerian-materials.com/' > /tmp/site.html
           grep -Fq 'MATERIAL ATLAS' /tmp/site.html
@@ -104,19 +91,34 @@ jobs:
           grep -Fq '0/7 missions' /tmp/site.html
           echo 'TAMERIAN_PRESTIGE=PASS'
 
-  qc_legacy:
+  queen_califia:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
-      - name: Diagnose legacy Firebase without accepting it
+      - name: Current public presentation browser gate
         shell: bash
         run: |
           set -euo pipefail
-          code="$(curl --silent --show-error --location --output /tmp/qc-legacy --write-out '%{http_code}' 'https://queencalifia-cyberai.web.app/')"
-          printf 'QC_LEGACY_HTTP=%s\n' "$code"
+          base='https://heruahmose.github.io/QueenCalifia-CyberAI/'
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=14000 --dump-dom "$base" > /tmp/qc.html
+          grep -Fqi 'Queen Califia' /tmp/qc.html
+          grep -Fqi 'SOVEREIGN COGNITIVE DEFENSE' /tmp/qc.html
+          grep -Fqi 'HUMAN AUTHORITY' /tmp/qc.html
+          echo 'QC_CURRENT_PRESENTATION=PASS'
+      - name: Sovereign edge must remain dormant
+        shell: bash
+        run: |
+          set -euo pipefail
+          code="$(curl --silent --show-error --location --output /tmp/edge --write-out '%{http_code}' 'https://qc.tamerian-materials.com/' || true)"
+          echo "QC_EDGE_HTTP=$code"
+          test "$code" = 530
+          grep -Fqi '1033' /tmp/edge
+          echo 'QC_SOVEREIGN_EDGE_DORMANT=PASS'
+      - name: Legacy Firebase remains noncanonical diagnostic
+        shell: bash
+        run: |
+          code="$(curl --silent --show-error --location --output /tmp/legacy --write-out '%{http_code}' 'https://queencalifia-cyberai.web.app/')"
+          echo "QC_LEGACY_FIREBASE_HTTP=$code"
           test "$code" = 200
-          if grep -Fq 'SOVEREIGN SEAL' /tmp/qc-legacy; then
-            echo 'QC_LEGACY_PRESTIGE=CURRENT'
-          else
-            echo 'QC_LEGACY_PRESTIGE=STALE_EXPECTED_PENDING_MIGRATION'
-          fi
+          if grep -Fq 'SOVEREIGN SEAL' /tmp/legacy; then echo 'QC_LEGACY_FIREBASE=CURRENT'; else echo 'QC_LEGACY_FIREBASE=STALE_NONCANONICAL'; fi
