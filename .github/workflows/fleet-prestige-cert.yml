@@ -62,14 +62,15 @@ jobs:
 
   trai:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 5
     steps:
       - name: Estate organism browser gate
         shell: bash
         run: |
           set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          timeout 60s "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=18000 --dump-dom 'https://heruahmose.github.io/trai-portfolio/' > /tmp/site.html
+          timeout 35s "$chrome" --headless --no-sandbox --disable-gpu --disable-webgl --disable-software-rasterizer --virtual-time-budget=8000 --dump-dom 'https://heruahmose.github.io/trai-portfolio/' > /tmp/site.html
+          test -s /tmp/site.html
           grep -Eiq 'Seven regions|Seven functions|one memory|TRAI' /tmp/site.html
           echo 'TRAI_PRESTIGE=PASS'
 
