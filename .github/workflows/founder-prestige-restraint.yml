@@ -1,0 +1,47 @@
+name: Temporary Founder Prestige Restraint
+
+on:
+  push:
+    branches: [style/founder-prestige-restraint-20260823]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: style/founder-prestige-restraint-20260823
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+      - name: Restrain founder hero effects
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('client/src/pages/Home.tsx')
+          s = p.read_text()
+          s = s.replace('  LoadingPulse,\n', '')
+          s = s.replace('  ParticleBurst,\n', '')
+          s = s.replace('  SuccessCheckmark,\n', '')
+          s = s.replace('            <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">\n              <ParticleBurst />\n            </div>\n', '')
+          s = s.replace('              <div className="mt-4 flex flex-wrap items-center justify-center gap-4">\n                <SuccessCheckmark label="SYSTEMS NOMINAL" />\n                <LoadingPulse className="opacity-80" />\n              </div>\n', '              <p className="mt-5 font-mono text-[9px] tracking-[0.3em] text-muted-foreground/70 md:text-[10px]">\n                FOUNDER RECORD /// VERIFIED WORK · ACTIVE SYSTEMS · PUBLIC EVIDENCE\n              </p>\n')
+          s = s.replace('className="cyber-panel cyber-panel--hero relative max-w-3xl overflow-hidden', 'className="cyber-panel cyber-panel--hero relative max-w-4xl overflow-hidden')
+          p.write_text(s)
+      - name: Format changed source
+        run: npx prettier --write client/src/pages/Home.tsx
+      - name: Commit application change
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- client/src/pages/Home.tsx; then
+            echo 'No application changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add client/src/pages/Home.tsx
+          git commit -m 'style(home): quiet founder HUD and strengthen hierarchy'
+          git push origin HEAD:style/founder-prestige-restraint-20260823
