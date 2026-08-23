@@ -7,15 +7,12 @@ import {
   FloatingBubbles,
   GlitchFlash,
   LiquidSwipeWave,
-  LoadingPulse,
   MorphingBlob,
   ParallaxSection,
-  ParticleBurst,
   RippleButton,
   ScrollReveal,
   StaggerItem,
   StaggerReveal,
-  SuccessCheckmark,
   TextReveal,
 } from "@/components/AdvancedVisualEffects";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
@@ -48,13 +45,10 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85 }}
-            className="cyber-panel cyber-panel--hero relative max-w-3xl overflow-hidden px-6 pt-10 pb-12 text-center md:px-12 md:pt-14 md:pb-14"
+            className="cyber-panel cyber-panel--hero relative max-w-4xl overflow-hidden px-6 pt-10 pb-12 text-center md:px-12 md:pt-14 md:pb-14"
           >
             <MorphingBlob className="-top-24 -left-20 h-48 w-48 md:-left-28 md:h-64 md:w-64" />
             <AnimatedGradientOrb className="-top-32 right-[-20%] h-72 w-72 md:right-[-10%]" />
-            <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
-              <ParticleBurst />
-            </div>
             <LiquidSwipeWave className="z-[2]" />
 
             <div className="relative z-10">
@@ -70,10 +64,10 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   SOVEREIGN STACK /// ZERO-TRUST VISUAL · CIPHER-ORBIT HUD
                 </GlitchFlash>
               </p>
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
-                <SuccessCheckmark label="SYSTEMS NOMINAL" />
-                <LoadingPulse className="opacity-80" />
-              </div>
+              <p className="mt-5 font-mono text-[9px] tracking-[0.3em] text-muted-foreground/70 md:text-[10px]">
+                FOUNDER RECORD /// VERIFIED WORK · ACTIVE SYSTEMS · PUBLIC
+                EVIDENCE
+              </p>
               <div className="mt-7 space-y-5">
                 <h1 className="font-display text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
                   <HolographicText variant="sovereign" className="font-bold">
