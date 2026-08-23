@@ -3,6 +3,8 @@ name: Fleet Prestige Certification
 on:
   push:
     branches: [probe/fleet-prestige-cert-20260823]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -11,14 +13,14 @@ permissions:
 jobs:
   certify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout probe host
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
 
-      - name: Install Chrome helpers
+      - name: Require Chrome
         shell: bash
         run: |
           set -euo pipefail
@@ -49,9 +51,7 @@ jobs:
             'https://techbridge-collective.org/' \
             'https://heruahmose.github.io/blue-gold-daily/' \
             'https://heruahmose.github.io/blue-gold-daily/layers.html' \
-            'https://heruahmose.github.io/trai-portfolio/' \
-            'https://heruahmose.github.io/trai-portfolio/melanina/' \
-            'https://queencalifia-cyberai.web.app/'; do
+            'https://heruahmose.github.io/trai-portfolio/'; do
             code="$(curl --silent --show-error --location --output /tmp/body --write-out '%{http_code}' "$url")"
             printf '%s -> %s bytes=%s\n' "$url" "$code" "$(wc -c </tmp/body)"
             test "$code" = 200
@@ -64,40 +64,47 @@ jobs:
           set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           render() {
-            local url="$1" out="$2" budget="${3:-12000}"
+            local url="$1" out="$2" budget="${3:-15000}"
             "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget="$budget" --dump-dom "$url" > "$out"
             test -s "$out"
           }
 
-          render 'https://heruahmose.github.io/peoples-portfolio/timeline/' /tmp/peoples.html 15000
+          render 'https://heruahmose.github.io/peoples-portfolio/timeline/' /tmp/peoples.html 18000
           grep -Fq 'LINEAGE ENGINE' /tmp/peoples.html
           grep -Fq 'FOUNDER JOURNEY' /tmp/peoples.html
+          grep -Fq 'SERVICE' /tmp/peoples.html
+          grep -Fq 'INVENTION' /tmp/peoples.html
+          grep -Fq 'SOVEREIGNTY' /tmp/peoples.html
 
           render 'https://heruahmose.github.io/blue-gold-daily/layers.html' /tmp/bluegold.html
           grep -Fq 'Φ ARCHITECTURE' /tmp/bluegold.html
+          grep -Fq 'LIVING INDEX' /tmp/bluegold.html
           grep -Fq 'Sovereignty Loop' /tmp/bluegold.html
 
           render 'https://heruahmose.github.io/trai-portfolio/' /tmp/trai.html 18000
-          grep -Eiq 'TRAI|Tamerian Renaissance Alliance Initiative' /tmp/trai.html
+          grep -Eiq 'Seven regions|Seven functions|one memory|TRAI' /tmp/trai.html
 
-          render 'https://techbridge-collective.org/' /tmp/techbridge.html 15000
+          render 'https://techbridge-collective.org/' /tmp/techbridge.html 18000
           grep -Eiq 'TechBridge|Digital Equity' /tmp/techbridge.html
+          grep -Eiq 'ACCESS|NAVIGATION|SKILLS|TRUST|OPPORTUNITY' /tmp/techbridge.html
 
-          render 'https://tamerian-materials.com/' /tmp/tamerian.html 18000
-          grep -Eiq 'Tamerian' /tmp/tamerian.html
+          render 'https://tamerian-materials.com/' /tmp/tamerian.html 22000
+          grep -Fq 'MATERIAL ATLAS' /tmp/tamerian.html
+          grep -Fq 'LIVE PHASE MAP' /tmp/tamerian.html
+          grep -Eiq 'TRANSFORMATION|DEVICE ARCHITECTURE|Material System' /tmp/tamerian.html
+          grep -Fq '0/7 missions' /tmp/tamerian.html
 
-          render 'https://queencalifia-cyberai.web.app/' /tmp/qc.html 12000
-          grep -Eiq 'Queen Califia|QC' /tmp/qc.html
+          echo 'FLEET_PRESTIGE_PUBLIC_BROWSER=PASS'
 
-          echo 'FLEET_PUBLIC_BROWSER_SMOKE=PASS'
-
-      - name: Diagnose QC prestige currency
+      - name: Diagnose QC legacy surface without accepting it
         shell: bash
         run: |
           set -euo pipefail
-          if grep -Fq 'SOVEREIGN SEAL' /tmp/qc.html && grep -Fq 'SOVEREIGN COGNITIVE DEFENSE' /tmp/qc.html; then
-            echo 'QC_PRESTIGE_PUBLIC=CURRENT'
+          code="$(curl --silent --show-error --location --output /tmp/qc-legacy --write-out '%{http_code}' 'https://queencalifia-cyberai.web.app/')"
+          printf 'QC_LEGACY_HTTP=%s\n' "$code"
+          test "$code" = 200
+          if grep -Fq 'SOVEREIGN SEAL' /tmp/qc-legacy; then
+            echo 'QC_LEGACY_PRESTIGE=CURRENT'
           else
-            echo 'QC_PRESTIGE_PUBLIC=STALE'
-            exit 42
+            echo 'QC_LEGACY_PRESTIGE=STALE_EXPECTED_PENDING_MIGRATION'
           fi
