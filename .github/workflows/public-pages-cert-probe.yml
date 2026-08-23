@@ -8,7 +8,80 @@ permissions:
   contents: read
 
 jobs:
+  pipeline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 6b3e735ac79d4bc183629287ce581cbe212aca2c
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
+        with:
+          version: 10.34.5
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm test
+
+      - name: Reproduce Pages artifact
+        shell: bash
+        env:
+          PEOPLES_STATIC_PAGES: "true"
+        run: |
+          set -euo pipefail
+          pnpm exec vite build --base /peoples-portfolio/
+          sed -i 's/data-trai-static="false"/data-trai-static="true"/' dist/public/index.html
+          sed -i 's/__DEPLOY_COMMIT__/6b3e735ac79d4bc183629287ce581cbe212aca2c/g' dist/public/index.html
+          printf '%s\n' '6b3e735ac79d4bc183629287ce581cbe212aca2c' > dist/public/deploy-commit.txt
+          cp dist/public/index.html dist/public/404.html
+          for route in materials community research gallery timeline; do
+            mkdir -p "dist/public/$route"
+            cp dist/public/index.html "dist/public/$route/index.html"
+          done
+          touch dist/public/.nojekyll
+
+          test -s dist/public/index.html
+          test -s dist/public/deploy-commit.txt
+          grep -Fq '6b3e735ac79d4bc183629287ce581cbe212aca2c' dist/public/index.html
+          grep -Fq 'id="peoples-boot-fallback"' dist/public/index.html
+          grep -Fq 'data-trai-static="true"' dist/public/index.html
+          if grep -Eq '(src|href)="/assets/' dist/public/index.html; then exit 1; fi
+          grep -Eq '(src|href)="/peoples-portfolio/assets/' dist/public/index.html
+
+      - name: Execute reproduced artifact in headless Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/peoples-pages-root
+          mkdir -p /tmp/peoples-pages-root/peoples-portfolio
+          cp -a dist/public/. /tmp/peoples-pages-root/peoples-portfolio/
+          python3 -m http.server 4173 --directory /tmp/peoples-pages-root >/tmp/peoples-pages-http.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          for _ in $(seq 1 30); do
+            curl --fail --silent http://127.0.0.1:4173/peoples-portfolio/ >/dev/null && break
+            sleep 1
+          done
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+          "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=12000 --dump-dom \
+            http://127.0.0.1:4173/peoples-portfolio/ > /tmp/local-dom.html
+          grep -Fq 'data-peoples-app-mounted="true"' /tmp/local-dom.html
+          grep -Fq 'JONATHAN PEOPLES' /tmp/local-dom.html
+          if grep -Fq 'id="peoples-boot-fallback"' /tmp/local-dom.html; then
+            echo 'LOCAL_BROWSER_RENDER=FAIL_BOOT_FALLBACK_REMAINED' >&2
+            exit 1
+          fi
+          echo 'LOCAL_PAGES_PIPELINE=PASS'
+
   live:
+    needs: pipeline
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -18,12 +91,16 @@ jobs:
           set -euo pipefail
           expected="6b3e735ac79d4bc183629287ce581cbe212aca2c"
           base="https://heruahmose.github.io/peoples-portfolio"
-
-          observed="$(curl --fail --silent --show-error --location "${base}/deploy-commit.txt")"
+          status="$(curl --silent --location --output /tmp/deploy-commit --write-out '%{http_code}' "${base}/deploy-commit.txt")"
+          printf 'DEPLOY_COMMIT_HTTP_STATUS=%s\n' "$status"
+          if [ "$status" != 200 ]; then
+            echo 'PUBLIC_DEPLOYMENT_IDENTITY=FAIL_MISSING_CURRENT_ARTIFACT' >&2
+            exit 1
+          fi
+          observed="$(cat /tmp/deploy-commit)"
           printf 'EXPECTED_DEPLOY_COMMIT=%s\n' "$expected"
           printf 'PUBLIC_DEPLOY_COMMIT=%s\n' "$observed"
           test "$observed" = "$expected"
-
           html="$(curl --fail --silent --show-error --location "${base}/")"
           printf '%s' "$html" | grep -Fq "$expected"
           printf '%s' "$html" | grep -Fq 'id="peoples-boot-fallback"'
@@ -36,15 +113,8 @@ jobs:
           url="https://heruahmose.github.io/peoples-portfolio/"
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$chrome"
-
-          "$chrome" \
-            --headless \
-            --no-sandbox \
-            --disable-gpu \
-            --virtual-time-budget=12000 \
-            --dump-dom \
-            "$url" > /tmp/public-peoples-dom.html
-
+          "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=12000 --dump-dom "$url" \
+            > /tmp/public-peoples-dom.html
           grep -Fq 'data-peoples-app-mounted="true"' /tmp/public-peoples-dom.html
           grep -Fq 'JONATHAN PEOPLES' /tmp/public-peoples-dom.html
           if grep -Fq 'id="peoples-boot-fallback"' /tmp/public-peoples-dom.html; then
