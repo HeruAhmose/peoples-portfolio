@@ -1,0 +1,54 @@
+name: Public Pages Certification Probe
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Verify exact deployed revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="6b3e735ac79d4bc183629287ce581cbe212aca2c"
+          base="https://heruahmose.github.io/peoples-portfolio"
+
+          observed="$(curl --fail --silent --show-error --location "${base}/deploy-commit.txt")"
+          printf 'EXPECTED_DEPLOY_COMMIT=%s\n' "$expected"
+          printf 'PUBLIC_DEPLOY_COMMIT=%s\n' "$observed"
+          test "$observed" = "$expected"
+
+          html="$(curl --fail --silent --show-error --location "${base}/")"
+          printf '%s' "$html" | grep -Fq "$expected"
+          printf '%s' "$html" | grep -Fq 'id="peoples-boot-fallback"'
+          printf 'PUBLIC_HTTP_SHELL=PASS\n'
+
+      - name: Execute the public URL in headless Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://heruahmose.github.io/peoples-portfolio/"
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+
+          "$chrome" \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --virtual-time-budget=12000 \
+            --dump-dom \
+            "$url" > /tmp/public-peoples-dom.html
+
+          grep -Fq 'data-peoples-app-mounted="true"' /tmp/public-peoples-dom.html
+          grep -Fq 'JONATHAN PEOPLES' /tmp/public-peoples-dom.html
+          if grep -Fq 'id="peoples-boot-fallback"' /tmp/public-peoples-dom.html; then
+            echo 'PUBLIC_BROWSER_RENDER=FAIL_BOOT_FALLBACK_REMAINED' >&2
+            exit 1
+          fi
+          printf 'PUBLIC_BROWSER_RENDER=PASS\n'
