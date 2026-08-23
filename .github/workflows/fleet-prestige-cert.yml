@@ -1,0 +1,103 @@
+name: Fleet Prestige Certification
+
+on:
+  push:
+    branches: [probe/fleet-prestige-cert-20260823]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout probe host
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Install Chrome helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v google-chrome || command -v chromium || command -v chromium-browser
+
+      - name: Require exact Pages deployment identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          check_sha() {
+            local url="$1" expected="$2" label="$3"
+            observed="$(curl --fail --silent --show-error --location "$url" | tr -d '\r\n')"
+            printf '%s expected=%s observed=%s\n' "$label" "$expected" "$observed"
+            test "$observed" = "$expected"
+          }
+          check_sha 'https://heruahmose.github.io/peoples-portfolio/deploy-commit.txt' '9e7fa2a6d3395aef7a7cf31dca7d73e4eb664189' PEOPLES
+          check_sha 'https://heruahmose.github.io/blue-gold-daily/deploy-commit.txt' 'd3b801a57e1c25713a1f1c2da838b0da741930bb' BLUE_GOLD
+          check_sha 'https://heruahmose.github.io/trai-portfolio/deploy-commit.txt' '312fe89e9ba504bf749f361a09d2f5fadfd2fe6c' TRAI
+
+      - name: Public HTTP fleet smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          for url in \
+            'https://tamerian-materials.com/' \
+            'https://heruahmose.github.io/peoples-portfolio/' \
+            'https://heruahmose.github.io/peoples-portfolio/timeline/' \
+            'https://techbridge-collective.org/' \
+            'https://heruahmose.github.io/blue-gold-daily/' \
+            'https://heruahmose.github.io/blue-gold-daily/layers.html' \
+            'https://heruahmose.github.io/trai-portfolio/' \
+            'https://heruahmose.github.io/trai-portfolio/melanina/' \
+            'https://queencalifia-cyberai.web.app/'; do
+            code="$(curl --silent --show-error --location --output /tmp/body --write-out '%{http_code}' "$url")"
+            printf '%s -> %s bytes=%s\n' "$url" "$code" "$(wc -c </tmp/body)"
+            test "$code" = 200
+            test -s /tmp/body
+          done
+
+      - name: Render prestige-specific public surfaces in Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          render() {
+            local url="$1" out="$2" budget="${3:-12000}"
+            "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget="$budget" --dump-dom "$url" > "$out"
+            test -s "$out"
+          }
+
+          render 'https://heruahmose.github.io/peoples-portfolio/timeline/' /tmp/peoples.html 15000
+          grep -Fq 'LINEAGE ENGINE' /tmp/peoples.html
+          grep -Fq 'FOUNDER JOURNEY' /tmp/peoples.html
+
+          render 'https://heruahmose.github.io/blue-gold-daily/layers.html' /tmp/bluegold.html
+          grep -Fq 'Φ ARCHITECTURE' /tmp/bluegold.html
+          grep -Fq 'Sovereignty Loop' /tmp/bluegold.html
+
+          render 'https://heruahmose.github.io/trai-portfolio/' /tmp/trai.html 18000
+          grep -Eiq 'TRAI|Tamerian Renaissance Alliance Initiative' /tmp/trai.html
+
+          render 'https://techbridge-collective.org/' /tmp/techbridge.html 15000
+          grep -Eiq 'TechBridge|Digital Equity' /tmp/techbridge.html
+
+          render 'https://tamerian-materials.com/' /tmp/tamerian.html 18000
+          grep -Eiq 'Tamerian' /tmp/tamerian.html
+
+          render 'https://queencalifia-cyberai.web.app/' /tmp/qc.html 12000
+          grep -Eiq 'Queen Califia|QC' /tmp/qc.html
+
+          echo 'FLEET_PUBLIC_BROWSER_SMOKE=PASS'
+
+      - name: Diagnose QC prestige currency
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Fq 'SOVEREIGN SEAL' /tmp/qc.html && grep -Fq 'SOVEREIGN COGNITIVE DEFENSE' /tmp/qc.html; then
+            echo 'QC_PRESTIGE_PUBLIC=CURRENT'
+          else
+            echo 'QC_PRESTIGE_PUBLIC=STALE'
+            exit 42
+          fi
