@@ -55,7 +55,9 @@ jobs:
           grep -Eq '(src|href)="/peoples-portfolio/assets/' dist/public/index.html
 
       - name: Execute reproduced artifact in headless Chrome
+        id: chrome
         shell: bash
+        continue-on-error: true
         run: |
           set -euo pipefail
           rm -rf /tmp/peoples-pages-root
@@ -70,8 +72,41 @@ jobs:
           done
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$chrome"
-          "$chrome" --headless --no-sandbox --disable-gpu --virtual-time-budget=12000 --dump-dom \
-            http://127.0.0.1:4173/peoples-portfolio/ > /tmp/local-dom.html
+          "$chrome" \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --enable-logging=stderr \
+            --virtual-time-budget=12000 \
+            --dump-dom \
+            http://127.0.0.1:4173/peoples-portfolio/ \
+            > /tmp/local-dom.html 2>/tmp/chrome-stderr.log
+
+          {
+            echo '=== DOM MARKERS ==='
+            grep -o 'data-peoples-app-mounted="[^"]*"' /tmp/local-dom.html || true
+            grep -o 'id="peoples-boot-fallback"' /tmp/local-dom.html || true
+            grep -o 'JONATHAN PEOPLES' /tmp/local-dom.html | head || true
+            echo '=== HTML SERVER LOG ==='
+            cat /tmp/peoples-pages-http.log || true
+          } > /tmp/probe-summary.txt
+
+      - name: Upload browser evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: peoples-pages-browser-evidence
+          path: |
+            /tmp/local-dom.html
+            /tmp/chrome-stderr.log
+            /tmp/peoples-pages-http.log
+            /tmp/probe-summary.txt
+          retention-days: 3
+
+      - name: Assert reproduced browser render
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat /tmp/probe-summary.txt
           grep -Fq 'data-peoples-app-mounted="true"' /tmp/local-dom.html
           grep -Fq 'JONATHAN PEOPLES' /tmp/local-dom.html
           if grep -Fq 'id="peoples-boot-fallback"' /tmp/local-dom.html; then
