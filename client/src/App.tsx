@@ -120,16 +120,9 @@ function App() {
   const activeSection = pathToSection(location);
   const { isMuted, toggleMute, playSectionTransition, playClickSound } =
     useAudioSystem();
-  // The opening sequence is an entrance, not a toll: it plays at the root,
-  // and a deep link goes straight to content.
-  // Derived from wouter's location, which is already router-relative. Reading
-  // window.location.pathname here would see "/peoples-portfolio/materials" on
-  // Pages, whose first segment is the repo name, so every deep link would look
-  // like "home" and replay the sequence.
   const [showAwakening, setShowAwakening] = useState(
     () => activeSection === "home"
   );
-  // Full cut once per session; a compressed one on reloads after that.
   const [introBrief] = useState(() => {
     try {
       const seen = sessionStorage.getItem("trai_ignition_seen") === "1";
@@ -143,12 +136,22 @@ function App() {
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
+    document.documentElement.dataset.peoplesAppMounted = "true";
   }, []);
 
   useEffect(() => {
     document.title =
       SECTION_TITLES[activeSection] ?? SECTION_TITLES.home ?? "Portfolio";
   }, [activeSection]);
+
+  // Production fail-open: the cinematic intro must never become a permanent
+  // black overlay. The normal sequence completes in under four seconds; this
+  // watchdog gives slow devices generous headroom, then reveals the site.
+  useEffect(() => {
+    if (!showAwakening) return;
+    const watchdog = window.setTimeout(() => setShowAwakening(false), 7000);
+    return () => window.clearTimeout(watchdog);
+  }, [showAwakening]);
 
   const handleNavigate = (section: string) => {
     if (pathToSection(location) !== section) {
