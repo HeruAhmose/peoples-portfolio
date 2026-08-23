@@ -114,7 +114,7 @@ jobs:
               })()`,
               returnByValue: true
             });
-            result = evaluation.result?.result?.value;
+            result = evaluation.result?.value;
             if (result?.mounted && result?.heading && result?.cards === 6) break;
           }
           console.log(JSON.stringify(result, null, 2));
