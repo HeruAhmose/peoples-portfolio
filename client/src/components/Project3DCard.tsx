@@ -49,11 +49,15 @@ function GalleryOutboundLink({
 }
 
 function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
-  const common = "relative h-36 overflow-hidden rounded-lg border border-white/10 bg-black/35";
+  const common =
+    "relative h-36 overflow-hidden rounded-lg border border-white/10 bg-black/35";
 
   if (project.id === "tamerian-materials") {
     return (
-      <div className={common} aria-label="Animated materials lattice and energy harvesting preview">
+      <div
+        className={common}
+        aria-label="Animated materials lattice and energy harvesting preview"
+      >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.12),transparent_55%)]" />
         {[0, 1, 2, 3, 4].map(row =>
           [0, 1, 2, 3, 4, 5].map(col => (
@@ -62,7 +66,11 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
               className="absolute h-1.5 w-1.5 rounded-full bg-cyan-300"
               style={{ left: `${12 + col * 15}%`, top: `${16 + row * 17}%` }}
               animate={{ opacity: [0.25, 1, 0.25], scale: [0.8, 1.35, 0.8] }}
-              transition={{ duration: 2.6, repeat: Infinity, delay: (row + col) * 0.08 }}
+              transition={{
+                duration: 2.6,
+                repeat: Infinity,
+                delay: (row + col) * 0.08,
+              }}
             />
           ))
         )}
@@ -80,11 +88,20 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
 
   if (project.id === "queen-califia") {
     return (
-      <div className={common} aria-label="Animated sovereign cyber defense orchestration preview">
+      <div
+        className={common}
+        aria-label="Animated sovereign cyber defense orchestration preview"
+      >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(168,85,247,0.16),transparent_58%)]" />
         <motion.div
           className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-fuchsia-300/55"
-          animate={{ boxShadow: ["0 0 0 rgba(217,70,239,0)", "0 0 28px rgba(217,70,239,.35)", "0 0 0 rgba(217,70,239,0)"] }}
+          animate={{
+            boxShadow: [
+              "0 0 0 rgba(217,70,239,0)",
+              "0 0 28px rgba(217,70,239,.35)",
+              "0 0 0 rgba(217,70,239,0)",
+            ],
+          }}
           transition={{ duration: 2.4, repeat: Infinity }}
         />
         {[
@@ -112,7 +129,10 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
 
   if (project.id === "trai-organism") {
     return (
-      <div className={common} aria-label="Animated TRAI organism network preview">
+      <div
+        className={common}
+        aria-label="Animated TRAI organism network preview"
+      >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.14),transparent_60%)]" />
         {[
           [50, 50],
@@ -128,14 +148,35 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
             className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-200/70 bg-blue-500/30"
             style={{ left: `${left}%`, top: `${top}%` }}
             animate={{ scale: [0.8, 1.25, 0.8], opacity: [0.45, 1, 0.45] }}
-            transition={{ duration: 2.8, repeat: Infinity, delay: index * 0.16 }}
+            transition={{
+              duration: 2.8,
+              repeat: Infinity,
+              delay: index * 0.16,
+            }}
           />
         ))}
-        <svg className="absolute inset-0 h-full w-full opacity-55" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-          {["22,25", "78,24", "18,69", "82,68", "50,18", "50,82"].map((point, index) => {
-            const [x, y] = point.split(",");
-            return <line key={index} x1="50" y1="50" x2={x} y2={y} stroke="rgba(103,232,249,.55)" strokeWidth="0.5" />;
-          })}
+        <svg
+          className="absolute inset-0 h-full w-full opacity-55"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          {["22,25", "78,24", "18,69", "82,68", "50,18", "50,82"].map(
+            (point, index) => {
+              const [x, y] = point.split(",");
+              return (
+                <line
+                  key={index}
+                  x1="50"
+                  y1="50"
+                  x2={x}
+                  y2={y}
+                  stroke="rgba(103,232,249,.55)"
+                  strokeWidth="0.5"
+                />
+              );
+            }
+          )}
         </svg>
         <div className="absolute bottom-2 left-3 font-mono text-[9px] tracking-[0.18em] text-cyan-200/90">
           INTEROPERABLE ORGANISM · CROSS-SITE ROUTING
@@ -146,7 +187,10 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
 
   if (project.id === "techbridge") {
     return (
-      <div className={common} aria-label="Animated Digital Navigator and impact flow preview">
+      <div
+        className={common}
+        aria-label="Animated Digital Navigator and impact flow preview"
+      >
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,185,129,.08),transparent_60%)]" />
         {[16, 38, 60, 82].map((left, index) => (
           <motion.div
@@ -171,10 +215,28 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
 
   if (project.id === "research-lab") {
     return (
-      <div className={common} aria-label="Animated evidence graph and research trace preview">
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 45" preserveAspectRatio="none" aria-hidden>
-          <polyline points="0,36 14,30 28,33 42,19 55,24 68,11 82,17 100,7" fill="none" stroke="rgba(34,211,238,.8)" strokeWidth="1.2" />
-          <polyline points="0,40 14,35 28,37 42,28 55,30 68,21 82,25 100,15" fill="none" stroke="rgba(168,85,247,.55)" strokeWidth="0.8" />
+      <div
+        className={common}
+        aria-label="Animated evidence graph and research trace preview"
+      >
+        <svg
+          className="absolute inset-0 h-full w-full"
+          viewBox="0 0 100 45"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <polyline
+            points="0,36 14,30 28,33 42,19 55,24 68,11 82,17 100,7"
+            fill="none"
+            stroke="rgba(34,211,238,.8)"
+            strokeWidth="1.2"
+          />
+          <polyline
+            points="0,40 14,35 28,37 42,28 55,30 68,21 82,25 100,15"
+            fill="none"
+            stroke="rgba(168,85,247,.55)"
+            strokeWidth="0.8"
+          />
         </svg>
         {[18, 42, 68, 86].map((left, index) => (
           <motion.span
@@ -182,7 +244,11 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
             className="absolute h-2 w-2 rounded-full bg-cyan-300"
             style={{ left: `${left}%`, top: `${62 - index * 12}%` }}
             animate={{ scale: [0.7, 1.45, 0.7], opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 2.4, repeat: Infinity, delay: index * 0.25 }}
+            transition={{
+              duration: 2.4,
+              repeat: Infinity,
+              delay: index * 0.25,
+            }}
           />
         ))}
         <div className="absolute bottom-2 left-3 font-mono text-[9px] tracking-[0.18em] text-cyan-200/90">
@@ -193,9 +259,15 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
   }
 
   return (
-    <div className={common} aria-label="Animated technology training terminal preview">
+    <div
+      className={common}
+      aria-label="Animated technology training terminal preview"
+    >
       <div className="absolute left-3 right-3 top-3 rounded border border-cyan-300/20 bg-black/55 p-3 font-mono text-[9px] leading-5 text-cyan-200/90">
-        <motion.div animate={{ opacity: [0.35, 1, 0.35] }} transition={{ duration: 1.8, repeat: Infinity }}>
+        <motion.div
+          animate={{ opacity: [0.35, 1, 0.35] }}
+          transition={{ duration: 1.8, repeat: Infinity }}
+        >
           $ network-status --secure
         </motion.div>
         <div className="text-emerald-300">✓ endpoint hardening</div>
@@ -270,19 +342,30 @@ export default function Project3DCard({
           style={{ WebkitBackfaceVisibility: "hidden" }}
         >
           <div className="flex h-full min-h-[390px] flex-col rounded-xl border border-primary/35 bg-card/95 p-6 shadow-[inset_0_0_48px_oklch(0.65_0.25_45/0.08)] backdrop-blur-md md:min-h-[410px]">
-            <p className="font-mono text-[10px] tracking-[0.28em] text-primary">TECH STACK</p>
+            <p className="font-mono text-[10px] tracking-[0.28em] text-primary">
+              TECH STACK
+            </p>
             <ul className="mt-3 flex flex-wrap gap-2">
               {project.techStack.map(tech => (
-                <li key={tech} className="rounded-md border border-cyan-500/25 bg-background/50 px-2 py-1 font-mono text-[10px] text-foreground/85">
+                <li
+                  key={tech}
+                  className="rounded-md border border-cyan-500/25 bg-background/50 px-2 py-1 font-mono text-[10px] text-foreground/85"
+                >
                   {tech}
                 </li>
               ))}
             </ul>
             <div className="mt-5 rounded-lg border border-white/10 bg-background/35 p-4">
-              <p className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">IMPACT SIGNAL</p>
-              <p className="mt-1 text-sm font-medium text-foreground/90">{project.impactLabel}</p>
+              <p className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">
+                IMPACT SIGNAL
+              </p>
+              <p className="mt-1 text-sm font-medium text-foreground/90">
+                {project.impactLabel}
+              </p>
             </div>
-            <p className="mt-5 font-mono text-[10px] tracking-[0.28em] text-primary">OPEN PROJECT</p>
+            <p className="mt-5 font-mono text-[10px] tracking-[0.28em] text-primary">
+              OPEN PROJECT
+            </p>
             <ul className="mt-2 flex flex-col gap-2">
               {project.links.map(link => (
                 <li key={`${link.label}-${link.href}`}>
@@ -292,8 +375,12 @@ export default function Project3DCard({
             </ul>
             <div className="mt-auto border-t border-white/10 pt-4">
               <p className="font-mono text-[10px] text-muted-foreground">
-                Impact score · <span className="text-primary">{project.impactScore}</span>
-                <span className="text-muted-foreground"> · Updated {project.updatedAt}</span>
+                Impact score ·{" "}
+                <span className="text-primary">{project.impactScore}</span>
+                <span className="text-muted-foreground">
+                  {" "}
+                  · Updated {project.updatedAt}
+                </span>
               </p>
             </div>
           </div>
