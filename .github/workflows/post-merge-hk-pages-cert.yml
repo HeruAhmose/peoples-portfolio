@@ -1,0 +1,77 @@
+name: Post-merge H.K. Pages certification
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      EXPECTED_SHA: d7ac3872aed0774dee551285e5bed0ae27b5ca5b
+      BASE_URL: https://heruahmose.github.io/peoples-portfolio/
+
+    steps:
+      - name: Wait for exact public deployment identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for _ in $(seq 1 60); do
+            observed="$(curl --fail --silent --show-error "${BASE_URL}deploy-commit.txt" 2>/dev/null || true)"
+            if [ "$observed" = "$EXPECTED_SHA" ]; then
+              printf 'PUBLIC_DEPLOY_COMMIT=%s\n' "$observed"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          observed="$(curl --fail --silent --show-error "${BASE_URL}deploy-commit.txt")"
+          printf 'EXPECTED_SHA=%s\nOBSERVED_SHA=%s\n' "$EXPECTED_SHA" "$observed"
+          test "$observed" = "$EXPECTED_SHA"
+
+      - name: Verify H.K. identity exists in shipped bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          html="$(curl --fail --silent --show-error "$BASE_URL")"
+          asset="$(printf '%s' "$html" | grep -oE 'src="/peoples-portfolio/assets/[^"]+\.js"' | head -n 1 | cut -d'"' -f2)"
+          test -n "$asset"
+
+          bundle="$(curl --fail --silent --show-error "https://heruahmose.github.io${asset}")"
+          printf '%s' "$bundle" | grep -Fq 'PORTFOLIO GUIDE'
+          printf '%s' "$bundle" | grep -Fq 'Open H.K. Assistant'
+          printf 'PUBLIC_HK_BUNDLE=PASS\n'
+
+      - name: Execute public site and prove visible H.K. launcher
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME_BIN" ]; then
+            echo '::error::Headless Chrome/Chromium is unavailable on the runner.'
+            exit 1
+          fi
+
+          "$CHROME_BIN" \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --virtual-time-budget=10000 \
+            --dump-dom \
+            "$BASE_URL" \
+            > /tmp/peoples-public-dom.html
+
+          grep -Fq 'data-peoples-app-mounted="true"' /tmp/peoples-public-dom.html
+          grep -Fq 'PORTFOLIO GUIDE' /tmp/peoples-public-dom.html
+          grep -Fq 'aria-label="Open H.K. Assistant"' /tmp/peoples-public-dom.html
+          grep -Fq 'aria-expanded="false"' /tmp/peoples-public-dom.html
+          printf 'PUBLIC_HK_VISIBILITY=PASS\n'
