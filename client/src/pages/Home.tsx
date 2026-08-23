@@ -143,9 +143,9 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   id: "califia",
                   title: "Queen Califia CyberAI",
                   description:
-                    "Sovereign cybersecurity intelligence — sovereign awakening experience",
+                    "Sovereign cybersecurity intelligence — human-authority command architecture",
                   icon: "◉",
-                  externalUrl: "https://queencalifia-cyberai.web.app/",
+                  externalUrl: "https://qc.tamerian-materials.com/",
                 },
                 {
                   id: "gallery",
@@ -313,7 +313,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
               >
                 <h3 className="font-display mb-2 text-sm font-semibold tracking-wide text-primary md:text-base">
                   <a
-                    href="https://queencalifia-cyberai.web.app/"
+                    href="https://qc.tamerian-materials.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="transition-colors hover:text-cyan-300 hover:underline"
@@ -322,10 +322,11 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   </a>
                 </h3>
                 <p className="text-foreground/80 text-sm">
-                  Sovereign cybersecurity intelligence — interactive sovereign
-                  awakening sequence with hex mesh telemetry, cinematic
-                  transition geometry, and transition matrix — matching the
-                  public experience on the live Firebase app.
+                  Sovereign cybersecurity intelligence with a human-authority
+                  command architecture, provenance-aware decision framing, and a
+                  sovereign awakening interface. The canonical public runtime is
+                  transitioning away from the legacy Firebase presentation, so
+                  this portfolio does not certify that older surface as current.
                 </p>
               </motion.div>
             </StaggerItem>
@@ -369,7 +370,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
           </p>
           <p className="flex flex-wrap justify-center gap-x-5 gap-y-2 font-mono text-xs tracking-wide">
             <a
-              href="https://queencalifia-cyberai.web.app/"
+              href="https://qc.tamerian-materials.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-cyan-400/80 transition-colors hover:text-primary"
