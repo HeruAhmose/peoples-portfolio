@@ -60,8 +60,8 @@ export default function CommunityImpact({
           <p className="text-foreground/80 text-lg leading-relaxed mb-6">
             TechBridge Collective addresses the digital divide in North Carolina
             through a three-pillar model: weekly help desk services with paid
-            Digital Navigators, H.K. AI triage for 24/7 guidance, and
-            TechMinutes® impact reporting.
+            Digital Navigators, deterministic H.K. triage for bounded guidance,
+            and TechMinutes® impact reporting.
           </p>
           <p className="text-foreground/80 text-lg leading-relaxed">
             Pilot-to-scale targets are published as{" "}
@@ -273,7 +273,7 @@ export default function CommunityImpact({
         </motion.div>
       </section>
 
-      {/* H.K. AI Overview */}
+      {/* H.K. deterministic-triage overview */}
       <section className="container mx-auto px-4 py-16 border-t border-border">
         <motion.div
           initial={{ opacity: 0 }}
@@ -282,7 +282,7 @@ export default function CommunityImpact({
           className="max-w-3xl"
         >
           <h2 className="text-2xl font-bold text-foreground mb-6">
-            H.K. AI TRIAGE
+            DETERMINISTIC H.K. TRIAGE
           </h2>
           <p className="text-foreground/80 mb-6">
             Named for Horace King ({HORACE_KING_LIFESPAN}), the bridge builder

@@ -4,6 +4,7 @@ import { Send, X } from "lucide-react";
 import { TRPCClientError } from "@trpc/client";
 import { trpc } from "@/lib/trpc";
 import { usePortfolioAnalytics } from "@/hooks/usePortfolioAnalytics";
+import { PUBLIC_WORLD_URLS } from "@shared/publicWorlds";
 
 interface Message {
   id: string;
@@ -19,12 +20,11 @@ interface HKAssistantProps {
 
 const initialGreeting = `Greetings. I am H.K., your bridge for this portfolio — materials (Tamerian / AMC), digital equity (TechBridge), and sovereign cybersecurity (Queen Califia CyberAI).
 
-When the Claude API is configured on the server, I answer with full context. Otherwise you will see a short local fallback with links to the live sites.
+I answer from the verified public record and keep filed facts, standing builds, and designed systems distinct.
 
 How may I assist you today?`;
 
-const fallbackReply =
-  "The live model is offline (set ANTHROPIC_API_KEY on the server). For depth on each line of work, open the live sites: Queen Califia CyberAI — https://queencalifia-cyberai.web.app/ · Tamerian Materials — https://tamerian-materials.com/ · TechBridge Collective — https://techbridge-collective.org/ . The AMC materials hypothesis is summarized under Materials and Research here.";
+const fallbackReply = `The full assistant is temporarily unavailable. The verified public worlds remain available: Queen Califia CyberAI — ${PUBLIC_WORLD_URLS.queenCalifia} · Tamerian Materials — ${PUBLIC_WORLD_URLS.tamerian} · TechBridge Collective — ${PUBLIC_WORLD_URLS.techBridge}. The AMC materials hypothesis is summarized under Materials and Research here.`;
 
 export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
   const { logAssistantOpen } = usePortfolioAnalytics();
@@ -109,6 +109,8 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          role="dialog"
+          aria-label="H.K. portfolio assistant"
           className="cyber-panel fixed right-4 bottom-4 z-50 flex h-[min(24rem,50vh)] w-96 max-w-[calc(100vw-2rem)] flex-col rounded-2xl sm:h-96"
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -121,11 +123,12 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
                 H.K. ASSISTANT
               </h3>
               <p className="font-mono text-[10px] tracking-widest text-muted-foreground">
-                CLAUDE · PORTFOLIO CONTEXT
+                VERIFIED · PORTFOLIO CONTEXT
               </p>
             </div>
             <motion.button
               type="button"
+              aria-label="Close H.K. assistant"
               onClick={onClose}
               className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
               whileHover={{ scale: 1.1 }}
@@ -191,11 +194,13 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Ask about materials, TechBridge, Queen Califia, or research..."
+              aria-label="Ask H.K. about the portfolio"
               className="flex-1 rounded-lg border border-cyan-500/20 bg-background/80 px-3 py-2 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               disabled={loading}
             />
             <motion.button
               type="submit"
+              aria-label="Send message to H.K."
               disabled={loading || !input.trim()}
               className="rounded-lg bg-primary p-2 text-primary-foreground shadow-[0_0_14px_-4px_oklch(0.65_0.25_45/0.55)] transition-colors hover:bg-primary/85 disabled:opacity-50"
               whileHover={{ scale: 1.05 }}

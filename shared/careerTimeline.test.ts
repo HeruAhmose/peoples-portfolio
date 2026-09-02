@@ -89,6 +89,9 @@ describe("getMilestoneById", () => {
 
     expect(milestone?.year).toBe(2026);
     expect(milestone?.achievements.length).toBe(4);
+    expect(milestone?.location).toBe("Seven-organ Sovereignty Stack");
+    expect(milestone?.summary).toContain("seven independently viable");
+    expect(milestone?.detail).toContain("six distinct public experiences");
   });
 
   it("returns undefined for an unknown id", () => {
@@ -158,6 +161,18 @@ describe("founder-world coverage", () => {
     expect(ids.has("m2026-queen-califia")).toBe(true);
     expect(ids.has("m2026-techbridge")).toBe(true);
     expect(ids.has("m2026-organism")).toBe(true);
+  });
+
+  it("describes H.K. as deterministic triage", () => {
+    const milestone = getMilestoneById("m2026-techbridge")!;
+    const copy = [
+      milestone.summary,
+      milestone.detail,
+      ...milestone.achievements.map(achievement => achievement.label),
+    ].join(" ");
+
+    expect(copy).toContain("deterministic H.K. triage");
+    expect(copy).not.toContain("H.K. AI triage");
   });
 
   it("accepts gold and rejects unknown marker tones", () => {

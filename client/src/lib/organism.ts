@@ -9,6 +9,7 @@ export type {
   VentureMaturity,
 } from "../../../shared/organismFacts";
 import type { ClaimRegister } from "../../../shared/organismFacts";
+import { PUBLIC_WORLD_URLS } from "../../../shared/publicWorlds";
 
 /**
  * organism.ts — the canonical TRAI organ graph.
@@ -64,7 +65,7 @@ export const ORGANS: Organ[] = [
     name: "Tamerian Materials",
     domain: "Material sovereignty",
     route: "/materials",
-    external: "https://tamerian-materials.com/",
+    external: PUBLIC_WORLD_URLS.tamerian,
     hex: "#d6a33a",
   },
   {
@@ -76,7 +77,7 @@ export const ORGANS: Organ[] = [
     name: "True Mélange \u03a6",
     domain: "Biological sovereignty",
     route: null,
-    external: "https://heruahmose.github.io/blue-gold-daily/layers.html",
+    external: PUBLIC_WORLD_URLS.blueGold,
     hex: "#a8522f",
   },
   {
@@ -88,7 +89,7 @@ export const ORGANS: Organ[] = [
     name: "Queen Califia",
     domain: "Cognitive sovereignty",
     route: null,
-    external: "https://queencalifia-cyberai.web.app/",
+    external: PUBLIC_WORLD_URLS.queenCalifia,
     hex: "#6ea8da",
   },
   {
@@ -124,7 +125,7 @@ export const ORGANS: Organ[] = [
     name: "TechBridge Collective",
     domain: "Community reach",
     route: "/community",
-    external: "https://techbridge-collective.org/",
+    external: PUBLIC_WORLD_URLS.techBridge,
     hex: "#2f765d",
   },
   {

@@ -8,6 +8,7 @@ import {
   CLAIM_FONT,
   CLAIM_LABEL,
 } from "../client/src/lib/organism";
+import { PUBLIC_WORLD_URLS } from "./publicWorlds";
 
 /**
  * Guards the organ graph and, more importantly, the two defects that reached a
@@ -92,6 +93,12 @@ describe("organ graph", () => {
     );
     expect(ORGANS.find(o => o.name === "True Mélange Φ")?.external).toBe(
       "https://heruahmose.github.io/blue-gold-daily/layers.html"
+    );
+  });
+
+  it("pins Queen Califia to the repaired public command surface", () => {
+    expect(ORGANS.find(o => o.name === "Queen Califia")?.external).toBe(
+      PUBLIC_WORLD_URLS.queenCalifia
     );
   });
 

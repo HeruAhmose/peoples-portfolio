@@ -1,4 +1,6 @@
-export const ABOUT_RESUME_PDF_PATH = "/Jonathan-Peoples-Resume.pdf";
+import { PUBLIC_WORLD_URLS } from "./publicWorlds";
+
+export const ABOUT_RESUME_PDF_PATH = `${import.meta.env.BASE_URL}Jonathan-Peoples-Resume.pdf`;
 
 export const aboutContact = {
   location: "North Carolina",
@@ -54,7 +56,7 @@ export const currentWorlds = [
     id: "tamerian",
     title: "Tamerian Materials",
     eyebrow: "MATTER /// ENERGY /// QUANTUM",
-    href: "https://tamerian-materials.com/",
+    href: PUBLIC_WORLD_URLS.tamerian,
     description:
       "Advanced-materials work centered on Tamerian Ore: a hemp-based crystalline composite thesis spanning energy harvesting, quantum sensing, and future information systems.",
     signal: "MATERIALS",
@@ -63,7 +65,7 @@ export const currentWorlds = [
     id: "califia",
     title: "Queen Califia CyberAI",
     eyebrow: "SECURITY /// GOVERNANCE /// AUTONOMY",
-    href: "https://queencalifia-cyberai.web.app/",
+    href: PUBLIC_WORLD_URLS.queenCalifia,
     description:
       "A sovereign cybersecurity architecture built around unified security engines, biomimetic defense, post-quantum readiness, and human-controlled autonomy.",
     signal: "CYBER",
@@ -72,16 +74,16 @@ export const currentWorlds = [
     id: "techbridge",
     title: "TechBridge Collective",
     eyebrow: "ACCESS /// DIGNITY /// INFRASTRUCTURE",
-    href: "https://techbridge-collective.org/",
+    href: PUBLIC_WORLD_URLS.techBridge,
     description:
-      "Community technology infrastructure built around paid Digital Navigators, H.K. AI triage, and measurable service delivery for people navigating the digital world.",
+      "Community technology infrastructure built around paid Digital Navigators, deterministic H.K. triage, and measurable service delivery for people navigating the digital world.",
     signal: "COMMUNITY",
   },
   {
     id: "trai",
     title: "TRAI",
     eyebrow: "ORGANISM /// SYSTEMS /// INTEROPERABILITY",
-    href: "https://heruahmose.github.io/trai-portfolio/",
+    href: PUBLIC_WORLD_URLS.trai,
     description:
       "The systems world connecting research, interfaces, orchestration, and the shared organism protocol across the portfolio.",
     signal: "SYSTEMS",

@@ -7,9 +7,10 @@ import {
   SHOWCASE_PROJECTS,
   sortShowcaseProjects,
 } from "./projectGallery";
+import { PUBLIC_WORLD_URLS } from "./publicWorlds";
 
 describe("projectGallery data", () => {
-  it("exports exactly six founder-world projects", () => {
+  it("exports exactly six showcase projects", () => {
     expect(SHOWCASE_PROJECTS).toHaveLength(6);
   });
 
@@ -25,6 +26,32 @@ describe("projectGallery data", () => {
     expect(ids.has("queen-califia")).toBe(true);
     expect(ids.has("techbridge")).toBe(true);
     expect(ids.has("trai-organism")).toBe(true);
+  });
+
+  it("routes Queen Califia to the current public command surface", () => {
+    const queen = SHOWCASE_PROJECTS.find(
+      project => project.id === "queen-califia"
+    );
+    expect(queen?.links[0]?.href).toBe(PUBLIC_WORLD_URLS.queenCalifia);
+    expect(queen?.techStack).toContain("GitHub Pages");
+    expect(queen?.techStack).not.toContain("Firebase Hosting");
+  });
+
+  it("keeps seven organs distinct from six public experiences", () => {
+    const trai = SHOWCASE_PROJECTS.find(
+      project => project.id === "trai-organism"
+    );
+    expect(trai?.shortDescription).toContain("seven-organ Sovereignty Stack");
+    expect(trai?.shortDescription).toContain("six public experiences");
+    expect(trai?.impactLabel).toBe("Seven-organ Sovereignty Stack");
+  });
+
+  it("describes TechBridge H.K. triage as deterministic", () => {
+    const techBridge = SHOWCASE_PROJECTS.find(
+      project => project.id === "techbridge"
+    );
+    expect(techBridge?.shortDescription).toContain("deterministic H.K. triage");
+    expect(techBridge?.techStack).toContain("Deterministic triage");
   });
 
   it("requires core fields on every project", () => {
@@ -66,7 +93,7 @@ describe("projectMatchesSearch", () => {
       item => item.id === "queen-califia"
     )!;
 
-    expect(projectMatchesSearch(project, "firebase")).toBe(true);
+    expect(projectMatchesSearch(project, "github pages")).toBe(true);
   });
 
   it("returns false when no field contains the query", () => {

@@ -1,3 +1,5 @@
+import { PUBLIC_WORLD_URLS } from "./publicWorlds";
+
 export type ProjectCategory =
   "cybersecurity" | "materials" | "equity" | "research" | "platform";
 
@@ -41,7 +43,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     categoryLabel: PROJECT_CATEGORY_LABELS.cybersecurity,
     techStack: [
       "React",
-      "Firebase Hosting",
+      "GitHub Pages",
       "Framer Motion",
       "Security orchestration",
       "Post-quantum design",
@@ -49,7 +51,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     links: [
       {
         label: "Live app",
-        href: "https://queencalifia-cyberai.web.app/",
+        href: PUBLIC_WORLD_URLS.queenCalifia,
       },
     ],
     impactLabel: "Sovereign multi-engine security architecture",
@@ -73,7 +75,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     links: [
       {
         label: "Live site",
-        href: "https://tamerian-materials.com/",
+        href: PUBLIC_WORLD_URLS.tamerian,
       },
     ],
     impactLabel: "Materials + energy + sensing research program",
@@ -84,12 +86,12 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     id: "techbridge",
     title: "TechBridge Collective",
     shortDescription:
-      "Community technology infrastructure combining paid Digital Navigators, H.K. AI triage, and measurable support for real-world digital tasks.",
+      "Community technology infrastructure combining paid Digital Navigators, deterministic H.K. triage, and measurable support for real-world digital tasks.",
     category: "equity",
     categoryLabel: PROJECT_CATEGORY_LABELS.equity,
     techStack: [
       "Community UX",
-      "AI triage",
+      "Deterministic triage",
       "Service design",
       "Impact measurement",
       "Digital navigation",
@@ -97,7 +99,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     links: [
       {
         label: "Organization",
-        href: "https://techbridge-collective.org/",
+        href: PUBLIC_WORLD_URLS.techBridge,
       },
     ],
     impactLabel: "Human-centered digital-equity infrastructure",
@@ -108,7 +110,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     id: "trai-organism",
     title: "TRAI",
     shortDescription:
-      "The systems world connecting research, interfaces, orchestration, six-world navigation, and cinematic cross-site transport without collapsing each world's identity.",
+      "The systems world connecting a seven-organ Sovereignty Stack across six public experiences without collapsing each organ's identity.",
     category: "platform",
     categoryLabel: PROJECT_CATEGORY_LABELS.platform,
     techStack: [
@@ -122,10 +124,10 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     links: [
       {
         label: "Enter TRAI",
-        href: "https://heruahmose.github.io/trai-portfolio/",
+        href: PUBLIC_WORLD_URLS.trai,
       },
     ],
-    impactLabel: "Six-world interoperable organism",
+    impactLabel: "Seven-organ Sovereignty Stack",
     impactScore: 93,
     updatedAt: "2026-08-07",
   },
