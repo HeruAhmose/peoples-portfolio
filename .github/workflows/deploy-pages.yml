@@ -113,6 +113,13 @@ jobs:
           grep -R -Fq 'https://heruahmose.github.io/QueenCalifia-CyberAI/' dist/public/assets
           grep -R -Fq 'Operating under §508(c)(1)(A)' dist/public/assets
           grep -R -Fq 'Mandate of Mistrust' dist/public/assets
+          grep -R -Fq 'CONNECTED ORGANS' dist/public/assets
+          grep -R -Fq 'One organism, expressed through distinct systems.' dist/public/assets
+
+          if grep -RIn 'CONNECTED VENTURES' dist/public; then
+            echo "::error::Holding-company language detected in Pages artifact."
+            exit 1
+          fi
 
           if grep -RIn 'queencalifia-cyberai.web.app' dist/public; then
             echo "::error::Retired Queen Califia endpoint detected."
