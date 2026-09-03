@@ -9,15 +9,15 @@ Context for Claude Code. Read before touching anything.
 A visitor lands here. The opening sequence names all seven organs; two have a
 page in the gate, five open outward into the estate. No organ is a dead end.
 
-| Organ                              | Destination                  |
-| ---------------------------------- | ---------------------------- |
-| Skeleton · Tamerian Materials      | gate `/materials`            |
-| Heart · True Mélange Φ             | blue-gold-daily world        |
-| Brain · Queen Califia              | queencalifia-cyberai.web.app |
-| Vessels · Mela Nation              | estate `/mela-nation`        |
-| Skin · MeLaNiNa                    | estate `/melanina`           |
-| Hands · TechBridge Collective      | gate `/community`            |
-| Lymphatic · The Peoples Foundation | estate `/peoples-foundation` |
+| Organ                              | Destination                                |
+| ---------------------------------- | ------------------------------------------ |
+| Skeleton · Tamerian Materials      | gate `/materials`                          |
+| Heart · True Mélange Φ             | blue-gold-daily world                      |
+| Brain · Queen Califia              | heruahmose.github.io/QueenCalifia-CyberAI/ |
+| Vessels · Mela Nation              | estate `/mela-nation`                      |
+| Skin · MeLaNiNa                    | estate `/melanina`                         |
+| Hands · TechBridge Collective      | gate `/community`                          |
+| Lymphatic · The Peoples Foundation | estate `/peoples-foundation`               |
 
 What this means in practice:
 
@@ -34,9 +34,11 @@ What this means in practice:
 ## What this is
 
 Jonathan Peoples' portfolio, and the front door for TRAI — the Tamerian
-Renaissance Alliance Initiative. Seven ventures framed as organs of one
-organism. React 19 + Vite + wouter + Tailwind, with an Express/tRPC server that
-does **not** run on the deployed site.
+Renaissance Alliance Initiative. TRAI is one living Sovereignty Stack expressed
+through seven independently viable, mutually reinforcing organs—not a holding
+company or a portfolio of disconnected ventures. The Mandate of Mistrust is its
+constitutional operating doctrine. React 19 + Vite + wouter + Tailwind, with an
+Express/tRPC server that does **not** run on the deployed site.
 
 Deployed as a static GitHub Pages project site at
 `https://heruahmose.github.io/peoples-portfolio/`.

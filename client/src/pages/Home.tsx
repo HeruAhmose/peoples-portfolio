@@ -286,8 +286,8 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                 <p className="text-foreground/80 text-sm">
                   Building bridges of access, dignity, and opportunity — free,
                   human-centered digital help at Triangle community sites.
-                  Weekly help desk, H.K. AI triage (named for Horace King), and
-                  TechMinutes® reporting. SPAN-modeled rollout: Year{" "}
+                  Weekly help desk, deterministic H.K. triage (named for Horace
+                  King), and TechMinutes® reporting. SPAN-modeled rollout: Year{" "}
                   {TECHBRIDGE_ROLLOUT.year1Hubs} pilot hubs (
                   {TECHBRIDGE_ROLLOUT.year1PilotSites.join(", ")}) and Year{" "}
                   {TECHBRIDGE_ROLLOUT.year2Hubs} hubs with a Year 2 SOM of ~

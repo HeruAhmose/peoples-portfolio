@@ -95,6 +95,30 @@ jobs:
             exit 1
           fi
 
+          founder_assets=(
+            'media/founder/football/kannapolis-action.webp'
+            'media/founder/navy/academy-yearbook.webp'
+            'media/founder/hero/founder-present-portrait.webp'
+          )
+          for asset in "${founder_assets[@]}"; do
+            test -s "dist/public/$asset"
+            grep -R -Fq "/peoples-portfolio/$asset" dist/public/assets
+          done
+
+          if grep -RInE '["`]/media/founder/' dist/public/assets; then
+            echo "::error::Root-relative founder media reference detected."
+            exit 1
+          fi
+
+          grep -R -Fq 'https://heruahmose.github.io/QueenCalifia-CyberAI/' dist/public/assets
+          grep -R -Fq 'Operating under §508(c)(1)(A)' dist/public/assets
+          grep -R -Fq 'Mandate of Mistrust' dist/public/assets
+
+          if grep -RIn 'queencalifia-cyberai.web.app' dist/public; then
+            echo "::error::Retired Queen Califia endpoint detected."
+            exit 1
+          fi
+
       - name: Execute static site in headless Chrome
         shell: bash
         run: |
@@ -173,6 +197,13 @@ jobs:
 
           observed="$(curl --fail --silent --show-error "${base}deploy-commit.txt")"
           test "$observed" = "$GITHUB_SHA"
+
+          for asset in \
+            'media/founder/football/kannapolis-action.webp' \
+            'media/founder/navy/academy-yearbook.webp' \
+            'media/founder/hero/founder-present-portrait.webp'; do
+            curl --fail --silent --show-error "${base}${asset}" >/dev/null
+          done
 
           html="$(curl --fail --silent --show-error "$base")"
           printf '%s' "$html" | grep -Fq "$GITHUB_SHA"

@@ -372,6 +372,10 @@ export function founderMediaForChapter(chapter: FounderMediaChapter) {
   return FOUNDER_MEDIA.filter(asset => asset.chapter === chapter);
 }
 
-export const FOUNDER_HERO =
-  FOUNDER_MEDIA.find(asset => asset.id === "founder-present-portrait") ??
-  FOUNDER_MEDIA[0];
+export function founderMediaById(id: string): FounderMediaAsset {
+  const asset = FOUNDER_MEDIA.find(candidate => candidate.id === id);
+  if (!asset) throw new Error(`Unknown founder media asset: ${id}`);
+  return asset;
+}
+
+export const FOUNDER_HERO = founderMediaById("founder-present-portrait");

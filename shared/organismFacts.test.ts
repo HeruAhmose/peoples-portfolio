@@ -64,7 +64,10 @@ describe("public-safe organism facts", () => {
       "Designed · not yet operating"
     );
     expect(publicFactFor("peoples-foundation").status).toBe(
-      "EIN obtained · exemption pending"
+      "Operating under §508(c)(1)(A)"
+    );
+    expect(publicFactFor("peoples-foundation").maturity).toBe(
+      "operating-508c1a"
     );
   });
 

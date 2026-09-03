@@ -11,18 +11,22 @@ Full-stack portfolio: **React 19**, **Vite 7**, **Express**, **tRPC**, **Drizzle
 ## Part of TRAI
 
 This is the **entry gate** to TRAI — the Tamerian Renaissance Alliance
-Initiative — framed as seven organs of one regenerative organism. A visitor
+Initiative — one living Sovereignty Stack expressed through seven independently
+viable, mutually reinforcing organs. It is not a holding company or a collection
+of disconnected ventures. The Mandate of Mistrust is its constitutional operating
+doctrine: inspectable systems, explicit evidence boundaries, and human authority.
+A visitor
 lands here first; two organs live on this site, the rest open outward.
 
 | #   | Organ · role                    | Venture                | Status                           | Where it lives                                                                                                                                                                                                       |
 | --- | ------------------------------- | ---------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 01  | Skeleton — material sovereignty | Tamerian Materials     | U.S. provisional filed           | [`/materials`](client/src/pages/MaterialsScience.tsx) here · own repo: [tamerian-materials](https://github.com/HeruAhmose/tamerian-materials) → [tamerian-materials.com](https://tamerian-materials.com/)            |
 | 02  | Heart — biological sovereignty  | True Mélange Φ         | Formulation set · entity pending | own repo: [blue-gold-daily](https://github.com/HeruAhmose/blue-gold-daily) → [blue-gold-daily site](https://heruahmose.github.io/blue-gold-daily/layers.html)                                                        |
-| 03  | Brain — cognitive sovereignty   | Queen Califia          | Demo standing                    | own repo: [QueenCalifia-CyberAI](https://github.com/HeruAhmose/QueenCalifia-CyberAI) → [queencalifia-cyberai.web.app](https://queencalifia-cyberai.web.app/)                                                         |
+| 03  | Brain — cognitive sovereignty   | Queen Califia          | Demo standing                    | own repo: [QueenCalifia-CyberAI](https://github.com/HeruAhmose/QueenCalifia-CyberAI) → [public command surface](https://heruahmose.github.io/QueenCalifia-CyberAI/)                                                  |
 | 04  | Vessels — mobility sovereignty  | Mela Nation            | EIN filed · early development    | a page inside the estate — no separate repo                                                                                                                                                                          |
 | 05  | Skin — identity sovereignty     | MeLaNiNa               | EIN filed · early development    | a page inside the estate — no separate repo                                                                                                                                                                          |
 | 06  | Hands — community reach         | TechBridge Collective  | Designed · not yet operating     | [`/community`](client/src/pages/CommunityImpact.tsx) here · own repo: [techbridge-collective](https://github.com/HeruAhmose/techbridge-collective) → [techbridge-collective.org](https://techbridge-collective.org/) |
-| 07  | Lymphatic — regenerative return | The Peoples Foundation | EIN obtained · exemption pending | a page inside the estate — no separate repo                                                                                                                                                                          |
+| 07  | Lymphatic — regenerative return | The Peoples Foundation | Operating under §508(c)(1)(A)    | a page inside the estate — no separate repo                                                                                                                                                                          |
 
 **The estate** — [trai-portfolio](https://github.com/HeruAhmose/trai-portfolio)
 — is where organs 04, 05, and 07 actually live, alongside deeper material on

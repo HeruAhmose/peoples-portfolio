@@ -25,7 +25,7 @@ export type VentureMaturity =
   | "demo-standing"
   | "early-development"
   | "designed"
-  | "exemption-pending";
+  | "operating-508c1a";
 
 export interface OrganPublicFact {
   /** Existing typography/epistemic register used by the client. */
@@ -86,9 +86,9 @@ export const ORGAN_FACTS = {
   "peoples-foundation": {
     claim: "build",
     evidence: "verified",
-    maturity: "exemption-pending",
-    status: "EIN obtained · exemption pending",
-    evidenceRef: "verified-facts:peoples-foundation-entity",
+    maturity: "operating-508c1a",
+    status: "Operating under §508(c)(1)(A)",
+    evidenceRef: "verified-facts:peoples-foundation-508c1a",
   },
 } as const satisfies Record<OrganKey, OrganPublicFact>;
 

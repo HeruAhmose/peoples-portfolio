@@ -1,4 +1,5 @@
 import { ORGAN_FACTS, type OrganKey } from "../../../shared/organismFacts";
+import { PUBLIC_WORLD_URLS } from "../../../shared/publicWorlds";
 import { observable } from "@trpc/server/observable";
 import type { TRPCLink } from "@trpc/client";
 import type { AppRouter } from "../../../server/routers";
@@ -39,16 +40,15 @@ const HK_KNOWLEDGE: Entry[] = [
   },
   {
     match: /tamerian|material|composite|carbon|pyrolysis|skeleton/i,
-    answer:
-      "Tamerian Materials is the skeleton of the architecture — a hemp-derived carbon composite pyrolysed at 700-1400\u00b0C, targeting piezoelectric output of 50-500 \u00b5W/cm\u00b2 and thermoelectric ZT of 1.0-2.5. Quantum coherence above 500 ns at room temperature is a stated hypothesis, not a confirmed measurement. See the Materials Science page or the live Tamerian world at https://tamerian-materials.com/.",
+    answer: `Tamerian Materials is the skeleton of the architecture: bio-derived multifunctional composites for self-powered sensing. The AMC architecture combines documented constituent mechanisms into a novel, testable system; complete-system performance remains to be validated. Hemp growth carbon uptake is part of the carbon-negative design position, while full lifecycle carbon impact still requires measurement. See the Materials Science page or ${PUBLIC_WORLD_URLS.tamerian}.`,
   },
   {
     match: /melange|saffron|blue.?gold|beverage|drink|\bphi\b|cbd|thc|heart/i,
-    answer: `True Mélange Φ is the heart. ${organStatus("true-melange")}. First product is Blue-Gold Daily, a 12 oz can with 28 mg Affron® saffron at ISO 3632 Category I. Hemp content is hempseed oil and hemp seed protein only — no CBD, no THC. It has no internal page on this site yet; the live True Mélange / Blue Gold world is at https://heruahmose.github.io/blue-gold-daily/layers.html.`,
+    answer: `True Mélange Φ is the heart. ${organStatus("true-melange")}. First product is Blue-Gold Daily, a 12 oz can with 28 mg Affron® saffron at ISO 3632 Category I. Hemp content is hempseed oil and hemp seed protein only — no CBD, no THC. It has no internal page on this site yet; the live True Mélange / Blue Gold world is at ${PUBLIC_WORLD_URLS.blueGold}.`,
   },
   {
     match: /califia|cyber|secur|\bai\b|brain|threat|attack/i,
-    answer: `Queen Califia is the cognitive organ — an autonomous cybersecurity platform on Flask and React with three cores: Cyber, Identity and Markets. ${organStatus("queen-califia")}. A working demo stands at queencalifia-cyberai.web.app.`,
+    answer: `Queen Califia is the cognitive organ — an autonomous cybersecurity platform on Flask and React with three cores: Cyber, Identity and Markets. ${organStatus("queen-califia")}. The public command surface is ${PUBLIC_WORLD_URLS.queenCalifia}.`,
   },
   {
     match: /techbridge|navigator|hub|digital divide|horace|community|hands/i,
@@ -56,7 +56,7 @@ const HK_KNOWLEDGE: Entry[] = [
   },
   {
     match: /foundation|nonprofit|508|charit|give|donat|lymphatic/i,
-    answer: `The Peoples Foundation is the regenerative organ. ${organStatus("peoples-foundation")}. It is designed to receive defined allocations from the ventures and return them to community programs.`,
+    answer: `The Peoples Foundation is the regenerative organ. ${organStatus("peoples-foundation")}. That describes its operating position; it is not a claim of an IRS determination letter. It is designed to receive defined allocations from the ventures and return them to community programs.`,
   },
   {
     match: /mela nation|logistic|mobility|delivery|vessel/i,
@@ -70,7 +70,7 @@ const HK_KNOWLEDGE: Entry[] = [
     match:
       /founder|jonathan|\bjon\b|peoples|who (are|is) you|navy|veteran|background|career/i,
     answer:
-      "Jonathan Peoples is a U.S. Navy veteran based in Concord, North Carolina, holding CompTIA A+ and Tech+ among 14+ certifications. He is the founder and inventor across all seven ventures. The Founder Journey page has the timeline.",
+      "Jonathan Peoples is a U.S. Navy veteran based in Concord, North Carolina, holding CompTIA A+ and Tech+ among 14+ certifications. He is the founder and inventor across all seven organs of the TRAI organism. The Founder Journey page has the timeline.",
   },
   {
     match:
@@ -78,9 +78,10 @@ const HK_KNOWLEDGE: Entry[] = [
     answer: "Direct line: aitconsult22@gmail.com or (216) 307-0174.",
   },
   {
-    match: /trai|organism|seven|organ|architecture|flywheel|sovereign/i,
+    match:
+      /trai|organism|seven|organ|architecture|flywheel|sovereign|mandate|mistrust/i,
     answer:
-      "TRAI — the Tamerian Renaissance Alliance Initiative — treats seven ventures as organs of one organism: Skeleton, Heart, Brain, Vessels, Skin, Hands, Lymphatic. Value generated across them returns through The Peoples Foundation and funds the substrate again. Two organs have a page on this site so far; the opening sequence names all seven.",
+      "TRAI — the Tamerian Renaissance Alliance Initiative — is one living Sovereignty Stack expressed through seven independently viable, mutually reinforcing organs: Skeleton, Heart, Brain, Vessels, Skin, Hands, and Lymphatic. It is not a holding company or a set of disconnected ventures. The Mandate of Mistrust is its constitutional operating doctrine: systems must remain inspectable, evidence-bounded, and governed by human authority. Value returns through The Peoples Foundation to regenerate the substrate.",
   },
 ];
 

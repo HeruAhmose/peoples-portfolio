@@ -23,7 +23,7 @@ export const CAREER_TIMELINE_MILESTONE = {
     {
       title: "TRAI organism",
       detail:
-        "The parent systems architecture connects invention, governance, mobility, identity, community reach, and regenerative benefit into one portfolio of interdependent ventures.",
+        "The living Sovereignty Stack connects invention, governance, mobility, identity, community reach, and regenerative benefit through independently viable, mutually reinforcing organs.",
     },
   ] as const,
 } as const;

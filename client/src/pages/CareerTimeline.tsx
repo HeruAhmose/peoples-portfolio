@@ -10,6 +10,7 @@ import {
   milestonesSortedChronological,
 } from "@shared/careerTimeline";
 import { CAREER_TIMELINE_MILESTONE } from "@shared/portfolioCareerTimelineMilestone";
+import { founderMediaById } from "@/data/founderMedia";
 
 interface CareerTimelineProps {
   activeSection: string;
@@ -18,19 +19,19 @@ interface CareerTimelineProps {
 
 const founderArchive = [
   {
-    src: "/media/founder/football/kannapolis-action.webp",
+    src: founderMediaById("football-kannapolis-action").src,
     alt: "Jonathan Peoples during his Kannapolis football years",
     label: "FORMATION",
     caption: "Competition, repetition, discipline",
   },
   {
-    src: "/media/founder/navy/academy-yearbook.webp",
+    src: founderMediaById("navy-academy-yearbook").src,
     alt: "Archival Navy academy yearbook image from Jonathan Peoples' service chapter",
     label: "SERVICE",
     caption: "Duty, systems, accountability",
   },
   {
-    src: "/media/founder/hero/founder-present-portrait.webp",
+    src: founderMediaById("founder-present-portrait").src,
     alt: "Jonathan Peoples, founder and systems builder",
     label: "BUILD",
     caption: "Matter, intelligence, infrastructure",

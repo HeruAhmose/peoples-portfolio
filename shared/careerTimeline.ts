@@ -133,12 +133,12 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     org: "Community technology infrastructure",
     location: "Raleigh-Durham, NC",
     summary:
-      "A human-centered digital-equity operating model built around paid Digital Navigators, H.K. AI triage, and measurable service delivery.",
+      "A human-centered digital-equity operating model built around paid Digital Navigators, deterministic H.K. triage, and measurable service delivery.",
     detail:
       "The current LinkedIn story positions TechBridge as infrastructure for people who need practical help with portals, forms, job applications, telehealth, and devices—not another abstract access campaign.",
     achievements: [
       { label: "Paid Digital Navigators" },
-      { label: "H.K. AI triage" },
+      { label: "Deterministic H.K. triage" },
       { label: "TechMinutes® reporting" },
       { label: "Hub-host model" },
     ],
@@ -151,13 +151,13 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     periodLabel: "NOW",
     title: "One connected organism",
     org: "Peoples Portfolio + TRAI + connected worlds",
-    location: "Six-world digital ecosystem",
+    location: "Seven-organ Sovereignty Stack",
     summary:
-      "The portfolio becomes an interoperable organism: founder story, materials, cybersecurity, research, AI, and community infrastructure connected without collapsing their distinct identities.",
+      "The Sovereignty Stack becomes publicly navigable: seven independently viable, mutually reinforcing organs connected across distinct experiences without collapsing their identities.",
     detail:
-      "The current build preserves six separate worlds while giving each one a shared portal, matched cinematic transport, accessibility, and a common systems language.",
+      "The current build presents six distinct public experiences while preserving the seven-organ architecture, matched cinematic transport, accessibility, and a common systems language.",
     achievements: [
-      { label: "Six connected worlds" },
+      { label: "Seven organs · six public experiences" },
       { label: "Cinematic transport" },
       { label: "Accessible interaction" },
       { label: "Founder-centered narrative" },
