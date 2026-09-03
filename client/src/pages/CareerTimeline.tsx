@@ -219,16 +219,17 @@ export default function CareerTimeline({ onNavigate }: CareerTimelineProps) {
                 <div className="flex flex-col justify-between gap-3 md:flex-row md:items-end">
                   <div>
                     <p className="font-mono text-[9px] tracking-[0.25em] text-cyan-300/70">
-                      CONNECTED VENTURES
+                      CONNECTED ORGANS
                     </p>
                     <h3 className="font-display mt-2 text-xl font-semibold text-foreground md:text-2xl">
-                      One mission, expressed through different systems.
+                      One organism, expressed through distinct systems.
                     </h3>
                   </div>
                   <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-                    The portfolio is designed as an ecosystem: matter,
-                    intelligence, community infrastructure, and governance
-                    reinforce one another.
+                    The Sovereignty Stack is designed as a living organism:
+                    matter, intelligence, community infrastructure, and
+                    governance reinforce one another while each organ remains
+                    independently viable.
                   </p>
                 </div>
                 <div className="mt-6 grid gap-3 lg:grid-cols-3">
