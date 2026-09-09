@@ -39,9 +39,9 @@ export default function CommunityImpact({
             </HolographicText>
           </h1>
           <p className="text-xl text-foreground/80 max-w-2xl">
-            Building bridges of access, dignity, and opportunity — free,
-            human-centered digital help at community sites across the Triangle.
-            Walk in. Get help. Cross the bridge.
+            A planned Digital Navigator hub model for building access, dignity,
+            and opportunity across the Triangle. The public design is standing;
+            walk-in services are not yet operating.
           </p>
         </motion.div>
       </section>
@@ -58,23 +58,25 @@ export default function CommunityImpact({
             THE MISSION
           </h2>
           <p className="text-foreground/80 text-lg leading-relaxed mb-6">
-            TechBridge Collective addresses the digital divide in North Carolina
-            through a three-pillar model: weekly help desk services with paid
-            Digital Navigators, deterministic H.K. triage for bounded guidance,
-            and TechMinutes® impact reporting.
+            TechBridge Collective is designed to address the digital divide in
+            North Carolina through a three-pillar model: recurring help-desk
+            sessions with paid Digital Navigators, deterministic H.K. triage for
+            bounded guidance, and TechMinutes® impact reporting. These are
+            operating plans, not current service claims.
           </p>
           <p className="text-foreground/80 text-lg leading-relaxed">
             Pilot-to-scale targets are published as{" "}
-            <strong>SPAN-verified projections</strong> on the live site: Year{" "}
-            {TECHBRIDGE_ROLLOUT.year1Hubs} pilot hubs (
-            {TECHBRIDGE_ROLLOUT.year1PilotSites.join(" · ")}),{" "}
+            <strong>SPAN planning projections</strong> on the live site: Year{" "}
+            {TECHBRIDGE_ROLLOUT.year1Hubs} target hubs and{" "}
             {TECHBRIDGE_ROLLOUT.year1Navigators} paid Digital Navigators; Year{" "}
             {TECHBRIDGE_ROLLOUT.year2Hubs} hubs and a{" "}
             <strong>
               ~{TECHBRIDGE_ROLLOUT.year2ResidentsSom.toLocaleString()}-resident
             </strong>{" "}
             serviceable-market (SOM) goal, with{" "}
-            {TECHBRIDGE_ROLLOUT.investmentNote} (per that page). See{" "}
+            {TECHBRIDGE_ROLLOUT.investmentNote}. None of these figures
+            represents a recorded outcome, service schedule, or signed host
+            commitment. See{" "}
             <a
               href={TECHBRIDGE_SPAN_IMPACT_URL}
               target="_blank"
@@ -101,30 +103,32 @@ export default function CommunityImpact({
               {
                 icon: "🔄",
                 title: "Consistency over Novelty",
-                description: "We show up. Every week. Same time, same place.",
+                description:
+                  "The model prioritizes a reliable recurring schedule once host operations begin.",
               },
               {
                 icon: "🤝",
                 title: "Human-First Technology",
-                description: "H.K. triages; humans deliver.",
+                description:
+                  "H.K. provides bounded guidance; authorized humans make service decisions.",
               },
               {
                 icon: "📊",
                 title: "Measured Impact",
                 description:
-                  "Every interaction becomes a TechMinute®. We measure what matters.",
+                  "The proposed TechMinutes® record separates future activity from claimed outcomes.",
               },
               {
                 icon: "🏢",
                 title: "Low-Lift Partnerships",
                 description:
-                  "Host provides space. TechBridge provides everything else.",
+                  "The proposed host model defines responsibilities before any site is represented as committed.",
               },
               {
                 icon: "💰",
                 title: "Paid Navigators",
                 description:
-                  "No volunteers. Paid staff show up, stay trained, and don't churn.",
+                  "The staffing plan prioritizes paid, trained Digital Navigators rather than unpaid labor.",
               },
               {
                 icon: "🔒",
@@ -203,7 +207,7 @@ export default function CommunityImpact({
             HUB NETWORK
           </h2>
           <p className="mb-8 max-w-3xl text-xs font-mono tracking-wide text-muted-foreground">
-            Partner names and phases align with{" "}
+            The planning phases below align with{" "}
             <a
               href={TECHBRIDGE_SPAN_IMPACT_URL}
               target="_blank"
@@ -212,39 +216,27 @@ export default function CommunityImpact({
             >
               techbridge-collective.org/impact
             </a>{" "}
-            (SPAN-verified projections).
+            . No host organization is represented here as committed.
           </p>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {[
               {
-                name: TECHBRIDGE_ROLLOUT.year1PilotSites[0],
-                location: "Durham, NC",
-                status: "YEAR 1 PILOT",
-                hours: "4–8 hrs/wk (target)",
+                name: "Initial community-host cohort",
+                location: "Raleigh–Durham planning area",
+                status: "YEAR 1 TARGET",
+                hours: `${TECHBRIDGE_ROLLOUT.year1Hubs} hubs · contingent`,
               },
               {
-                name: TECHBRIDGE_ROLLOUT.year1PilotSites[1],
-                location: "Raleigh, NC",
-                status: "YEAR 1 PILOT",
-                hours: "4–8 hrs/wk (target)",
+                name: "Paid Digital Navigator cohort",
+                location: "Raleigh–Durham planning area",
+                status: "YEAR 1 TARGET",
+                hours: `${TECHBRIDGE_ROLLOUT.year1Navigators} roles · contingent`,
               },
               {
-                name: TECHBRIDGE_ROLLOUT.year2ExpansionExamples[0],
-                location: "Durham, NC",
-                status: "YEAR 2 EXPANSION",
-                hours: "TBD",
-              },
-              {
-                name: TECHBRIDGE_ROLLOUT.year2ExpansionExamples[1],
-                location: "Raleigh, NC",
-                status: "YEAR 2 EXPANSION",
-                hours: "TBD",
-              },
-              {
-                name: TECHBRIDGE_ROLLOUT.year2ExpansionExamples[2],
-                location: "Triangle, NC",
-                status: "YEAR 2 EXPANSION",
-                hours: "TBD",
+                name: "Expansion cohort",
+                location: "Triangle planning area",
+                status: "YEAR 2 TARGET",
+                hours: `${TECHBRIDGE_ROLLOUT.year2Hubs} total hubs · contingent`,
               },
             ].map((hub, idx) => (
               <motion.div
@@ -305,15 +297,17 @@ export default function CommunityImpact({
             >
               TechBridge Collective
             </a>{" "}
-            model, H.K. is 24/7 triage between visits — step-by-step guidance,
-            portal navigation, smart escalation, and no credential collection.
+            public model, H.K. is deterministic triage for step-by-step
+            guidance, portal navigation, bounded escalation, and no credential
+            collection. Its availability does not imply that physical hub
+            sessions are live.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               { label: "Step-by-step guidance", emoji: "📋" },
               { label: "Portal navigation", emoji: "🗺️" },
               { label: "Smart escalation", emoji: "🎯" },
-              { label: "24/7 availability", emoji: "⏰" },
+              { label: "Anytime public guidance", emoji: "⏰" },
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
@@ -344,8 +338,9 @@ export default function CommunityImpact({
             Ready to Cross the Bridge?
           </h2>
           <p className="text-foreground/80 mb-8">
-            Whether you need help with digital access, want to host a hub, or
-            are interested in partnership opportunities, we're here to help.
+            Explore the public help guide, propose a future host site, or
+            discuss a pilot partnership. TechBridge does not currently advertise
+            active walk-in hub hours.
           </p>
           <div className="flex flex-col sm:flex-wrap sm:flex-row gap-4 justify-center">
             <a

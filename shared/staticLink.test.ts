@@ -43,9 +43,9 @@ describe("static H.K. public claim projection (regression)", () => {
 
   it("projects the canonical Foundation status", () => {
     const answer = hkAnswer("What is the Peoples Foundation status?");
-    expect(answer).toContain("Operating under §508(c)(1)(A)");
-    expect(answer).toContain("not a claim of an IRS determination letter");
-    expect(answer).not.toContain("exemption pending");
+    expect(answer).toContain("EIN obtained");
+    expect(answer).toContain("tax-exempt status pending counsel confirmation");
+    expect(answer).not.toContain("§508(c)(1)(A)");
   });
 
   it("projects the canonical TechBridge maturity", () => {

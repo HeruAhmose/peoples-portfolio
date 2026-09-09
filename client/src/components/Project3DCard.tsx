@@ -189,7 +189,7 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
     return (
       <div
         className={common}
-        aria-label="Animated Digital Navigator and impact flow preview"
+        aria-label="Animated planned Digital Navigator flow preview"
       >
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,185,129,.08),transparent_60%)]" />
         {[16, 38, 60, 82].map((left, index) => (
@@ -207,7 +207,7 @@ function ProjectFeatureVisual({ project }: { project: ShowcaseProject }) {
           transition={{ duration: 3.2, repeat: Infinity }}
         />
         <div className="absolute bottom-2 left-3 font-mono text-[9px] tracking-[0.18em] text-emerald-200/90">
-          NAVIGATOR FLOW · TECHMINUTES IMPACT
+          PLANNED NAVIGATOR FLOW · NOT OPERATING
         </div>
       </div>
     );
@@ -289,12 +289,17 @@ export default function Project3DCard({
   const reduce = usePrefersReducedMotion();
   const [hover, setHover] = useState(false);
   const [focusWithin, setFocusWithin] = useState(false);
-  const flipped = !reduce && (hover || focusWithin);
+  const flipped = hover || focusWithin;
 
   return (
     <article
-      tabIndex={0}
-      className="group min-h-[390px] rounded-xl [perspective:1600px] outline-none focus-visible:ring-2 focus-visible:ring-primary/55 md:min-h-[410px]"
+      tabIndex={reduce ? undefined : 0}
+      className={cn(
+        "group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-primary/55",
+        reduce
+          ? "space-y-4"
+          : "min-h-[390px] [perspective:1600px] md:min-h-[410px]"
+      )}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onFocusCapture={() => setFocusWithin(true)}
@@ -303,17 +308,27 @@ export default function Project3DCard({
           setFocusWithin(false);
         }
       }}
-      aria-label={`${project.title} — live feature preview; hover or focus to view stack and links`}
+      aria-label={`${project.title} — public project preview; hover or focus to view stack and links`}
     >
       <motion.div
-        className="relative h-full min-h-[390px] w-full [transform-style:preserve-3d] md:min-h-[410px]"
-        animate={{ rotateY: flipped ? 180 : 0 }}
+        className={cn(
+          "relative h-full w-full",
+          reduce
+            ? "space-y-4"
+            : "min-h-[390px] [transform-style:preserve-3d] md:min-h-[410px]"
+        )}
+        animate={reduce ? undefined : { rotateY: flipped ? 180 : 0 }}
         transition={{ type: "spring", stiffness: 205, damping: 28 }}
         style={{ transformStyle: "preserve-3d" }}
       >
         <div
-          className="absolute inset-0 flex flex-col [backface-visibility:hidden]"
-          style={{ WebkitBackfaceVisibility: "hidden" }}
+          className={cn(
+            "flex flex-col",
+            reduce
+              ? "relative"
+              : "absolute inset-0 [backface-visibility:hidden]"
+          )}
+          style={reduce ? undefined : { WebkitBackfaceVisibility: "hidden" }}
         >
           <div className="cyber-panel--subtle sector-node-card flex h-full flex-col rounded-xl border border-cyan-500/20 p-5 md:p-6">
             <div className="mb-3 flex items-center justify-between gap-2">
@@ -331,15 +346,20 @@ export default function Project3DCard({
             </p>
             <div className="mt-auto border-t border-white/10 pt-3">
               <p className="font-mono text-[9px] tracking-[0.18em] text-cyan-200/75">
-                HOVER / FOCUS FOR STACK + LIVE LINKS
+                HOVER / FOCUS FOR STACK + PUBLIC LINKS
               </p>
             </div>
           </div>
         </div>
 
         <div
-          className="absolute inset-0 flex flex-col [backface-visibility:hidden] [transform:rotateY(180deg)]"
-          style={{ WebkitBackfaceVisibility: "hidden" }}
+          className={cn(
+            "flex flex-col",
+            reduce
+              ? "relative"
+              : "absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          )}
+          style={reduce ? undefined : { WebkitBackfaceVisibility: "hidden" }}
         >
           <div className="flex h-full min-h-[390px] flex-col rounded-xl border border-primary/35 bg-card/95 p-6 shadow-[inset_0_0_48px_oklch(0.65_0.25_45/0.08)] backdrop-blur-md md:min-h-[410px]">
             <p className="font-mono text-[10px] tracking-[0.28em] text-primary">
@@ -357,10 +377,10 @@ export default function Project3DCard({
             </ul>
             <div className="mt-5 rounded-lg border border-white/10 bg-background/35 p-4">
               <p className="font-mono text-[9px] tracking-[0.2em] text-muted-foreground">
-                IMPACT SIGNAL
+                EVIDENCE STATE
               </p>
               <p className="mt-1 text-sm font-medium text-foreground/90">
-                {project.impactLabel}
+                {project.evidenceLabel}
               </p>
             </div>
             <p className="mt-5 font-mono text-[10px] tracking-[0.28em] text-primary">
@@ -373,16 +393,9 @@ export default function Project3DCard({
                 </li>
               ))}
             </ul>
-            <div className="mt-auto border-t border-white/10 pt-4">
-              <p className="font-mono text-[10px] text-muted-foreground">
-                Impact score ·{" "}
-                <span className="text-primary">{project.impactScore}</span>
-                <span className="text-muted-foreground">
-                  {" "}
-                  · Updated {project.updatedAt}
-                </span>
-              </p>
-            </div>
+            <p className="mt-auto border-t border-white/10 pt-4 font-mono text-[10px] tracking-[0.16em] text-muted-foreground">
+              REVIEW MATURITY ON THE PUBLIC SOURCE
+            </p>
           </div>
         </div>
       </motion.div>

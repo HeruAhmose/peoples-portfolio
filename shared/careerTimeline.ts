@@ -74,13 +74,13 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     org: "Tamerian",
     location: "North Carolina",
     summary:
-      "The materials-and-systems thesis takes form: regenerative quantum infrastructure, biomimetic materials, and a next-generation QPU concept.",
+      "The materials-and-systems thesis takes form as a research concept joining bio-derived composites, self-powered sensing, and testable coupling hypotheses.",
     detail:
-      "LinkedIn lists The Tamerian Circuit and The Tamerian Project as projects beginning in October 2024, marking the shift from separate technical interests into one systems framework.",
+      "This chapter marks the shift from separate technical interests into a single research framework. It records an intellectual direction, not a validated device, deployed infrastructure, or operating quantum processor.",
     achievements: [
-      { label: "Next-generation QPU concept" },
-      { label: "Regenerative infrastructure" },
-      { label: "Biomimetic systems thesis" },
+      { label: "Systems research concept" },
+      { label: "Self-powered sensing thesis" },
+      { label: "Testable coupling hypotheses" },
     ],
     markerTone: "cyan",
     highlight: "Convergence",
@@ -93,13 +93,13 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     org: "Tamerian Materials",
     location: "North Carolina",
     summary:
-      "A hemp-based crystalline composite thesis designed around multiple functions: energy harvesting, quantum sensing, and future information-system applications.",
+      "Bio-derived multifunctional composites for self-powered sensing: a filed architecture whose integrated system performance remains unvalidated.",
     detail:
-      "Jonathan's LinkedIn writing describes a U.S. provisional patent filing in December 2025 and frames the work with peer-reviewed support for the component capabilities while distinguishing what is demonstrated from what remains projected.",
+      "The public record describes a U.S. provisional filing in December 2025. Constituent mechanisms have literature support; the proposed integrated architecture still requires experimental validation and falsification testing.",
     achievements: [
       { label: "Provisional patent filing", detail: "December 2025" },
-      { label: "Energy harvesting" },
-      { label: "Quantum sensing" },
+      { label: "Energy-harvesting direction" },
+      { label: "Quantum-sensing hypothesis" },
       { label: "Materials research" },
     ],
     markerTone: "emerald",
@@ -113,14 +113,14 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     org: "Sovereign cybersecurity architecture",
     location: "Digital",
     summary:
-      "A unified cybersecurity platform built from first principles around shared security signals, biomimetic defense, post-quantum readiness, and human-controlled autonomy.",
+      "A public, human-authorized cybersecurity interface demo exploring shared security signals, biomimetic defense, and post-quantum readiness.",
     detail:
-      "LinkedIn describes Queen Califia as thirteen security engines sharing signals through one codebase, one dashboard, and one command surface.",
+      "The public command surface demonstrates an evidence-bounded architecture concept. It is not represented as an autonomous operator, production security service, or proof that every proposed engine is operational.",
     achievements: [
-      { label: "13-engine architecture" },
+      { label: "Public interface demo" },
       { label: "Biomimetic defense" },
       { label: "Post-quantum readiness" },
-      { label: "Human-controlled autonomy" },
+      { label: "Explicit human authorization" },
     ],
     markerTone: "magenta",
     highlight: "Protect",
@@ -133,14 +133,14 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     org: "Community technology infrastructure",
     location: "Raleigh-Durham, NC",
     summary:
-      "A human-centered digital-equity operating model built around paid Digital Navigators, deterministic H.K. triage, and measurable service delivery.",
+      "A planned digital-equity model built around paid Digital Navigators, deterministic H.K. triage, and proposed service measurement. It is not yet operating.",
     detail:
-      "The current LinkedIn story positions TechBridge as infrastructure for people who need practical help with portals, forms, job applications, telehealth, and devices—not another abstract access campaign.",
+      "The public plan focuses on practical help with portals, forms, job applications, telehealth, and devices. Hub counts, navigator counts, and service volumes remain planning targets rather than active schedules or outcomes.",
     achievements: [
-      { label: "Paid Digital Navigators" },
+      { label: "Paid Navigator model" },
       { label: "Deterministic H.K. triage" },
-      { label: "TechMinutes® reporting" },
-      { label: "Hub-host model" },
+      { label: "Proposed TechMinutes® reporting" },
+      { label: "Planned hub-host model" },
     ],
     markerTone: "sapphire",
     highlight: "Expand access",

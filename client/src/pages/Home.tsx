@@ -27,6 +27,7 @@ import {
   TECHBRIDGE_ROLLOUT,
   TECHBRIDGE_SPAN_IMPACT_URL,
 } from "@shared/siteFacts";
+import { PUBLIC_WORLD_URLS } from "@shared/publicWorlds";
 
 interface HomeProps {
   activeSection: string;
@@ -145,7 +146,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   description:
                     "Sovereign cybersecurity intelligence — human-authority command architecture",
                   icon: "◉",
-                  externalUrl: "https://qc.tamerian-materials.com/",
+                  externalUrl: PUBLIC_WORLD_URLS.queenCalifia,
                 },
                 {
                   id: "gallery",
@@ -172,7 +173,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   id: "community",
                   title: "TechBridge Collective",
                   description:
-                    "Free digital help at Triangle community sites — walk in, get help, cross the bridge",
+                    "Planned Triangle Digital Navigator hub model — designed, not yet operating",
                   icon: "◇",
                 },
                 {
@@ -257,13 +258,13 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   </a>
                 </h3>
                 <p className="text-foreground/80 text-sm">
-                  Where carbon meets crystal: hemp-derived carbon matrices with
-                  embedded piezoelectric, thermoelectric, magnetic, and
-                  quantum-active phases — one composite for energy harvesting
-                  and room-temperature quantum sensing.{" "}
-                  {TAMERIAN_PATENT.publicStatus} · {TAMERIAN_PATENT.filedDate} ·{" "}
-                  {TAMERIAN_PATENT.claimCount} claims (source: live patents
-                  section on the site above).
+                  Bio-derived multifunctional composites for self-powered
+                  sensing. The filed architecture proposes multiple constituent
+                  mechanisms, including a room-temperature quantum-sensing
+                  research hypothesis; integrated performance remains
+                  unvalidated. {TAMERIAN_PATENT.publicStatus} ·{" "}
+                  {TAMERIAN_PATENT.filedDate} · {TAMERIAN_PATENT.claimCount}{" "}
+                  claims (source: live patents section on the site above).
                 </p>
               </motion.div>
             </StaggerItem>
@@ -284,15 +285,16 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   </a>
                 </h3>
                 <p className="text-foreground/80 text-sm">
-                  Building bridges of access, dignity, and opportunity — free,
-                  human-centered digital help at Triangle community sites.
-                  Weekly help desk, deterministic H.K. triage (named for Horace
-                  King), and TechMinutes® reporting. SPAN-modeled rollout: Year{" "}
-                  {TECHBRIDGE_ROLLOUT.year1Hubs} pilot hubs (
-                  {TECHBRIDGE_ROLLOUT.year1PilotSites.join(", ")}) and Year{" "}
-                  {TECHBRIDGE_ROLLOUT.year2Hubs} hubs with a Year 2 SOM of ~
-                  {TECHBRIDGE_ROLLOUT.year2ResidentsSom.toLocaleString()}{" "}
-                  residents — see{" "}
+                  A planned Digital Navigator hub model for the Triangle,
+                  combining paid human help, deterministic H.K. triage, and
+                  TechMinutes® reporting. It is designed, not yet operating. The
+                  SPAN-modeled figures—Year {TECHBRIDGE_ROLLOUT.year1Hubs} hubs
+                  and {TECHBRIDGE_ROLLOUT.year1Navigators} Navigators, scaling
+                  toward {TECHBRIDGE_ROLLOUT.year2Hubs} hubs and an
+                  approximately{" "}
+                  {TECHBRIDGE_ROLLOUT.year2ResidentsSom.toLocaleString()}
+                  -resident serviceable market—are planning targets, not
+                  outcomes or host commitments. See{" "}
                   <a
                     href={TECHBRIDGE_SPAN_IMPACT_URL}
                     target="_blank"
@@ -313,7 +315,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
               >
                 <h3 className="font-display mb-2 text-sm font-semibold tracking-wide text-primary md:text-base">
                   <a
-                    href="https://qc.tamerian-materials.com/"
+                    href={PUBLIC_WORLD_URLS.queenCalifia}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="transition-colors hover:text-cyan-300 hover:underline"
@@ -322,11 +324,10 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                   </a>
                 </h3>
                 <p className="text-foreground/80 text-sm">
-                  Sovereign cybersecurity intelligence with a human-authority
-                  command architecture, provenance-aware decision framing, and a
-                  sovereign awakening interface. The canonical public runtime is
-                  transitioning away from the legacy Firebase presentation, so
-                  this portfolio does not certify that older surface as current.
+                  A human-authorized, evidence-bound cybersecurity command
+                  surface with Cyber, Identity, and Markets cores. The public
+                  experience is an active-development demo—not an autonomous
+                  operator or production security service.
                 </p>
               </motion.div>
             </StaggerItem>
@@ -370,7 +371,7 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
           </p>
           <p className="flex flex-wrap justify-center gap-x-5 gap-y-2 font-mono text-xs tracking-wide">
             <a
-              href="https://qc.tamerian-materials.com/"
+              href={PUBLIC_WORLD_URLS.queenCalifia}
               target="_blank"
               rel="noopener noreferrer"
               className="text-cyan-400/80 transition-colors hover:text-primary"

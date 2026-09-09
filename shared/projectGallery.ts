@@ -3,7 +3,7 @@ import { PUBLIC_WORLD_URLS } from "./publicWorlds";
 export type ProjectCategory =
   "cybersecurity" | "materials" | "equity" | "research" | "platform";
 
-export type GallerySortMode = "impact" | "name" | "recent";
+export type GallerySortMode = "featured" | "name" | "category";
 
 export type GalleryCategoryFilter = ProjectCategory | "all";
 
@@ -20,9 +20,7 @@ export interface ShowcaseProject {
   categoryLabel: string;
   techStack: string[];
   links: ProjectLink[];
-  impactLabel: string;
-  impactScore: number;
-  updatedAt: string;
+  evidenceLabel: string;
 }
 
 export const PROJECT_CATEGORY_LABELS: Record<ProjectCategory, string> = {
@@ -38,7 +36,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
     id: "queen-califia",
     title: "Queen Califia CyberAI",
     shortDescription:
-      "Sovereign cybersecurity architecture with biomimetic defense, post-quantum readiness, unified security signals, and human-controlled autonomy.",
+      "A public cybersecurity interface demo for exploring biomimetic defense, post-quantum readiness, and shared security signals under explicit human authorization.",
     category: "cybersecurity",
     categoryLabel: PROJECT_CATEGORY_LABELS.cybersecurity,
     techStack: [
@@ -54,15 +52,13 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
         href: PUBLIC_WORLD_URLS.queenCalifia,
       },
     ],
-    impactLabel: "Sovereign multi-engine security architecture",
-    impactScore: 94,
-    updatedAt: "2026-08-07",
+    evidenceLabel: "Public demo · human-authorized · evidence-bound",
   },
   {
     id: "tamerian-materials",
     title: "Tamerian Materials",
     shortDescription:
-      "Advanced-materials work centered on a hemp-based crystalline composite thesis spanning energy harvesting, sensing, and future information systems.",
+      "Bio-derived multifunctional composites for self-powered sensing: a filed research architecture whose integrated performance remains unvalidated.",
     category: "materials",
     categoryLabel: PROJECT_CATEGORY_LABELS.materials,
     techStack: [
@@ -78,15 +74,13 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
         href: PUBLIC_WORLD_URLS.tamerian,
       },
     ],
-    impactLabel: "Materials + energy + sensing research program",
-    impactScore: 96,
-    updatedAt: "2026-08-07",
+    evidenceLabel: "Filed research concept · performance unvalidated",
   },
   {
     id: "techbridge",
     title: "TechBridge Collective",
     shortDescription:
-      "Community technology infrastructure combining paid Digital Navigators, deterministic H.K. triage, and measurable support for real-world digital tasks.",
+      "A planned digital-equity model combining paid Digital Navigators, deterministic H.K. triage, and proposed measurement for real-world digital tasks. It is not yet operating.",
     category: "equity",
     categoryLabel: PROJECT_CATEGORY_LABELS.equity,
     techStack: [
@@ -102,9 +96,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
         href: PUBLIC_WORLD_URLS.techBridge,
       },
     ],
-    impactLabel: "Human-centered digital-equity infrastructure",
-    impactScore: 90,
-    updatedAt: "2026-08-07",
+    evidenceLabel: "Planned model · not operating",
   },
   {
     id: "trai-organism",
@@ -127,9 +119,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
         href: PUBLIC_WORLD_URLS.trai,
       },
     ],
-    impactLabel: "Seven-organ Sovereignty Stack",
-    impactScore: 93,
-    updatedAt: "2026-08-07",
+    evidenceLabel: "Public map · seven-organ Sovereignty Stack",
   },
   {
     id: "research-lab",
@@ -151,9 +141,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
         href: "/research",
       },
     ],
-    impactLabel: "Evidence-first research interface",
-    impactScore: 82,
-    updatedAt: "2026-08-07",
+    evidenceLabel: "Public research interface · explicit boundaries",
   },
   {
     id: "npower-path",
@@ -175,9 +163,7 @@ export const SHOWCASE_PROJECTS: ShowcaseProject[] = [
         href: "https://www.npower.org/",
       },
     ],
-    impactLabel: "Technology and cybersecurity training",
-    impactScore: 72,
-    updatedAt: "2026-08-07",
+    evidenceLabel: "Documented training pathway",
   },
 ];
 
@@ -200,7 +186,7 @@ export function projectMatchesSearch(
     project.shortDescription,
     project.categoryLabel,
     ...project.techStack,
-    project.impactLabel,
+    project.evidenceLabel,
   ]
     .join(" ")
     .toLowerCase();
@@ -225,14 +211,13 @@ export function sortShowcaseProjects(
 ): ShowcaseProject[] {
   const copy = [...projects];
 
-  if (mode === "impact") {
-    copy.sort((a, b) => b.impactScore - a.impactScore);
-  } else if (mode === "name") {
+  if (mode === "name") {
     copy.sort((a, b) => a.title.localeCompare(b.title, "en"));
-  } else {
+  } else if (mode === "category") {
     copy.sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        a.categoryLabel.localeCompare(b.categoryLabel, "en") ||
+        a.title.localeCompare(b.title, "en")
     );
   }
 

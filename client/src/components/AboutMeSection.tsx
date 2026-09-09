@@ -284,7 +284,7 @@ export default function AboutMeSection() {
                 The Peoples Foundation
               </p>
               <p className="font-mono text-xs tracking-[0.18em] text-amber-200">
-                508(c)(1)(a)
+                EIN OBTAINED · TAX-EXEMPT STATUS PENDING COUNSEL CONFIRMATION
               </p>
             </div>
           </motion.div>

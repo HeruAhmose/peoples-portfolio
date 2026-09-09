@@ -55,20 +55,18 @@ describe("public-safe organism facts", () => {
       "Formulation set · entity pending"
     );
     expect(publicFactFor("mela-nation").status).toBe(
-      "EIN filed · early development"
+      "Early development · not operating"
     );
     expect(publicFactFor("melanina").status).toBe(
-      "EIN filed · early development"
+      "Early development · not operating"
     );
     expect(publicFactFor("techbridge").status).toBe(
       "Designed · not yet operating"
     );
     expect(publicFactFor("peoples-foundation").status).toBe(
-      "Operating under §508(c)(1)(A)"
+      "EIN obtained · tax-exempt status pending counsel confirmation"
     );
-    expect(publicFactFor("peoples-foundation").maturity).toBe(
-      "operating-508c1a"
-    );
+    expect(publicFactFor("peoples-foundation").maturity).toBe("entity-formed");
   });
 
   it("keeps every public patent projection on the canonical safe status", () => {

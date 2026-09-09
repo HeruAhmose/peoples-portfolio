@@ -10,15 +10,30 @@ import { ORGANS, RING_ANGLES } from "@/lib/organism";
  * time it ends the visitor has already been told what the seven organs are and
  * what order they run in, so the site's structure is legible before they scroll.
  *
- * Falls back cleanly: WebGL2 → WebGL1 → CSS-only. Honors prefers-reduced-motion
- * by skipping to a still frame. Skippable at any point with click, key or the
- * visible control.
+ * Falls back cleanly: WebGL2 → WebGL1 → CSS-only. The visitor advances each
+ * chapter explicitly; no timer can dismiss the sequence. Reduced motion uses
+ * the same user-paced controls with a still background.
  */
 
-const FULL_MS = 4600;
-const SHORT_MS = 1950;
-const NODE_GAP = 235;
-const FIRST_NODE_AT = 280;
+type IntroStep = 0 | 1 | 2;
+
+const STEP_COPY = [
+  {
+    eyebrow: "CHAPTER 01 · HUMAN ORIGIN",
+    title: "One founder. Seven connected organs.",
+    action: "Ignite the lattice",
+  },
+  {
+    eyebrow: "CHAPTER 02 · SOVEREIGNTY STACK",
+    title: "Each organ stands alone. Together, they reinforce the whole.",
+    action: "Reveal TRAI",
+  },
+  {
+    eyebrow: "CHAPTER 03 · FOUNDER WORLD",
+    title: "The human story anchors the living system.",
+    action: "Enter portfolio",
+  },
+] as const;
 
 const VERT = `#version 300 es
 in vec2 a_pos;
@@ -189,9 +204,6 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-const easeInOutCubic = (t: number) =>
-  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
 interface Props {
   onComplete: () => void;
   /** Short form for repeat visits inside the same session. */
@@ -200,12 +212,15 @@ interface Props {
 
 export function LatticeIgnition({ onComplete, brief = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const skipRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const actionRef = useRef<HTMLButtonElement>(null);
   const rafRef = useRef(0);
   const doneRef = useRef(false);
-  const [lit, setLit] = useState(-1);
+  const initialStep: IntroStep = brief ? 1 : 0;
+  const [step, setStep] = useState<IntroStep>(initialStep);
+  const stepRef = useRef<IntroStep>(initialStep);
+  const [lit, setLit] = useState(brief ? 6 : -1);
   const [stage, setStage] = useState<"lattice" | "wordmark" | "out">("lattice");
-  const stageRef = useRef<"lattice" | "wordmark" | "out">("lattice");
   const [glFailed, setGlFailed] = useState(false);
 
   const reduced = useMemo(
@@ -215,46 +230,70 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
     []
   );
 
-  const total = reduced ? 1200 : brief ? SHORT_MS : FULL_MS;
-  const scale = total / FULL_MS;
-
   const finish = useCallback(() => {
     if (doneRef.current) return;
     doneRef.current = true;
     cancelAnimationFrame(rafRef.current);
-    stageRef.current = "out";
     setStage("out");
     window.setTimeout(onComplete, 620);
   }, [onComplete]);
 
-  /* The overlay covers the page, so focus its only control immediately. */
+  const advance = useCallback(() => {
+    setStep(current => {
+      if (current === 2) {
+        finish();
+        return current;
+      }
+      return (current + 1) as IntroStep;
+    });
+  }, [finish]);
+
+  /* The overlay covers the page, so put keyboard focus on its primary action. */
   useEffect(() => {
-    skipRef.current?.focus({ preventScroll: true });
+    actionRef.current?.focus({ preventScroll: true });
   }, []);
 
-  /* Skip on any deliberate input. */
   useEffect(() => {
-    const skip = (e: Event) => {
-      if (e instanceof KeyboardEvent && e.key === "Tab") return;
-      finish();
+    stepRef.current = step;
+    setLit(step === 0 ? -1 : 6);
+    setStage(step === 2 ? "wordmark" : "lattice");
+  }, [step]);
+
+  /* Escape skips; Right Arrow advances. Enter/Space remain native buttons. */
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        finish();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        advance();
+      } else if (event.key === "Tab") {
+        const controls = Array.from(
+          dialogRef.current?.querySelectorAll<HTMLButtonElement>(
+            "button:not([disabled])"
+          ) ?? []
+        ).filter(control => control.getClientRects().length > 0);
+        if (!controls.length) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     };
-    window.addEventListener("pointerdown", skip);
-    window.addEventListener("keydown", skip);
-    window.addEventListener("wheel", skip, { passive: true });
-    return () => {
-      window.removeEventListener("pointerdown", skip);
-      window.removeEventListener("keydown", skip);
-      window.removeEventListener("wheel", skip);
-    };
-  }, [finish]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [advance, finish]);
 
   useEffect(() => {
     if (reduced) {
-      setLit(6);
-      stageRef.current = "wordmark";
-      setStage("wordmark");
-      const t = window.setTimeout(finish, 1200);
-      return () => window.clearTimeout(t);
+      setGlFailed(true);
+      return;
     }
 
     const canvas = canvasRef.current;
@@ -273,8 +312,7 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
     }
     if (!gl) {
       setGlFailed(true);
-      const t = window.setTimeout(finish, 2400);
-      return () => window.clearTimeout(t);
+      return;
     }
 
     const compile = (type: number, src: string) => {
@@ -292,8 +330,7 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
     const fs = compile(gl.FRAGMENT_SHADER, isGL2 ? FRAG : FRAG1);
     if (!vs || !fs) {
       setGlFailed(true);
-      const t = window.setTimeout(finish, 2400);
-      return () => window.clearTimeout(t);
+      return;
     }
 
     const prog = gl.createProgram()!;
@@ -302,8 +339,7 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
       setGlFailed(true);
-      const t = window.setTimeout(finish, 2400);
-      return () => window.clearTimeout(t);
+      return;
     }
     gl.useProgram(prog);
 
@@ -366,16 +402,19 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
     const ignite = new Float32Array(7);
     let start = 0;
     let lastLit = -1;
+    let renderedProgress = stepRef.current === 0 ? 0.05 : 0.82;
 
     const draw = (ts: number) => {
       if (!start) start = ts;
       const t = ts - start;
-      const p = Math.min(t / total, 1);
+      const target =
+        stepRef.current === 0 ? 0.05 : stepRef.current === 1 ? 0.82 : 1;
+      renderedProgress += (target - renderedProgress) * 0.055;
+      const p = renderedProgress;
 
       for (let i = 0; i < 7; i++) {
-        const at = (FIRST_NODE_AT + i * NODE_GAP) * scale;
-        const dur = 360 * scale;
-        ignite[i] = easeOutCubic(Math.max(0, Math.min((t - at) / dur, 1)));
+        const at = 0.1 + i * 0.085;
+        ignite[i] = easeOutCubic(Math.max(0, Math.min((p - at) / 0.18, 1)));
       }
 
       const nowLit = ignite.reduce((acc, v, i) => (v > 0.55 ? i : acc), -1);
@@ -384,35 +423,17 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
         setLit(nowLit);
       }
 
-      const coreAt = (FIRST_NODE_AT + 7 * NODE_GAP) * scale;
-      const core = easeOutCubic(
-        Math.max(0, Math.min((t - coreAt) / (420 * scale), 1))
-      );
-      const beat = easeInOutCubic(
-        Math.max(0, Math.min((t - coreAt - 120 * scale) / (900 * scale), 1))
-      );
-
-      const wordAt = coreAt + 460 * scale;
-      if (t > wordAt && stageRef.current === "lattice") {
-        stageRef.current = "wordmark";
-        setStage("wordmark");
-      }
-
-      const outAt = total - 900 * scale;
-      const fade = t > outAt ? Math.max(0, 1 - (t - outAt) / (800 * scale)) : 1;
+      const core = easeOutCubic(Math.max(0, Math.min((p - 0.7) / 0.2, 1)));
+      const beat = stepRef.current === 2 ? 0.32 + Math.sin(t / 540) * 0.08 : 0;
 
       gl!.uniform1f(U.time, t / 1000);
       gl!.uniform1f(U.prog, p);
       gl!.uniform1f(U.core, core);
       gl!.uniform1f(U.beat, beat);
-      gl!.uniform1f(U.fade, fade);
+      gl!.uniform1f(U.fade, 1);
       gl!.uniform1fv(U.ignite, ignite);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
 
-      if (t >= total) {
-        finish();
-        return;
-      }
       rafRef.current = requestAnimationFrame(draw);
     };
     rafRef.current = requestAnimationFrame(draw);
@@ -422,14 +443,14 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
       window.removeEventListener("resize", resize);
       gl?.getExtension("WEBGL_lose_context")?.loseContext();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduced, total, scale, finish]);
+  }, [reduced]);
 
   const current = lit >= 0 ? ORGANS[lit] : null;
 
   return (
     <div
-      className="fixed inset-0 z-[200] overflow-hidden"
+      ref={dialogRef}
+      className="fixed inset-0 z-[2147483000] overflow-hidden"
       style={{
         background: "#050607",
         opacity: stage === "out" ? 0 : 1,
@@ -437,7 +458,8 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
       }}
       role="dialog"
       aria-modal="true"
-      aria-label="Opening sequence"
+      aria-label="Peoples Portfolio cinematic introduction"
+      data-peoples-intro-step={step + 1}
     >
       {!glFailed && (
         <canvas
@@ -517,7 +539,7 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
 
       {/* Small screens: one organ at a time, centered under the lattice. */}
       <div
-        className="absolute inset-x-0 bottom-32 sm:hidden text-center px-8"
+        className="absolute inset-x-0 bottom-52 px-8 text-center sm:hidden"
         aria-hidden="true"
       >
         {current && (
@@ -586,21 +608,46 @@ export function LatticeIgnition({ onComplete, brief = false }: Props) {
         </div>
       </div>
 
-      {/* Skip. Always reachable, never in the way. */}
+      <div
+        className="absolute inset-x-4 bottom-5 z-10 mx-auto flex max-w-2xl flex-col items-center gap-3 text-center sm:bottom-8"
+        aria-live="polite"
+      >
+        <div className="rounded-2xl border border-white/10 bg-[#050607]/72 px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6">
+          <p className="font-mono text-[9px] tracking-[0.25em] text-[#d6a33a] sm:text-[10px]">
+            {STEP_COPY[step].eyebrow}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-[#f3eddf]/75 sm:text-sm">
+            {STEP_COPY[step].title}
+          </p>
+        </div>
+        <button
+          ref={actionRef}
+          type="button"
+          onClick={advance}
+          className="min-h-11 rounded-full border border-[#d6a33a]/65 bg-[#d6a33a] px-6 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#050607] shadow-[0_0_30px_rgba(214,163,58,0.24)] transition hover:border-white hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3eddf] focus-visible:ring-offset-4 focus-visible:ring-offset-[#050607]"
+        >
+          {STEP_COPY[step].action}
+        </button>
+        <p className="font-mono text-[8px] tracking-[0.16em] text-[#f3eddf]/40 sm:text-[9px]">
+          USER-PACED · ENTER OR SPACE ACTIVATES · RIGHT ARROW CONTINUES
+        </p>
+      </div>
+
+      {/* Skip remains visible through every user-paced chapter. */}
       <button
-        ref={skipRef}
+        type="button"
         onClick={finish}
-        className="absolute bottom-8 right-8 z-10 px-4 py-2 text-[10px] tracking-[0.28em] uppercase transition-colors"
+        className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] z-20 min-h-11 rounded-full px-4 py-2 text-[10px] uppercase tracking-[0.24em] transition-colors hover:border-[#d6a33a]/60 hover:text-[#f3eddf] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f3eddf] sm:right-8"
         style={{
           fontFamily: "var(--font-mono)",
-          color: "rgba(243,237,223,0.4)",
-          border: "1px solid rgba(214,163,58,0.22)",
-          background: "rgba(5,6,7,0.4)",
-          backdropFilter: "blur(6px)",
+          color: "rgba(243,237,223,0.72)",
+          border: "1px solid rgba(214,163,58,0.38)",
+          background: "rgba(5,6,7,0.72)",
+          backdropFilter: "blur(10px)",
         }}
         aria-label="Skip the opening sequence"
       >
-        Skip
+        Skip intro
       </button>
     </div>
   );

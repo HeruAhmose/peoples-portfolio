@@ -1,6 +1,7 @@
-name: Deploy Peoples Portfolio
+name: Verify and Deploy Peoples Portfolio
 
 on:
+  pull_request:
   push:
     branches:
       - main
@@ -8,16 +9,18 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: peoples-portfolio-pages
+  group: peoples-portfolio-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout
@@ -35,17 +38,17 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Install dependencies
+      - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Type check
+      - name: Type and verified-facts check
         run: pnpm check
 
-      - name: Tests
+      - name: Unit and regression tests
         run: pnpm test
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+      - name: Formatting check
+        run: pnpm format:check
 
       - name: Build static portfolio
         env:
@@ -57,8 +60,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          # The deployed shell is a static world. Keep server-hosted builds free
-          # to use SPA transitions while making Pages navigation explicit.
           sed -i 's/data-trai-static="false"/data-trai-static="true"/' dist/public/index.html
           sed -i "s/__DEPLOY_COMMIT__/${GITHUB_SHA}/g" dist/public/index.html
           printf '%s\n' "$GITHUB_SHA" > dist/public/deploy-commit.txt
@@ -66,7 +67,7 @@ jobs:
           cp dist/public/index.html dist/public/404.html
           for route in materials community research gallery timeline; do
             mkdir -p "dist/public/$route"
-            cp "dist/public/index.html" "dist/public/$route/index.html"
+            cp dist/public/index.html "dist/public/$route/index.html"
           done
           touch dist/public/.nojekyll
 
@@ -86,15 +87,6 @@ jobs:
             exit 1
           fi
 
-          if grep -RIn 'manus\.computer' dist/public \
-            --include='*.html' \
-            --include='*.js' \
-            --include='*.css' \
-            --include='*.json'; then
-            echo "::error::Temporary Manus runtime reference detected in Pages artifact."
-            exit 1
-          fi
-
           founder_assets=(
             'media/founder/football/kannapolis-action.webp'
             'media/founder/navy/academy-yearbook.webp'
@@ -105,76 +97,106 @@ jobs:
             grep -R -Fq "/peoples-portfolio/$asset" dist/public/assets
           done
 
+          grep -R -Fq 'https://heruahmose.github.io/QueenCalifia-CyberAI/' dist/public/assets
+          grep -R -Fq 'EIN obtained · tax-exempt status pending counsel confirmation' dist/public/assets
+          grep -R -Fq 'Mandate of Mistrust' dist/public/assets
+          grep -R -Fq 'one living Sovereignty Stack' dist/public/assets
+          grep -R -Fq 'USER-PACED' dist/public/assets
+          grep -R -Fq 'Skip intro' dist/public/assets
+          grep -R -Fq 'Planned model · not operating' dist/public/assets
+
+          if grep -RInE \
+            'manus\.computer|queencalifia-cyberai\.web\.app|qc\.tamerian-materials\.com|§508\(c\)\(1\)\(A\)|CONNECTED VENTURES|impact score|impactScore|human-controlled autonomy|358 tests|376 tests|403 passing tests' \
+            dist/public \
+            --include='*.html' \
+            --include='*.js' \
+            --include='*.css' \
+            --include='*.json'; then
+            echo "::error::Retired endpoint, holding-company language, or unsupported public claim detected."
+            exit 1
+          fi
+
           if grep -RInE '["`]/media/founder/' dist/public/assets; then
             echo "::error::Root-relative founder media reference detected."
             exit 1
           fi
 
-          grep -R -Fq 'https://heruahmose.github.io/QueenCalifia-CyberAI/' dist/public/assets
-          grep -R -Fq 'Operating under §508(c)(1)(A)' dist/public/assets
-          grep -R -Fq 'Mandate of Mistrust' dist/public/assets
-          grep -R -Fq 'CONNECTED ORGANS' dist/public/assets
-          grep -R -Fq 'One organism, expressed through distinct systems.' dist/public/assets
-
-          if grep -RIn 'CONNECTED VENTURES' dist/public; then
-            echo "::error::Holding-company language detected in Pages artifact."
-            exit 1
-          fi
-
-          if grep -RIn 'queencalifia-cyberai.web.app' dist/public; then
-            echo "::error::Retired Queen Califia endpoint detected."
-            exit 1
-          fi
-
-      - name: Execute static site in headless Chrome
+      - name: Execute full built-site browser matrix
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf /tmp/peoples-pages-root
+          rm -rf /tmp/peoples-pages-root /tmp/peoples-browser-profile
           mkdir -p /tmp/peoples-pages-root/peoples-portfolio
           cp -a dist/public/. /tmp/peoples-pages-root/peoples-portfolio/
 
-          python3 -m http.server 4173 --directory /tmp/peoples-pages-root >/tmp/peoples-pages-http.log 2>&1 &
+          python3 -m http.server 4173 --directory /tmp/peoples-pages-root \
+            >/tmp/peoples-pages-http.log 2>&1 &
           server_pid=$!
-          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
 
-          for _ in $(seq 1 30); do
-            if curl --fail --silent http://127.0.0.1:4173/peoples-portfolio/ >/dev/null; then
-              break
-            fi
-            sleep 1
-          done
-
-          CHROME_BIN="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
-          if [ -z "$CHROME_BIN" ]; then
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome" ]; then
             echo "::error::Headless Chrome/Chromium is unavailable on the runner."
             exit 1
           fi
 
-          "$CHROME_BIN" \
+          "$chrome" \
             --headless \
             --no-sandbox \
             --disable-gpu \
-            --virtual-time-budget=9000 \
-            --dump-dom \
-            http://127.0.0.1:4173/peoples-portfolio/ \
-            > /tmp/peoples-pages-dom.html
+            --disable-dev-shm-usage \
+            --remote-debugging-port=9222 \
+            --remote-allow-origins='*' \
+            --user-data-dir=/tmp/peoples-browser-profile \
+            about:blank >/tmp/peoples-chrome.log 2>&1 &
+          chrome_pid=$!
+          trap 'kill "$chrome_pid" "$server_pid" 2>/dev/null || true' EXIT
 
-          grep -Fq 'data-peoples-app-mounted="true"' /tmp/peoples-pages-dom.html
-          grep -Fq 'JONATHAN PEOPLES' /tmp/peoples-pages-dom.html
-          if grep -Fq 'id="peoples-boot-fallback"' /tmp/peoples-pages-dom.html; then
-            echo "::error::React never replaced the boot fallback."
+          for _ in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:9222/json/version >/dev/null; then
+              break
+            fi
+            sleep 0.25
+          done
+          curl --fail --silent http://127.0.0.1:9222/json/version >/dev/null
+
+          PEOPLES_BASE_URL='http://127.0.0.1:4173/peoples-portfolio/' \
+          PEOPLES_CDP_URL='http://127.0.0.1:9222' \
+          PEOPLES_AUDIT_REPORT='peoples-browser-audit.json' \
+          PEOPLES_AUDIT_CAPTURES='peoples-browser-captures' \
+            pnpm audit:built
+
+          if grep -Fq '/api/trpc' /tmp/peoples-pages-http.log; then
+            echo '::error::Static Pages runtime attempted a server-only tRPC request.'
             exit 1
           fi
 
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: peoples-browser-evidence-${{ github.sha }}
+          path: |
+            peoples-browser-audit.json
+            peoples-browser-captures/
+          if-no-files-found: warn
+
+      - name: Configure GitHub Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+
       - name: Upload GitHub Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist/public
 
   deploy:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      pages: write
+      id-token: write
 
     environment:
       name: github-pages
@@ -185,7 +207,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128
 
-      - name: Verify public deployment identity
+      - name: Verify public deployment identity and assets
         shell: bash
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
@@ -205,11 +227,17 @@ jobs:
           observed="$(curl --fail --silent --show-error "${base}deploy-commit.txt")"
           test "$observed" = "$GITHUB_SHA"
 
-          for asset in \
+          for path in \
+            '' \
+            'materials/' \
+            'community/' \
+            'research/' \
+            'gallery/' \
+            'timeline/' \
             'media/founder/football/kannapolis-action.webp' \
             'media/founder/navy/academy-yearbook.webp' \
             'media/founder/hero/founder-present-portrait.webp'; do
-            curl --fail --silent --show-error "${base}${asset}" >/dev/null
+            curl --fail --silent --show-error "${base}${path}" >/dev/null
           done
 
           html="$(curl --fail --silent --show-error "$base")"
