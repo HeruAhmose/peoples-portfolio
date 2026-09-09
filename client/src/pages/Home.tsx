@@ -34,6 +34,9 @@ interface HomeProps {
   onNavigate: (section: string) => void;
 }
 
+const SOVEREIGNTY_DOCTRINE =
+  "TRAI is one living Sovereignty Stack expressed through seven independently viable, mutually reinforcing organs.";
+
 export default function Home({ activeSection, onNavigate }: HomeProps) {
   const { logSectionView } = usePortfolioAnalytics();
   useEffect(() => {
@@ -96,6 +99,16 @@ export default function Home({ activeSection, onNavigate }: HomeProps) {
                 <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
                   <TextReveal text="Born in Salisbury and raised in Kannapolis, Jonathan Peoples carries the discipline of football and Navy service into a connected body of work spanning advanced materials, sovereign cybersecurity, AI systems, research, and community technology infrastructure." />
                 </p>
+                <div className="mx-auto max-w-2xl rounded-2xl border border-amber-300/20 bg-amber-300/[0.035] px-4 py-3 text-left shadow-[inset_0_0_28px_rgba(251,191,36,0.025)] md:px-5 md:py-4">
+                  <p className="font-mono text-[9px] tracking-[0.26em] text-amber-200/75">
+                    OPERATING CONSTITUTION
+                  </p>
+                  <p className="mt-2 text-xs leading-relaxed text-foreground/78 md:text-sm">
+                    {SOVEREIGNTY_DOCTRINE} The Mandate of Mistrust keeps that
+                    organism inspectable, evidence-bounded, human-authorized,
+                    and open to reversible intervention.
+                  </p>
+                </div>
               </div>
 
               <motion.div

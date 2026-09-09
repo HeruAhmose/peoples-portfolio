@@ -102,6 +102,21 @@ const projections = [
     forbidden: ["introWatchdog", "7000"],
   },
   {
+    path: "client/src/pages/Home.tsx",
+    required: [
+      "one living Sovereignty Stack",
+      "seven independently viable, mutually reinforcing organs",
+      "Mandate of Mistrust",
+      "evidence-bounded, human-authorized",
+    ],
+    forbidden: [],
+  },
+  {
+    path: "client/index.html",
+    required: ['href="%BASE_URL%favicon.svg"'],
+    forbidden: ['href="/favicon'],
+  },
+  {
     path: "shared/organismFacts.ts",
     required: [
       "EIN obtained · tax-exempt status pending counsel confirmation",
