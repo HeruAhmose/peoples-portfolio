@@ -1,21 +1,23 @@
 #!/usr/bin/env node
 
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 
 const sleep = milliseconds =>
   new Promise(resolve => setTimeout(resolve, milliseconds));
 
-const cdpEndpoint = (
-  process.env.PEOPLES_CDP_URL || "http://127.0.0.1:9222"
-).replace(/\/$/, "");
-const baseUrl = new URL(
-  process.env.PEOPLES_BASE_URL || "http://127.0.0.1:4173/peoples-portfolio/"
-);
-const reportPath =
-  process.env.PEOPLES_AUDIT_REPORT || "peoples-browser-audit.json";
-const captureDirectory =
-  process.env.PEOPLES_AUDIT_CAPTURES || "peoples-browser-captures";
+// This harness talks only to the loopback services started by the Pages
+// workflow. Keeping its network target and output locations closed prevents a
+// caller from turning the audit into an SSRF or arbitrary-file-write surface.
+const cdpEndpoint = "http://127.0.0.1:9222";
+const baseUrl = new URL("http://127.0.0.1:4173/peoples-portfolio/");
+const reportPath = "peoples-browser-audit.json";
+const captureDirectory = "peoples-browser-captures";
+const capturePaths = Object.freeze({
+  "desktop-home": "peoples-browser-captures/desktop-home.png",
+  "mobile-hk": "peoples-browser-captures/mobile-hk.png",
+  "desktop-gallery-search":
+    "peoples-browser-captures/desktop-gallery-search.png",
+});
 
 const routes = [
   {
@@ -376,13 +378,15 @@ function validateSnapshot(check, page, required, sweptOverflow = 0) {
 }
 
 async function capture(name) {
+  const capturePath = capturePaths[name];
+  if (!capturePath) throw new Error(`Unsupported capture name: ${name}`);
   const result = await send("Page.captureScreenshot", {
     format: "png",
     fromSurface: true,
     captureBeyondViewport: false,
   });
   mkdirSync(captureDirectory, { recursive: true });
-  writeFileSync(join(captureDirectory, `${name}.png`), result.data, "base64");
+  writeFileSync(capturePath, result.data, "base64");
 }
 
 function completeCheck(check, page, issueStart, sweptOverflow = 0) {

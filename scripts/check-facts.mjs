@@ -117,6 +117,16 @@ const projections = [
     forbidden: ['href="/favicon'],
   },
   {
+    path: "scripts/audit-built-site.mjs",
+    required: [
+      'const cdpEndpoint = "http://127.0.0.1:9222"',
+      'const reportPath = "peoples-browser-audit.json"',
+      "const capturePaths = Object.freeze",
+      "Unsupported capture name",
+    ],
+    forbidden: ["process.env.PEOPLES_"],
+  },
+  {
     path: "shared/organismFacts.ts",
     required: [
       "EIN obtained · tax-exempt status pending counsel confirmation",

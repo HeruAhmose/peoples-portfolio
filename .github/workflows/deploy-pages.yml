@@ -159,11 +159,7 @@ jobs:
           done
           curl --fail --silent http://127.0.0.1:9222/json/version >/dev/null
 
-          PEOPLES_BASE_URL='http://127.0.0.1:4173/peoples-portfolio/' \
-          PEOPLES_CDP_URL='http://127.0.0.1:9222' \
-          PEOPLES_AUDIT_REPORT='peoples-browser-audit.json' \
-          PEOPLES_AUDIT_CAPTURES='peoples-browser-captures' \
-            pnpm audit:built
+          pnpm audit:built
 
           if grep -Fq '/api/trpc' /tmp/peoples-pages-http.log; then
             echo '::error::Static Pages runtime attempted a server-only tRPC request.'
