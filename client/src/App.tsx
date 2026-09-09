@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Route, Switch, useLocation } from "wouter";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -133,6 +133,7 @@ function App() {
     }
   });
   const [hkAssistantOpen, setHkAssistantOpen] = useState(false);
+  const hkLauncherRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -143,15 +144,6 @@ function App() {
     document.title =
       SECTION_TITLES[activeSection] ?? SECTION_TITLES.home ?? "Portfolio";
   }, [activeSection]);
-
-  // Production fail-open: the cinematic intro must never become a permanent
-  // black overlay. The normal sequence completes in under four seconds; this
-  // watchdog gives slow devices generous headroom, then reveals the site.
-  useEffect(() => {
-    if (!showAwakening) return;
-    const watchdog = window.setTimeout(() => setShowAwakening(false), 7000);
-    return () => window.clearTimeout(watchdog);
-  }, [showAwakening]);
 
   const handleNavigate = (section: string) => {
     if (pathToSection(location) !== section) {
@@ -169,6 +161,11 @@ function App() {
   const handleNavClick = (section: string) => {
     void playClickSound();
     handleNavigate(section);
+  };
+
+  const closeHkAssistant = () => {
+    setHkAssistantOpen(false);
+    window.requestAnimationFrame(() => hkLauncherRef.current?.focus());
   };
 
   return (
@@ -212,9 +209,10 @@ function App() {
               </main>
 
               <button
+                ref={hkLauncherRef}
                 type="button"
                 onClick={() => setHkAssistantOpen(!hkAssistantOpen)}
-                className="group fixed bottom-4 left-4 z-40 flex items-center gap-3 rounded-full border border-[color:color-mix(in_oklch,var(--afro-emerald)_42%,var(--cyan))] bg-background/90 px-2.5 py-2.5 text-left text-foreground shadow-[0_0_36px_-4px_oklch(0.65_0.25_45/0.75),0_0_24px_-6px_color-mix(in_oklch,var(--afro-sapphire)_35%,transparent)] backdrop-blur-md transition-all hover:scale-[1.02] hover:border-cyan-300/55 hover:shadow-[0_0_48px_0_oklch(0.6_0.2_200/0.38)] sm:px-3"
+                className="group fixed bottom-4 left-4 z-[2147482400] flex items-center gap-3 rounded-full border border-[color:color-mix(in_oklch,var(--afro-emerald)_42%,var(--cyan))] bg-background/90 px-2.5 py-2.5 text-left text-foreground shadow-[0_0_36px_-4px_oklch(0.65_0.25_45/0.75),0_0_24px_-6px_color-mix(in_oklch,var(--afro-sapphire)_35%,transparent)] backdrop-blur-md transition-all hover:scale-[1.02] hover:border-cyan-300/55 hover:shadow-[0_0_48px_0_oklch(0.6_0.2_200/0.38)] sm:px-3"
                 title={
                   hkAssistantOpen
                     ? "Close H.K. Assistant"
@@ -226,6 +224,7 @@ function App() {
                     : "Open H.K. Assistant"
                 }
                 aria-expanded={hkAssistantOpen}
+                aria-controls="hk-portfolio-assistant"
               >
                 <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-primary text-primary-foreground shadow-[0_0_18px_-2px_oklch(0.65_0.25_45/0.7)]">
                   <span
@@ -248,7 +247,7 @@ function App() {
 
               <HKAssistant
                 isOpen={hkAssistantOpen}
-                onClose={() => setHkAssistantOpen(false)}
+                onClose={closeHkAssistant}
               />
             </>
           )}

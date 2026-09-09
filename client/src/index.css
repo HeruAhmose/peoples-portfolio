@@ -134,6 +134,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: ui-sans-serif, system-ui, sans-serif;

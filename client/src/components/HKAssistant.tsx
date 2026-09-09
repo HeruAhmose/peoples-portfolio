@@ -39,10 +39,50 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
   ]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen) logAssistantOpen();
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    logAssistantOpen();
+    window.requestAnimationFrame(() => inputRef.current?.focus());
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
   }, [isOpen, logAssistantOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = Array.from(
+        dialogRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        ) ?? []
+      ).filter(element => element.getClientRects().length > 0);
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -108,108 +148,124 @@ export default function HKAssistant({ isOpen, onClose }: HKAssistantProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          role="dialog"
-          aria-label="H.K. portfolio assistant"
-          className="cyber-panel fixed right-4 bottom-4 z-50 flex h-[min(24rem,50vh)] w-96 max-w-[calc(100vw-2rem)] flex-col rounded-2xl sm:h-96"
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="flex shrink-0 items-center justify-between border-b border-cyan-500/20 bg-background/40 px-4 py-3 backdrop-blur-sm">
-            <div>
-              <h3 className="font-display text-sm font-semibold tracking-[0.2em] text-foreground">
-                H.K. ASSISTANT
-              </h3>
-              <p className="font-mono text-[10px] tracking-widest text-muted-foreground">
-                VERIFIED · PORTFOLIO CONTEXT
-              </p>
-            </div>
-            <motion.button
-              type="button"
-              aria-label="Close H.K. assistant"
-              onClick={onClose}
-              className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <X className="w-5 h-5 text-foreground" />
-            </motion.button>
-          </div>
-
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-background/20 p-4">
-            {messages.map((message, idx) => (
-              <motion.div
-                key={message.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.02 }}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[85%] rounded-lg p-3 text-sm leading-relaxed whitespace-pre-wrap ${
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground shadow-[0_0_16px_-4px_oklch(0.65_0.25_45/0.5)]"
-                      : "border border-cyan-500/15 bg-card/80 text-foreground backdrop-blur-sm"
-                  }`}
-                >
-                  {message.content}
-                </div>
-              </motion.div>
-            ))}
-            {loading && (
-              <motion.div
-                className="flex justify-start"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <div className="rounded-lg border border-primary/20 bg-card/60 p-3 backdrop-blur-sm">
-                  <div className="flex gap-2">
-                    {[0, 1, 2].map(i => (
-                      <motion.div
-                        key={i}
-                        className="w-2 h-2 bg-primary rounded-full"
-                        animate={{ y: [0, -4, 0] }}
-                        transition={{
-                          delay: i * 0.1,
-                          repeat: Infinity,
-                          duration: 0.6,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <form
-            onSubmit={handleSendMessage}
-            className="flex shrink-0 gap-2 border-t border-cyan-500/15 bg-background/50 p-4 backdrop-blur-sm"
+        <>
+          <motion.button
+            type="button"
+            tabIndex={-1}
+            aria-label="Close H.K. assistant backdrop"
+            className="fixed inset-0 z-[2147483100] cursor-default bg-[#02050b]/72 backdrop-blur-sm sm:bg-[#02050b]/45"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
+          <motion.div
+            ref={dialogRef}
+            id="hk-portfolio-assistant"
+            role="dialog"
+            aria-modal="true"
+            aria-label="H.K. portfolio assistant"
+            className="cyber-panel fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[2147483200] flex h-[min(38rem,calc(100dvh-1.5rem))] flex-col rounded-2xl sm:left-auto sm:right-4 sm:h-[min(34rem,calc(100dvh-2rem))] sm:w-[26rem]"
+            initial={{ opacity: 0, scale: 0.92, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 20 }}
+            transition={{ duration: 0.25 }}
           >
-            <input
-              type="text"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Ask about materials, TechBridge, Queen Califia, or research..."
-              aria-label="Ask H.K. about the portfolio"
-              className="flex-1 rounded-lg border border-cyan-500/20 bg-background/80 px-3 py-2 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-              disabled={loading}
-            />
-            <motion.button
-              type="submit"
-              aria-label="Send message to H.K."
-              disabled={loading || !input.trim()}
-              className="rounded-lg bg-primary p-2 text-primary-foreground shadow-[0_0_14px_-4px_oklch(0.65_0.25_45/0.55)] transition-colors hover:bg-primary/85 disabled:opacity-50"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <div className="flex shrink-0 items-center justify-between border-b border-cyan-500/20 bg-background/40 px-4 py-3 backdrop-blur-sm">
+              <div>
+                <h3 className="font-display text-sm font-semibold tracking-[0.2em] text-foreground">
+                  H.K. ASSISTANT
+                </h3>
+                <p className="font-mono text-[10px] tracking-widest text-muted-foreground">
+                  VERIFIED · PORTFOLIO CONTEXT
+                </p>
+              </div>
+              <motion.button
+                type="button"
+                aria-label="Close H.K. assistant"
+                onClick={onClose}
+                className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <X className="w-5 h-5 text-foreground" />
+              </motion.button>
+            </div>
+
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-background/20 p-4">
+              {messages.map((message, idx) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.02 }}
+                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[85%] rounded-lg p-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground shadow-[0_0_16px_-4px_oklch(0.65_0.25_45/0.5)]"
+                        : "border border-cyan-500/15 bg-card/80 text-foreground backdrop-blur-sm"
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                </motion.div>
+              ))}
+              {loading && (
+                <motion.div
+                  className="flex justify-start"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <div className="rounded-lg border border-primary/20 bg-card/60 p-3 backdrop-blur-sm">
+                    <div className="flex gap-2">
+                      {[0, 1, 2].map(i => (
+                        <motion.div
+                          key={i}
+                          className="w-2 h-2 bg-primary rounded-full"
+                          animate={{ y: [0, -4, 0] }}
+                          transition={{
+                            delay: i * 0.1,
+                            repeat: Infinity,
+                            duration: 0.6,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            <form
+              onSubmit={handleSendMessage}
+              className="flex shrink-0 gap-2 border-t border-cyan-500/15 bg-background/50 p-4 backdrop-blur-sm"
             >
-              <Send className="w-4 h-4" />
-            </motion.button>
-          </form>
-        </motion.div>
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                placeholder="Ask about materials, TechBridge, Queen Califia, or research..."
+                aria-label="Ask H.K. about the portfolio"
+                className="flex-1 rounded-lg border border-cyan-500/20 bg-background/80 px-3 py-2 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                disabled={loading}
+              />
+              <motion.button
+                type="submit"
+                aria-label="Send message to H.K."
+                disabled={loading || !input.trim()}
+                className="rounded-lg bg-primary p-2 text-primary-foreground shadow-[0_0_14px_-4px_oklch(0.65_0.25_45/0.55)] transition-colors hover:bg-primary/85 disabled:opacity-50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Send className="w-4 h-4" />
+              </motion.button>
+            </form>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   );

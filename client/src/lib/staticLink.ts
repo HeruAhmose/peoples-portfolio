@@ -48,15 +48,15 @@ const HK_KNOWLEDGE: Entry[] = [
   },
   {
     match: /califia|cyber|secur|\bai\b|brain|threat|attack/i,
-    answer: `Queen Califia is the cognitive organ — an autonomous cybersecurity platform on Flask and React with three cores: Cyber, Identity and Markets. ${organStatus("queen-califia")}. The public command surface is ${PUBLIC_WORLD_URLS.queenCalifia}.`,
+    answer: `Queen Califia is the cognitive organ — a human-authorized, evidence-bound cybersecurity command-surface concept with three cores: Cyber, Identity and Markets. ${organStatus("queen-califia")}. The public experience is a demo, not an autonomous operator or production security service. Open it at ${PUBLIC_WORLD_URLS.queenCalifia}.`,
   },
   {
     match: /techbridge|navigator|hub|digital divide|horace|community|hands/i,
-    answer: `TechBridge Collective is designed as community technology hubs staffed by paid Digital Navigators — two hubs and four Navigators in year one. It is named for Horace King, the enslaved master bridge builder. ${organStatus("techbridge")}. See the Community Impact page.`,
+    answer: `TechBridge Collective is a planned community-technology hub model built around paid Digital Navigators and deterministic H.K. triage. The Year 1 figures—two hubs and four Navigators—are planning targets, not operating results, schedules, or signed host commitments. It is named for Horace King, the bridge builder born into slavery who connected communities across the American South. ${organStatus("techbridge")}. See the Community Impact page.`,
   },
   {
     match: /foundation|nonprofit|508|charit|give|donat|lymphatic/i,
-    answer: `The Peoples Foundation is the regenerative organ. ${organStatus("peoples-foundation")}. That describes its operating position; it is not a claim of an IRS determination letter. It is designed to receive defined allocations from the ventures and return them to community programs.`,
+    answer: `The Peoples Foundation is a separate regenerative-beneficiary affiliate and the lymphatic organ of TRAI. ${organStatus("peoples-foundation")}. It is designed to receive defined allocations from the ventures and return them to community programs; no tax-exempt determination is represented.`,
   },
   {
     match: /mela nation|logistic|mobility|delivery|vessel/i,

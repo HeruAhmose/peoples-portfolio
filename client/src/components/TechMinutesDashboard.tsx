@@ -299,9 +299,8 @@ export default function TechMinutesDashboard({
           MISSION STATEMENT
         </p>
         <p>
-          TechBridge Collective builds bridges of access, dignity, and
-          opportunity through human-centered digital help at Triangle community
-          sites (
+          TechBridge Collective is designed to build bridges of access, dignity,
+          and opportunity through a planned human-centered digital-help model (
           <a
             href="https://techbridge-collective.org/"
             target="_blank"
@@ -310,9 +309,9 @@ export default function TechMinutesDashboard({
           >
             techbridge-collective.org
           </a>
-          ). Every TechMinute® represents a life changed — a parent reconnecting
-          with their child&apos;s education, a veteran rebuilding their career,
-          a senior accessing healthcare.
+          ). The sample TechMinutes® above demonstrate how future activity could
+          be recorded; they are scenarios, not people served or outcomes
+          achieved.
         </p>
       </motion.div>
     </motion.div>

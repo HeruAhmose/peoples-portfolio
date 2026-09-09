@@ -25,7 +25,7 @@ export type VentureMaturity =
   | "demo-standing"
   | "early-development"
   | "designed"
-  | "operating-508c1a";
+  | "entity-formed";
 
 export interface OrganPublicFact {
   /** Existing typography/epistemic register used by the client. */
@@ -63,18 +63,18 @@ export const ORGAN_FACTS = {
     evidenceRef: "verified-facts:queen-califia-demo",
   },
   "mela-nation": {
-    claim: "build",
-    evidence: "verified",
+    claim: "vision",
+    evidence: "planned",
     maturity: "early-development",
-    status: "EIN filed · early development",
-    evidenceRef: "verified-facts:mela-nation-entity",
+    status: "Early development · not operating",
+    evidenceRef: "verified-facts:mela-nation-development",
   },
   melanina: {
-    claim: "build",
-    evidence: "verified",
+    claim: "vision",
+    evidence: "planned",
     maturity: "early-development",
-    status: "EIN filed · early development",
-    evidenceRef: "verified-facts:melanina-entity",
+    status: "Early development · not operating",
+    evidenceRef: "verified-facts:melanina-development",
   },
   techbridge: {
     claim: "vision",
@@ -86,9 +86,9 @@ export const ORGAN_FACTS = {
   "peoples-foundation": {
     claim: "build",
     evidence: "verified",
-    maturity: "operating-508c1a",
-    status: "Operating under §508(c)(1)(A)",
-    evidenceRef: "verified-facts:peoples-foundation-508c1a",
+    maturity: "entity-formed",
+    status: "EIN obtained · tax-exempt status pending counsel confirmation",
+    evidenceRef: "verified-facts:peoples-foundation-ein",
   },
 } as const satisfies Record<OrganKey, OrganPublicFact>;
 

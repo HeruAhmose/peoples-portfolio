@@ -43,7 +43,7 @@ describe("projectGallery data", () => {
     );
     expect(trai?.shortDescription).toContain("seven-organ Sovereignty Stack");
     expect(trai?.shortDescription).toContain("six public experiences");
-    expect(trai?.impactLabel).toBe("Seven-organ Sovereignty Stack");
+    expect(trai?.evidenceLabel).toContain("seven-organ Sovereignty Stack");
   });
 
   it("describes TechBridge H.K. triage as deterministic", () => {
@@ -51,6 +51,7 @@ describe("projectGallery data", () => {
       project => project.id === "techbridge"
     );
     expect(techBridge?.shortDescription).toContain("deterministic H.K. triage");
+    expect(techBridge?.shortDescription).toContain("not yet operating");
     expect(techBridge?.techStack).toContain("Deterministic triage");
   });
 
@@ -60,8 +61,7 @@ describe("projectGallery data", () => {
       expect(project.shortDescription.trim().length).toBeGreaterThan(0);
       expect(project.techStack.length).toBeGreaterThan(0);
       expect(project.links.length).toBeGreaterThan(0);
-      expect(project.impactScore).toBeGreaterThanOrEqual(0);
-      expect(project.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(project.evidenceLabel.trim().length).toBeGreaterThan(0);
     }
   });
 });
@@ -124,13 +124,12 @@ describe("filterProjectsByCategory", () => {
 });
 
 describe("sortShowcaseProjects", () => {
-  it("sorts by impact descending", () => {
-    const sorted = sortShowcaseProjects(SHOWCASE_PROJECTS, "impact");
+  it("preserves the curated order for featured", () => {
+    const sorted = sortShowcaseProjects(SHOWCASE_PROJECTS, "featured");
 
-    expect(sorted[0]!.impactScore).toBeGreaterThanOrEqual(
-      sorted[1]!.impactScore
+    expect(sorted.map(project => project.id)).toEqual(
+      SHOWCASE_PROJECTS.map(project => project.id)
     );
-    expect(sorted[0]!.id).toBe("tamerian-materials");
   });
 
   it("sorts by title ascending", () => {
@@ -141,12 +140,14 @@ describe("sortShowcaseProjects", () => {
     expect(titles).toEqual(expected);
   });
 
-  it("sorts by updatedAt descending for recent", () => {
-    const sorted = sortShowcaseProjects(SHOWCASE_PROJECTS, "recent");
-    const first = new Date(sorted[0]!.updatedAt).getTime();
-    const second = new Date(sorted[1]!.updatedAt).getTime();
+  it("sorts by category and then title", () => {
+    const sorted = sortShowcaseProjects(SHOWCASE_PROJECTS, "category");
+    const labels = sorted.map(
+      project => `${project.categoryLabel}:${project.title}`
+    );
+    const expected = [...labels].sort((a, b) => a.localeCompare(b, "en"));
 
-    expect(first).toBeGreaterThanOrEqual(second);
+    expect(labels).toEqual(expected);
   });
 });
 
@@ -155,7 +156,7 @@ describe("queryShowcaseProjects", () => {
     const result = queryShowcaseProjects(SHOWCASE_PROJECTS, {
       search: "tech",
       category: "equity",
-      sort: "impact",
+      sort: "featured",
     });
 
     expect(result).toHaveLength(1);
@@ -189,7 +190,7 @@ describe("queryShowcaseProjects", () => {
     const result = queryShowcaseProjects(SHOWCASE_PROJECTS, {
       search: "",
       category: "materials",
-      sort: "recent",
+      sort: "category",
     });
 
     expect(result).toHaveLength(1);

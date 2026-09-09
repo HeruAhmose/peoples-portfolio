@@ -25,16 +25,16 @@ interface ProjectGalleryProps {
 }
 
 const SORT_LABELS: Record<GallerySortMode, string> = {
-  impact: "Impact (high → low)",
+  featured: "Featured order",
   name: "Name (A → Z)",
-  recent: "Recently updated",
+  category: "Category (A → Z)",
 };
 
 export default function ProjectGallery({ onNavigate }: ProjectGalleryProps) {
   const { logSectionView } = usePortfolioAnalytics();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<GalleryCategoryFilter>("all");
-  const [sort, setSort] = useState<GallerySortMode>("impact");
+  const [sort, setSort] = useState<GallerySortMode>("featured");
 
   useEffect(() => {
     logSectionView("gallery");
@@ -60,7 +60,7 @@ export default function ProjectGallery({ onNavigate }: ProjectGalleryProps) {
           className="mx-auto max-w-4xl text-center"
         >
           <p className="font-mono text-[10px] tracking-[0.35em] text-cyan-400/85 md:text-xs">
-            LIVE SYSTEMS /// INTERACTIVE PROJECT FIELD
+            PUBLIC WORK /// INTERACTIVE PROJECT FIELD
           </p>
           <h1 className="font-display mt-4 text-4xl font-bold tracking-tight md:text-5xl">
             <HolographicText variant="sovereign" className="font-bold">
@@ -68,15 +68,15 @@ export default function ProjectGallery({ onNavigate }: ProjectGalleryProps) {
             </HolographicText>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            Each project opens with a living preview of one of its defining
-            systems. Move through the portfolio by domain or impact, then flip a
-            surface for the implementation stack and live destination.
+            Each card presents a public project surface, its implementation
+            context, and its evidence state. Filter by domain, then flip a card
+            to inspect the stack and open the corresponding public record.
           </p>
           <div className="mx-auto mt-6 grid max-w-2xl grid-cols-1 gap-2 sm:grid-cols-3">
             {[
               ["01", "WATCH", "Core behavior in motion"],
               ["02", "INSPECT", "Flip for the working stack"],
-              ["03", "ENTER", "Open the live system"],
+              ["03", "OPEN", "Visit the public record"],
             ].map(([index, label, detail]) => (
               <div
                 key={index}
@@ -106,7 +106,7 @@ export default function ProjectGallery({ onNavigate }: ProjectGalleryProps) {
               <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search projects, systems, materials, impact…"
+                placeholder="Search projects, systems, materials, evidence…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="border-cyan-500/25 bg-background/40 pl-10 font-mono text-sm"
@@ -152,7 +152,7 @@ export default function ProjectGallery({ onNavigate }: ProjectGalleryProps) {
 
         <p className="mx-auto mt-6 max-w-6xl text-center font-mono text-xs text-muted-foreground">
           Showing <span className="text-primary">{visible.length}</span> of{" "}
-          {SHOWCASE_PROJECTS.length} live project surfaces
+          {SHOWCASE_PROJECTS.length} public project surfaces
         </p>
 
         <StaggerReveal className="mx-auto mt-10 grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2">

@@ -58,7 +58,7 @@ export const currentWorlds = [
     eyebrow: "MATTER /// ENERGY /// QUANTUM",
     href: PUBLIC_WORLD_URLS.tamerian,
     description:
-      "Advanced-materials work centered on Tamerian Ore: a hemp-based crystalline composite thesis spanning energy harvesting, quantum sensing, and future information systems.",
+      "Bio-derived multifunctional composites for self-powered sensing: a filed research architecture whose integrated performance remains unvalidated.",
     signal: "MATERIALS",
   },
   {
@@ -67,7 +67,7 @@ export const currentWorlds = [
     eyebrow: "SECURITY /// GOVERNANCE /// AUTONOMY",
     href: PUBLIC_WORLD_URLS.queenCalifia,
     description:
-      "A sovereign cybersecurity architecture built around unified security engines, biomimetic defense, post-quantum readiness, and human-controlled autonomy.",
+      "A public, human-authorized cybersecurity interface demo exploring shared signals, biomimetic defense, and post-quantum readiness within explicit evidence boundaries.",
     signal: "CYBER",
   },
   {
@@ -76,7 +76,7 @@ export const currentWorlds = [
     eyebrow: "ACCESS /// DIGNITY /// INFRASTRUCTURE",
     href: PUBLIC_WORLD_URLS.techBridge,
     description:
-      "Community technology infrastructure built around paid Digital Navigators, deterministic H.K. triage, and measurable service delivery for people navigating the digital world.",
+      "A planned digital-equity model built around paid Digital Navigators, deterministic H.K. triage, and proposed service measurement. It is not yet operating.",
     signal: "COMMUNITY",
   },
   {
@@ -91,10 +91,10 @@ export const currentWorlds = [
 ] as const;
 
 export const aboutSkillBullets = [
-  "Advanced materials · biomimetic systems · energy harvesting · quantum-sensing concepts",
-  "Cybersecurity architecture · AI orchestration · post-quantum security · human-controlled autonomy",
+  "Advanced materials · biomimetic systems · energy-harvesting directions · quantum-sensing hypotheses",
+  "Cybersecurity architecture · AI orchestration · post-quantum design · explicit human authorization",
   "Interactive systems · React/TypeScript · research UX · 3D/holographic interfaces",
-  "Digital equity · community technology infrastructure · service design · measurable impact",
+  "Digital equity · community technology planning · service design · evidence-bounded measurement",
 ] as const;
 
 export type LinkedInCredential = {

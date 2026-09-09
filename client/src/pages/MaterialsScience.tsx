@@ -76,10 +76,10 @@ export default function MaterialsScience({
             {TAMERIAN_PATENT.claimCount} claims
           </p>
           <p className="text-xl text-foreground/80 max-w-2xl">
-            Hemp-derived carbon matrices with embedded piezoelectric,
-            thermoelectric, magnetic, and quantum-active crystalline phases — a
-            single composite for simultaneous energy harvesting and
-            room-temperature quantum sensing (narrative aligned with{" "}
+            Bio-derived multifunctional composites for self-powered sensing. The
+            filed architecture combines a hemp-derived carbon matrix with
+            proposed piezoelectric, thermal, magnetic, and optical coupling
+            pathways (public narrative aligned with{" "}
             <a
               href="https://tamerian-materials.com/"
               target="_blank"
@@ -89,7 +89,8 @@ export default function MaterialsScience({
               tamerian-materials.com
             </a>
             ). This section pairs that public story with the AMC research
-            framing and claim explorer.
+            framing and claim explorer; integrated performance remains
+            unvalidated.
           </p>
         </motion.div>
       </section>
@@ -208,7 +209,7 @@ export default function MaterialsScience({
 
             <div className="space-y-3">
               <p className="text-xs font-mono text-muted-foreground tracking-widest">
-                COUPLING GRAPH — multi-node interaction (live)
+                ILLUSTRATIVE COUPLING GRAPH — NOT MEASURED DATA
               </p>
               <NeuralNetwork />
             </div>

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { SAFE_URL } from "../client/src/components/cinematic/Prose";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { Prose, SAFE_URL } from "../client/src/components/cinematic/Prose";
 
 /**
  * Prose renders assistant output. Escaping HTML is not enough on its own:
@@ -47,5 +49,19 @@ describe("Prose URL allowlist", () => {
     // The comment in Prose.tsx mentions dangerouslySetInnerHTML to explain that
     // it is deliberately not used, so assert on usage rather than the word.
     expect(src).not.toMatch(/dangerouslySetInnerHTML\s*=/);
+  });
+
+  it("renders supported prose tokens through React elements", () => {
+    const html = renderToStaticMarkup(
+      createElement(Prose, {
+        children:
+          "**Verified** with `bounded code` and [public evidence](https://example.com).",
+      })
+    );
+
+    expect(html).toContain("<strong");
+    expect(html).toContain("<code");
+    expect(html).toContain('href="https://example.com"');
+    expect(html).toContain('rel="noreferrer noopener"');
   });
 });
