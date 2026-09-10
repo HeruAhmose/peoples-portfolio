@@ -15,7 +15,7 @@ new='''    if (isMuted) return;
     if (!ctx) return;
 '''
 p=Path('client/src/hooks/useAudioSystem.ts');s=p.read_text(encoding='utf-8');n=s.count(old)
-if n < 7: raise SystemExit(f'expected >=7 audio guards, found {n}')
+if n != 6: raise SystemExit(f'expected exactly 6 audio guards, found {n}')
 p.write_text(s.replace(old,new),encoding='utf-8')
 
 replace_exact(
