@@ -149,9 +149,9 @@ jobs:
             --user-data-dir=/tmp/peoples-browser-profile \
             about:blank >/tmp/peoples-chrome.log 2>&1 &
           chrome_pid=$!
-          trap 'kill "$chrome_pid" "$server_pid" 2>/dev/null || true' EXIT
+          trap 'kill "$chrome_pid" "$server_pid" 2>/dev/null || true; cat /tmp/peoples-chrome.log || true; cat /tmp/peoples-pages-http.log || true' EXIT
 
-          for _ in $(seq 1 40); do
+          for _ in $(seq 1 240); do
             if curl --fail --silent http://127.0.0.1:9222/json/version >/dev/null; then
               break
             fi
