@@ -16,6 +16,41 @@ const routerBase =
   viteBaseUrl === "/" ? undefined : viteBaseUrl.replace(/\/$/, "");
 const queryClient = new QueryClient();
 
+const syncTraiHologramViewport = () => {
+  const hologram = document.querySelector<HTMLElement>(".trai-v54-hologram");
+  if (!hologram) return false;
+
+  hologram.style.right = "auto";
+  hologram.style.width = `${document.documentElement.clientWidth}px`;
+  return true;
+};
+
+const bindTraiHologramViewport = () => {
+  const sync = () => {
+    syncTraiHologramViewport();
+  };
+
+  if (typeof ResizeObserver !== "undefined") {
+    const viewportObserver = new ResizeObserver(sync);
+    viewportObserver.observe(document.documentElement);
+  } else {
+    window.addEventListener("resize", sync, { passive: true });
+  }
+
+  if (syncTraiHologramViewport()) return;
+
+  const hologramObserver = new MutationObserver(() => {
+    if (!syncTraiHologramViewport()) return;
+    hologramObserver.disconnect();
+  });
+  hologramObserver.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+};
+
+bindTraiHologramViewport();
+
 const redirectToLoginIfUnauthorized = (error: unknown) => {
   // There is no OAuth portal behind the static deploy; redirecting would loop.
   if (STATIC_MODE) return;
