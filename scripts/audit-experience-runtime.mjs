@@ -110,10 +110,11 @@ try {
     mounted: document.documentElement.dataset.peoplesAppMounted,
     overflow: Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth)
   }))()`);
+  const validIntroStart = ["1", "2"].includes(introStart.introStep);
   if (
     introStart.probe.contexts !== 0 ||
     introStart.probe.oscillators !== 0 ||
-    introStart.introStep !== "1" ||
+    !validIntroStart ||
     introStart.mounted !== "true" ||
     introStart.overflow > 1
   ) {
