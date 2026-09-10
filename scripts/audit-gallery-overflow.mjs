@@ -244,12 +244,11 @@ try {
   console.log(`PEOPLES_GALLERY_PHASE_AUDIT=${JSON.stringify(report)}`);
 
   if (report.missing || report.missingAnimation) {
-    throw new Error(`TRAI hologram/grid contract missing: ${JSON.stringify(report)}`);
+    throw new Error(
+      `TRAI hologram/grid contract missing: ${JSON.stringify(report)}`
+    );
   }
-  if (
-    report.baseline.maxOverflow > 1 ||
-    report.baseline.maxForcedScrollX > 1
-  ) {
+  if (report.baseline.maxOverflow > 1 || report.baseline.maxForcedScrollX > 1) {
     throw new Error(
       `Gallery horizontal overflow regression: ${JSON.stringify(report)}`
     );
