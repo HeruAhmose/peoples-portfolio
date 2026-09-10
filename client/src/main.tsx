@@ -9,6 +9,7 @@ import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
+import "./trai-organism-overflow.css";
 
 const viteBaseUrl = import.meta.env.BASE_URL;
 const routerBase =
