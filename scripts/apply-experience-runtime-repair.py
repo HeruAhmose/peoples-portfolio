@@ -37,4 +37,8 @@ replace_exact(
                   setHkAssistantOpen(!hkAssistantOpen);
                 }}
 ''')
+replace_exact(
+ 'package.json',
+ '    "audit:built": "node scripts/audit-built-site.mjs",',
+ '    "audit:built": "node scripts/audit-built-site.mjs && node scripts/audit-experience-runtime.mjs",')
 print('PEOPLES_EXPERIENCE_PATCH=APPLIED')
