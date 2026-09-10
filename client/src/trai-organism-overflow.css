@@ -3,7 +3,6 @@
 .trai-v54-hologram {
   left: 0 !important;
   right: auto !important;
-  width: 100% !important;
   contain: paint !important;
   overflow: clip !important;
 }
