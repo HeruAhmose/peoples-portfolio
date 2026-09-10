@@ -39,3 +39,5 @@ jobs:
           git add scripts/audit-gallery-overflow.mjs
           git commit -m "style(gallery): format deterministic overflow audit"
           git push origin HEAD:fix/gallery-hologram-overflow-20260910
+
+# Temporary branch-only formatter; remove before merge.
