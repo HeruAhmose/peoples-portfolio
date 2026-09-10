@@ -30,6 +30,10 @@ jobs:
           pnpm audit --audit-level=high
           pnpm check
           pnpm test
+          pnpm exec prettier --write scripts/audit-gallery-overflow.mjs
+          echo "PEOPLES_FORMATTED_GALLERY_AUDIT_BEGIN"
+          cat scripts/audit-gallery-overflow.mjs
+          echo "PEOPLES_FORMATTED_GALLERY_AUDIT_END"
           pnpm format:check
       - name: Build Pages-base artifact
         env:
