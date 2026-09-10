@@ -96,7 +96,12 @@ try {
       `document.querySelector('button[aria-label="Skip the opening sequence"]')?.click(); true`
     );
   }
-  await waitForEval(cdp, `!!document.querySelector('[data-peoples-sound]')`, 80, 100);
+  await waitForEval(
+    cdp,
+    `!!document.querySelector('[data-peoples-sound]')`,
+    80,
+    100
+  );
 
   const clicked = await cdp.eval(`(() => {
     const button = [...document.querySelectorAll('nav button')].find(node =>
@@ -106,7 +111,8 @@ try {
     button.click();
     return true;
   })()`);
-  if (!clicked) throw new Error("Visible 3D GALLERY navigation control missing");
+  if (!clicked)
+    throw new Error("Visible 3D GALLERY navigation control missing");
   await waitForEval(cdp, `location.pathname.endsWith('/gallery')`, 80, 100);
   await waitForEval(cdp, `!!document.querySelector('.trai-v54-grid')`, 80, 100);
   await sleep(650);
@@ -157,18 +163,31 @@ try {
     };
   })()`);
 
-  if (report.missing) throw new Error("TRAI hologram/grid contract missing on gallery");
+  if (report.missing)
+    throw new Error("TRAI hologram/grid contract missing on gallery");
   if (report.maxOverflow > 1 || report.finalOverflow > 1) {
-    throw new Error(`Gallery horizontal overflow regression: ${JSON.stringify(report)}`);
+    throw new Error(
+      `Gallery horizontal overflow regression: ${JSON.stringify(report)}`
+    );
   }
   if (!report.visual.animationName.includes("v54-grid-drift")) {
-    throw new Error(`TRAI grid animation contract changed: ${report.visual.animationName}`);
+    throw new Error(
+      `TRAI grid animation contract changed: ${report.visual.animationName}`
+    );
   }
-  if (!report.visual.contain.includes("paint") || report.visual.overflowX !== "clip") {
-    throw new Error(`TRAI hologram containment contract missing: ${JSON.stringify(report.visual)}`);
+  if (
+    !report.visual.contain.includes("paint") ||
+    report.visual.overflowX !== "clip"
+  ) {
+    throw new Error(
+      `TRAI hologram containment contract missing: ${JSON.stringify(report.visual)}`
+    );
   }
 
-  await fs.writeFile("peoples-gallery-overflow-audit.json", JSON.stringify(report, null, 2));
+  await fs.writeFile(
+    "peoples-gallery-overflow-audit.json",
+    JSON.stringify(report, null, 2)
+  );
   console.log("PEOPLES_GALLERY_OVERFLOW=PASS");
   console.log(JSON.stringify(report));
 } finally {
