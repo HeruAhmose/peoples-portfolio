@@ -9,7 +9,7 @@
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit && node scripts/check-facts.mjs",
     "check:facts": "node scripts/check-facts.mjs",
-    "audit:built": "node scripts/audit-built-site.mjs",
+    "audit:built": "node scripts/audit-built-site.mjs && node scripts/audit-experience-runtime.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",

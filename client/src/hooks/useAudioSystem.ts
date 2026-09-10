@@ -19,7 +19,7 @@ export interface AudioSystemConfig {
 
 export const useAudioSystem = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [masterVolume, setMasterVolume] = useState(0.3);
   const oscillatorsRef = useRef<Map<string, OscillatorNode>>(new Map());
 
@@ -36,8 +36,9 @@ export const useAudioSystem = () => {
 
   // Generate a cyberpunk boot-up sound
   const playBootUpSound = useCallback(async () => {
+    if (isMuted) return;
     const ctx = initAudioContext();
-    if (!ctx || isMuted) return;
+    if (!ctx) return;
 
     const now = ctx.currentTime;
     const gainNode = ctx.createGain();
@@ -69,8 +70,9 @@ export const useAudioSystem = () => {
 
   // Generate section transition sound
   const playSectionTransition = useCallback(async () => {
+    if (isMuted) return;
     const ctx = initAudioContext();
-    if (!ctx || isMuted) return;
+    if (!ctx) return;
 
     const now = ctx.currentTime;
     const gainNode = ctx.createGain();
@@ -101,8 +103,9 @@ export const useAudioSystem = () => {
 
   // Generate UI interaction click sound
   const playClickSound = useCallback(async () => {
+    if (isMuted) return;
     const ctx = initAudioContext();
-    if (!ctx || isMuted) return;
+    if (!ctx) return;
 
     const now = ctx.currentTime;
     const gainNode = ctx.createGain();
@@ -122,8 +125,9 @@ export const useAudioSystem = () => {
 
   // Generate hover sound
   const playHoverSound = useCallback(async () => {
+    if (isMuted) return;
     const ctx = initAudioContext();
-    if (!ctx || isMuted) return;
+    if (!ctx) return;
 
     const now = ctx.currentTime;
     const gainNode = ctx.createGain();
@@ -143,8 +147,9 @@ export const useAudioSystem = () => {
 
   // Generate success/completion sound
   const playSuccessSound = useCallback(async () => {
+    if (isMuted) return;
     const ctx = initAudioContext();
-    if (!ctx || isMuted) return;
+    if (!ctx) return;
 
     const now = ctx.currentTime;
     const gainNode = ctx.createGain();
@@ -167,8 +172,9 @@ export const useAudioSystem = () => {
 
   // Generate error/warning sound
   const playErrorSound = useCallback(async () => {
+    if (isMuted) return;
     const ctx = initAudioContext();
-    if (!ctx || isMuted) return;
+    if (!ctx) return;
 
     const now = ctx.currentTime;
     const gainNode = ctx.createGain();
@@ -196,10 +202,32 @@ export const useAudioSystem = () => {
     osc2.stop(now + 0.45);
   }, [initAudioContext, isMuted, masterVolume]);
 
-  // Toggle mute state
+  // Explicit opt-in owns AudioContext creation and provides an audible confirmation.
   const toggleMute = useCallback(() => {
-    setIsMuted(prev => !prev);
-  }, []);
+    if (!isMuted) {
+      setIsMuted(true);
+      return;
+    }
+
+    const ctx = initAudioContext();
+    if (ctx.state === "suspended") void ctx.resume();
+
+    const now = ctx.currentTime;
+    const gainNode = ctx.createGain();
+    const osc = ctx.createOscillator();
+    gainNode.connect(ctx.destination);
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(masterVolume * 0.22, now + 0.015);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(523.25, now);
+    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.12);
+    osc.connect(gainNode);
+    osc.start(now);
+    osc.stop(now + 0.18);
+
+    setIsMuted(false);
+  }, [initAudioContext, isMuted, masterVolume]);
 
   // Update master volume
   const setVolume = useCallback((volume: number) => {

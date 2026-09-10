@@ -176,8 +176,10 @@ export default function Navigation({
             className="rounded-lg border border-cyan-500/25 bg-background/40 p-2 transition-colors hover:border-primary/60 hover:shadow-[0_0_16px_-4px_oklch(0.65_0.25_45/0.45)]"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            title={audioEnabled ? "Mute audio" : "Unmute audio"}
-            aria-label={audioEnabled ? "Mute audio" : "Unmute audio"}
+            title={audioEnabled ? "Mute audio" : "Enable audio"}
+            aria-label={audioEnabled ? "Mute audio" : "Enable audio"}
+            aria-pressed={audioEnabled}
+            data-peoples-sound={audioEnabled ? "on" : "off"}
           >
             {audioEnabled ? (
               <Volume2 className="h-5 w-5 text-primary" />

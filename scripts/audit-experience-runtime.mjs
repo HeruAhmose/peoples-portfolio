@@ -1,10 +1,8 @@
 import fs from "node:fs/promises";
 
-const CDP_HTTP =
-  process.env.PEOPLES_CDP_URL || "http://127.0.0.1:9222";
+const CDP_HTTP = process.env.PEOPLES_CDP_URL || "http://127.0.0.1:9222";
 const BASE =
-  process.env.PEOPLES_BASE_URL ||
-  "http://127.0.0.1:4173/peoples-portfolio/";
+  process.env.PEOPLES_BASE_URL || "http://127.0.0.1:4173/peoples-portfolio/";
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 class CDP {
@@ -125,11 +123,19 @@ try {
   await sleep(300);
   const rafAfter = await cdp.eval(`window.__peoplesMotionProbe.callbacks`);
   if (introStart.canvas && rafAfter <= rafBefore) {
-    throw new Error(`LatticeIgnition motion loop did not advance: ${rafBefore} -> ${rafAfter}`);
+    throw new Error(
+      `LatticeIgnition motion loop did not advance: ${rafBefore} -> ${rafAfter}`
+    );
   }
 
-  await cdp.eval(`document.querySelector('button[aria-label="Skip the opening sequence"]')?.click(); true`);
-  await waitForEval(cdp, `!!document.querySelector('[data-peoples-sound]')`, 60);
+  await cdp.eval(
+    `document.querySelector('button[aria-label="Skip the opening sequence"]')?.click(); true`
+  );
+  await waitForEval(
+    cdp,
+    `!!document.querySelector('[data-peoples-sound]')`,
+    60
+  );
   await sleep(150);
 
   const initial = await cdp.eval(`(() => {
@@ -153,7 +159,9 @@ try {
     throw new Error(`initial contract ${JSON.stringify(initial)}`);
   }
 
-  await cdp.eval(`document.querySelector('[data-peoples-sound]')?.click(); true`);
+  await cdp.eval(
+    `document.querySelector('[data-peoples-sound]')?.click(); true`
+  );
   await sleep(220);
   const afterEnable = await cdp.eval(`(() => ({
     state: document.querySelector('[data-peoples-sound]')?.dataset.peoplesSound,
@@ -164,11 +172,15 @@ try {
     afterEnable.probe.contexts < 1 ||
     afterEnable.probe.oscillators < 1
   ) {
-    throw new Error(`sound did not explicitly enable ${JSON.stringify(afterEnable)}`);
+    throw new Error(
+      `sound did not explicitly enable ${JSON.stringify(afterEnable)}`
+    );
   }
 
   const beforeNav = afterEnable.probe.oscillators;
-  await cdp.eval(`([...document.querySelectorAll('nav button')].find(button => button.textContent.includes('3D GALLERY')))?.click(); true`);
+  await cdp.eval(
+    `([...document.querySelectorAll('nav button')].find(button => button.textContent.includes('3D GALLERY')))?.click(); true`
+  );
   await sleep(650);
   const afterNav = await cdp.eval(`(() => ({
     path: location.pathname,
@@ -184,10 +196,14 @@ try {
     );
   }
 
-  await cdp.eval(`document.querySelector('[data-peoples-sound]')?.click(); true`);
+  await cdp.eval(
+    `document.querySelector('[data-peoples-sound]')?.click(); true`
+  );
   await sleep(150);
   const mutedBefore = await cdp.eval(`window.__peoplesAudioProbe.oscillators`);
-  await cdp.eval(`document.querySelector('button[aria-label="Open H.K. Assistant"]')?.click(); true`);
+  await cdp.eval(
+    `document.querySelector('button[aria-label="Open H.K. Assistant"]')?.click(); true`
+  );
   await sleep(250);
   const mutedAfter = await cdp.eval(`window.__peoplesAudioProbe.oscillators`);
   if (mutedAfter !== mutedBefore) {
@@ -205,14 +221,26 @@ try {
     canvas: !!document.querySelector('[data-peoples-intro-step] canvas'),
     probe: window.__peoplesAudioProbe
   }))()`);
-  if (!reducedIntro.media || reducedIntro.canvas || reducedIntro.probe.contexts !== 0) {
-    throw new Error(`reduced-motion intro contract ${JSON.stringify(reducedIntro)}`);
+  if (
+    !reducedIntro.media ||
+    reducedIntro.canvas ||
+    reducedIntro.probe.contexts !== 0
+  ) {
+    throw new Error(
+      `reduced-motion intro contract ${JSON.stringify(reducedIntro)}`
+    );
   }
 
   if (reducedIntro.intro) {
-    await cdp.eval(`document.querySelector('button[aria-label="Skip the opening sequence"]')?.click(); true`);
+    await cdp.eval(
+      `document.querySelector('button[aria-label="Skip the opening sequence"]')?.click(); true`
+    );
   }
-  await waitForEval(cdp, `!!document.querySelector('[data-peoples-sound]')`, 60);
+  await waitForEval(
+    cdp,
+    `!!document.querySelector('[data-peoples-sound]')`,
+    60
+  );
   await sleep(150);
   const reduced = await cdp.eval(`(() => ({
     media: matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -228,7 +256,9 @@ try {
     reduced.overflow > 1 ||
     reduced.broken.length
   ) {
-    throw new Error(`reduced-motion/layout contract ${JSON.stringify(reduced)}`);
+    throw new Error(
+      `reduced-motion/layout contract ${JSON.stringify(reduced)}`
+    );
   }
 
   const report = {
