@@ -136,11 +136,46 @@ try {
       const root = document.documentElement;
       const overflow = Math.max(0, root.scrollWidth - root.clientWidth);
       maxOverflow = Math.max(maxOverflow, overflow);
+      const offenders = overflow > 1
+        ? [...document.querySelectorAll('*')]
+            .map((element, index) => {
+              const rect = element.getBoundingClientRect();
+              if (rect.right <= root.clientWidth + 1 && rect.left >= -1) return null;
+              const style = getComputedStyle(element);
+              return {
+                index,
+                tag: element.tagName,
+                id: element.id || null,
+                className: typeof element.className === 'string' ? element.className : null,
+                rect: {
+                  left: Number(rect.left.toFixed(2)),
+                  right: Number(rect.right.toFixed(2)),
+                  width: Number(rect.width.toFixed(2))
+                },
+                position: style.position,
+                width: style.width,
+                maxWidth: style.maxWidth,
+                overflowX: style.overflowX,
+                contain: style.contain,
+                transform: style.transform
+              };
+            })
+            .filter(Boolean)
+            .sort((a, b) => {
+              const excessA = Math.max(-a.rect.left, a.rect.right - root.clientWidth, 0);
+              const excessB = Math.max(-b.rect.left, b.rect.right - root.clientWidth, 0);
+              return excessB - excessA;
+            })
+            .slice(0, 12)
+        : [];
       samples.push({
         y,
         overflow,
         clientWidth: root.clientWidth,
-        scrollWidth: root.scrollWidth
+        scrollWidth: root.scrollWidth,
+        innerWidth: window.innerWidth,
+        bodyWidth: document.body?.getBoundingClientRect().width || 0,
+        offenders
       });
     }
     window.scrollTo(0, 0);
@@ -163,6 +198,11 @@ try {
     };
   })()`);
 
+  await fs.writeFile(
+    "peoples-gallery-overflow-audit.json",
+    JSON.stringify(report, null, 2)
+  );
+
   if (report.missing)
     throw new Error("TRAI hologram/grid contract missing on gallery");
   if (report.maxOverflow > 1 || report.finalOverflow > 1) {
@@ -184,10 +224,6 @@ try {
     );
   }
 
-  await fs.writeFile(
-    "peoples-gallery-overflow-audit.json",
-    JSON.stringify(report, null, 2)
-  );
   console.log("PEOPLES_GALLERY_OVERFLOW=PASS");
   console.log(JSON.stringify(report));
 } finally {
