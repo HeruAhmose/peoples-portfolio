@@ -1,8 +1,7 @@
 import fs from "node:fs/promises";
 
-const CDP_HTTP = process.env.PEOPLES_CDP_URL || "http://127.0.0.1:9222";
-const BASE =
-  process.env.PEOPLES_BASE_URL || "http://127.0.0.1:4173/peoples-portfolio/";
+const CDP_HTTP = "http://127.0.0.1:9222";
+const BASE = "http://127.0.0.1:4173/peoples-portfolio/";
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 class CDP {
