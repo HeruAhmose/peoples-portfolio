@@ -177,27 +177,6 @@ try {
       phases.push({ phase, ...(await measure()) });
     }
 
-    const baseline = {
-      phases,
-      maxOverflow: Math.max(...phases.map(item => item.overflow)),
-      maxForcedScrollX: Math.max(...phases.map(item => item.forcedScrollX))
-    };
-
-    const originalGridStyle = grid.style.cssText;
-    grid.style.contain = 'paint';
-    const candidatePhases = [];
-    for (let phase = 0; phase < duration; phase += 900) {
-      animation.currentTime = phase;
-      await wait(45);
-      candidatePhases.push({ phase, ...(await measure()) });
-    }
-    const gridContainPaintCandidate = {
-      phases: candidatePhases,
-      maxOverflow: Math.max(...candidatePhases.map(item => item.overflow)),
-      maxForcedScrollX: Math.max(...candidatePhases.map(item => item.forcedScrollX))
-    };
-    grid.style.cssText = originalGridStyle;
-
     if (originalTime !== null) animation.currentTime = originalTime;
     if (originalPlayState === 'running') animation.play();
     await wait(80);
@@ -208,8 +187,11 @@ try {
     return {
       missing: false,
       duration,
-      baseline,
-      gridContainPaintCandidate,
+      phaseSweep: {
+        phases,
+        maxOverflow: Math.max(...phases.map(item => item.overflow)),
+        maxForcedScrollX: Math.max(...phases.map(item => item.forcedScrollX))
+      },
       geometry: {
         root: {
           clientWidth: root.clientWidth,
@@ -248,7 +230,10 @@ try {
       `TRAI hologram/grid contract missing: ${JSON.stringify(report)}`
     );
   }
-  if (report.baseline.maxOverflow > 1 || report.baseline.maxForcedScrollX > 1) {
+  if (
+    report.phaseSweep.maxOverflow > 1 ||
+    report.phaseSweep.maxForcedScrollX > 1
+  ) {
     throw new Error(
       `Gallery horizontal overflow regression: ${JSON.stringify(report)}`
     );
@@ -264,6 +249,19 @@ try {
   ) {
     throw new Error(
       `TRAI hologram containment contract missing: ${JSON.stringify(report.geometry.hologram)}`
+    );
+  }
+  if (!report.geometry.grid.contain.includes("paint")) {
+    throw new Error(
+      `TRAI grid paint containment missing: ${JSON.stringify(report.geometry.grid)}`
+    );
+  }
+  if (
+    report.geometry.grid.width !== "1296px" ||
+    report.geometry.grid.height !== "1296px"
+  ) {
+    throw new Error(
+      `TRAI grid geometry changed: ${JSON.stringify(report.geometry.grid)}`
     );
   }
 
