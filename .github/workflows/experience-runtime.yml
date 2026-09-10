@@ -1,0 +1,69 @@
+name: Experience runtime
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  experience-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
+        with:
+          version: 10.34.5
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "24"
+          cache: pnpm
+      - name: Install locked graph
+        run: pnpm install --frozen-lockfile
+      - name: Static contracts
+        run: |
+          pnpm audit --audit-level=high
+          pnpm check
+          pnpm test
+          pnpm format:check
+      - name: Build Pages-base artifact
+        env:
+          PEOPLES_STATIC_PAGES: "true"
+        run: pnpm exec vite build --base /peoples-portfolio/
+      - name: Materialize Pages topology
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp dist/public/index.html dist/public/404.html
+          for route in materials community research gallery timeline; do
+            mkdir -p "dist/public/$route"
+            cp dist/public/index.html "dist/public/$route/index.html"
+          done
+          rm -rf /tmp/peoples-pages-root /tmp/peoples-browser-profile
+          mkdir -p /tmp/peoples-pages-root/peoples-portfolio
+          cp -a dist/public/. /tmp/peoples-pages-root/peoples-portfolio/
+      - name: Browser-certify estate, audio, motion, mute, and reduced motion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory /tmp/peoples-pages-root >/tmp/peoples-http.log 2>&1 &
+          server_pid=$!
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          "$chrome" --headless --no-sandbox --disable-gpu --disable-dev-shm-usage \
+            --remote-debugging-port=9222 --remote-allow-origins='*' \
+            --user-data-dir=/tmp/peoples-browser-profile about:blank >/tmp/peoples-chrome.log 2>&1 &
+          chrome_pid=$!
+          trap 'kill "$chrome_pid" "$server_pid" 2>/dev/null || true; cat /tmp/peoples-chrome.log || true; cat /tmp/peoples-http.log || true' EXIT
+          for _ in $(seq 1 240); do
+            curl --fail --silent http://127.0.0.1:9222/json/version >/dev/null && break
+            sleep .25
+          done
+          curl --fail --silent http://127.0.0.1:9222/json/version >/dev/null
+          pnpm audit:built
+          cat peoples-browser-audit.json
+          cat peoples-experience-audit.json
