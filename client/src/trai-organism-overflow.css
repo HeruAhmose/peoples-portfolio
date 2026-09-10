@@ -1,0 +1,6 @@
+/* Keep the fixed TRAI v5.4 hologram's transformed descendants from contributing
+   to document scrollable overflow while preserving the visual animation itself. */
+.trai-v54-hologram {
+  contain: paint !important;
+  overflow: clip !important;
+}
