@@ -92,10 +92,11 @@ try {
   );
   await sleep(900);
 
-  const skipPresent = await cdp.eval(
-    `!!document.querySelector('button[aria-label="Skip the opening sequence"]')`
-  );
-  if (skipPresent) {
+  if (
+    await cdp.eval(
+      `!!document.querySelector('button[aria-label="Skip the opening sequence"]')`
+    )
+  ) {
     await cdp.eval(
       `document.querySelector('button[aria-label="Skip the opening sequence"]')?.click(); true`
     );
@@ -141,25 +142,75 @@ try {
         height: round(rect.height)
       };
     };
-    const scrollState = async () => {
-      const startY = window.scrollY;
-      window.scrollTo(200, startY);
-      await wait(40);
+    const measure = async () => {
+      const y = window.scrollY;
+      const scrollWidth = root.scrollWidth;
+      const clientWidth = root.clientWidth;
+      window.scrollTo(200, y);
+      await wait(25);
       const forcedScrollX = window.scrollX;
-      window.scrollTo(0, startY);
-      await wait(40);
+      window.scrollTo(0, y);
+      await wait(25);
       return {
-        clientWidth: root.clientWidth,
-        scrollWidth: root.scrollWidth,
-        innerWidth: window.innerWidth,
-        overflow: Math.max(0, root.scrollWidth - root.clientWidth),
-        forcedScrollX
+        clientWidth,
+        scrollWidth,
+        overflow: Math.max(0, scrollWidth - clientWidth),
+        forcedScrollX,
+        gridRect: rectOf(grid)
       };
     };
-    const snapshot = () => {
-      const gridStyle = getComputedStyle(grid);
-      const hologramStyle = getComputedStyle(hologram);
-      return {
+    const animation = grid.getAnimations().find(item => {
+      const name = getComputedStyle(grid).animationName;
+      return name.includes('v54-grid-drift') && item.effect;
+    });
+    if (!animation) return { missingAnimation: true };
+
+    const originalPlayState = animation.playState;
+    const originalTime = animation.currentTime;
+    animation.pause();
+    const timing = animation.effect.getTiming();
+    const duration = Number(timing.duration);
+    const phases = [];
+    for (let phase = 0; phase < duration; phase += 900) {
+      animation.currentTime = phase;
+      await wait(45);
+      phases.push({ phase, ...(await measure()) });
+    }
+
+    const baseline = {
+      phases,
+      maxOverflow: Math.max(...phases.map(item => item.overflow)),
+      maxForcedScrollX: Math.max(...phases.map(item => item.forcedScrollX))
+    };
+
+    const originalGridStyle = grid.style.cssText;
+    grid.style.contain = 'paint';
+    const candidatePhases = [];
+    for (let phase = 0; phase < duration; phase += 900) {
+      animation.currentTime = phase;
+      await wait(45);
+      candidatePhases.push({ phase, ...(await measure()) });
+    }
+    const gridContainPaintCandidate = {
+      phases: candidatePhases,
+      maxOverflow: Math.max(...candidatePhases.map(item => item.overflow)),
+      maxForcedScrollX: Math.max(...candidatePhases.map(item => item.forcedScrollX))
+    };
+    grid.style.cssText = originalGridStyle;
+
+    if (originalTime !== null) animation.currentTime = originalTime;
+    if (originalPlayState === 'running') animation.play();
+    await wait(80);
+
+    window.scrollTo(0, 0);
+    const gridStyle = getComputedStyle(grid);
+    const hologramStyle = getComputedStyle(hologram);
+    return {
+      missing: false,
+      duration,
+      baseline,
+      gridContainPaintCandidate,
+      geometry: {
         root: {
           clientWidth: root.clientWidth,
           scrollWidth: root.scrollWidth,
@@ -168,13 +219,9 @@ try {
         },
         hologram: {
           rect: rectOf(hologram),
-          computedWidth: hologramStyle.width,
-          computedRight: hologramStyle.right,
-          computedLeft: hologramStyle.left,
+          width: hologramStyle.width,
           contain: hologramStyle.contain,
           overflowX: hologramStyle.overflowX,
-          clipPath: hologramStyle.clipPath,
-          perspective: hologramStyle.perspective,
           inlineWidth: hologram.style.width || null,
           inlineRight: hologram.style.right || null
         },
@@ -183,142 +230,10 @@ try {
           width: gridStyle.width,
           height: gridStyle.height,
           animationName: gridStyle.animationName,
-          backgroundImage: gridStyle.backgroundImage,
           contain: gridStyle.contain,
-          overflowX: gridStyle.overflowX,
-          clipPath: gridStyle.clipPath,
-          transform: gridStyle.transform
+          backgroundImage: gridStyle.backgroundImage
         }
-      };
-    };
-    const trial = async (name, apply) => {
-      const gridCss = grid.style.cssText;
-      const hologramCss = hologram.style.cssText;
-      window.scrollTo(0, 0);
-      await wait(60);
-      apply();
-      await wait(100);
-      const state = await scrollState();
-      const geometry = snapshot();
-      grid.style.cssText = gridCss;
-      hologram.style.cssText = hologramCss;
-      await wait(100);
-      return { name, state, geometry };
-    };
-
-    window.scrollTo(0, 0);
-    await wait(120);
-    const baselineGeometry = snapshot();
-    const baselineScroll = await scrollState();
-
-    const candidates = [];
-    if (baselineScroll.overflow > 1 || baselineScroll.forcedScrollX > 1) {
-      candidates.push(await trial('hide-grid', () => {
-        grid.style.display = 'none';
-      }));
-      candidates.push(await trial('grid-no-transform', () => {
-        grid.style.animation = 'none';
-        grid.style.transform = 'translate(-50%, -50%)';
-      }));
-      candidates.push(await trial('grid-contain-paint', () => {
-        grid.style.contain = 'paint';
-      }));
-      candidates.push(await trial('grid-clip-path', () => {
-        grid.style.clipPath = 'inset(0)';
-      }));
-      candidates.push(await trial('hologram-clip-path', () => {
-        hologram.style.clipPath = 'inset(0)';
-      }));
-      candidates.push(await trial('hologram-overflow-hidden', () => {
-        hologram.style.overflow = 'hidden';
-      }));
-      candidates.push(await trial('hologram-no-perspective', () => {
-        hologram.style.perspective = 'none';
-      }));
-      candidates.push(await trial('grid-overflow-hidden', () => {
-        grid.style.overflow = 'hidden';
-      }));
-    }
-
-    const samples = [];
-    let maxOverflow = 0;
-    let maxForcedScrollX = 0;
-    const maxHeight = Math.min(
-      Math.max(root.scrollHeight, document.body?.scrollHeight || 0),
-      24000
-    );
-    const step = Math.max(240, Math.floor(window.innerHeight * .55));
-    for (let y = 0; y <= maxHeight; y += step) {
-      window.scrollTo(0, y);
-      await wait(70);
-      const overflow = Math.max(0, root.scrollWidth - root.clientWidth);
-      const forced = await scrollState();
-      maxOverflow = Math.max(maxOverflow, overflow);
-      maxForcedScrollX = Math.max(maxForcedScrollX, forced.forcedScrollX);
-      const offenders = overflow > 1
-        ? [...document.querySelectorAll('*')]
-            .map((element, index) => {
-              const rect = element.getBoundingClientRect();
-              if (rect.right <= root.clientWidth + 1 && rect.left >= -1) return null;
-              const style = getComputedStyle(element);
-              return {
-                index,
-                tag: element.tagName,
-                id: element.id || null,
-                className:
-                  typeof element.className === 'string' ? element.className : null,
-                rect: {
-                  left: round(rect.left),
-                  right: round(rect.right),
-                  width: round(rect.width)
-                },
-                position: style.position,
-                width: style.width,
-                maxWidth: style.maxWidth,
-                overflowX: style.overflowX,
-                contain: style.contain,
-                clipPath: style.clipPath,
-                transform: style.transform
-              };
-            })
-            .filter(Boolean)
-            .sort((a, b) => {
-              const excessA = Math.max(-a.rect.left, a.rect.right - root.clientWidth, 0);
-              const excessB = Math.max(-b.rect.left, b.rect.right - root.clientWidth, 0);
-              return excessB - excessA;
-            })
-            .slice(0, 12)
-        : [];
-      samples.push({
-        y,
-        overflow,
-        forcedScrollX: forced.forcedScrollX,
-        clientWidth: root.clientWidth,
-        scrollWidth: root.scrollWidth,
-        innerWidth: window.innerWidth,
-        bodyWidth: round(document.body?.getBoundingClientRect().width || 0),
-        hologramRect: rectOf(hologram),
-        hologramInlineWidth: hologram.style.width || null,
-        offenders
-      });
-    }
-
-    window.scrollTo(0, 0);
-    await wait(120);
-    const finalScroll = await scrollState();
-    const finalGeometry = snapshot();
-
-    return {
-      missing: false,
-      baselineScroll,
-      baselineGeometry,
-      candidates,
-      maxOverflow,
-      maxForcedScrollX,
-      finalOverflow: finalScroll.overflow,
-      finalForcedScrollX: finalScroll.forcedScrollX,
-      samples,
-      finalGeometry
+      }
     };
   })()`);
 
@@ -326,34 +241,30 @@ try {
     "peoples-gallery-overflow-audit.json",
     JSON.stringify(report, null, 2)
   );
-  console.log(`PEOPLES_GALLERY_DIAGNOSTICS=${JSON.stringify(report)}`);
+  console.log(`PEOPLES_GALLERY_PHASE_AUDIT=${JSON.stringify(report)}`);
 
-  if (report.missing) {
-    throw new Error("TRAI hologram/grid contract missing on gallery");
+  if (report.missing || report.missingAnimation) {
+    throw new Error(`TRAI hologram/grid contract missing: ${JSON.stringify(report)}`);
   }
   if (
-    report.maxOverflow > 1 ||
-    report.maxForcedScrollX > 1 ||
-    report.finalOverflow > 1 ||
-    report.finalForcedScrollX > 1
+    report.baseline.maxOverflow > 1 ||
+    report.baseline.maxForcedScrollX > 1
   ) {
     throw new Error(
       `Gallery horizontal overflow regression: ${JSON.stringify(report)}`
     );
   }
-
-  const visual = report.finalGeometry;
-  if (!visual.grid.animationName.includes("v54-grid-drift")) {
+  if (!report.geometry.grid.animationName.includes("v54-grid-drift")) {
     throw new Error(
-      `TRAI grid animation contract changed: ${visual.grid.animationName}`
+      `TRAI grid animation contract changed: ${report.geometry.grid.animationName}`
     );
   }
   if (
-    !visual.hologram.contain.includes("paint") ||
-    visual.hologram.overflowX !== "clip"
+    !report.geometry.hologram.contain.includes("paint") ||
+    report.geometry.hologram.overflowX !== "clip"
   ) {
     throw new Error(
-      `TRAI hologram containment contract missing: ${JSON.stringify(visual.hologram)}`
+      `TRAI hologram containment contract missing: ${JSON.stringify(report.geometry.hologram)}`
     );
   }
 
