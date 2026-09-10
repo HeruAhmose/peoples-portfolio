@@ -1,0 +1,41 @@
+name: Format gallery overflow audit
+
+on:
+  push:
+    branches:
+      - fix/gallery-hologram-overflow-20260910
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: fix/gallery-hologram-overflow-20260910
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86
+        with:
+          version: 10.34.5
+          run_install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Apply locked Prettier to deterministic gallery audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec prettier --write scripts/audit-gallery-overflow.mjs
+          pnpm exec prettier --check scripts/audit-gallery-overflow.mjs
+          if git diff --quiet -- scripts/audit-gallery-overflow.mjs; then
+            echo "No formatting delta"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/audit-gallery-overflow.mjs
+          git commit -m "style(gallery): format deterministic overflow audit"
+          git push origin HEAD:fix/gallery-hologram-overflow-20260910
