@@ -39,9 +39,12 @@ jobs:
           grep -Fq 'data-peoples-sound' client/src/components/Navigation.tsx
           grep -Fq 'audit-experience-runtime.mjs' package.json
           test -z "$(git diff --name-only -- pnpm-lock.yaml)"
-      - name: Install and static checks
+      - name: Install locked graph
+        run: pnpm install --frozen-lockfile
+      - name: Format permanent experience audit
+        run: pnpm exec prettier --write scripts/audit-experience-runtime.mjs
+      - name: Static checks
         run: |
-          pnpm install --frozen-lockfile
           pnpm audit --audit-level=high
           pnpm check
           pnpm test
@@ -83,6 +86,6 @@ jobs:
           set -euo pipefail
           git config user.name 'Heru_Ahmose'
           git config user.email 'aitconsult22@gmail.com'
-          git add client/src/App.tsx client/src/components/Navigation.tsx client/src/hooks/useAudioSystem.ts package.json
+          git add client/src/App.tsx client/src/components/Navigation.tsx client/src/hooks/useAudioSystem.ts package.json scripts/audit-experience-runtime.mjs
           git commit -m 'fix(experience): require explicit Peoples audio opt-in'
           git push origin HEAD:fix/experience-runtime-20260910
