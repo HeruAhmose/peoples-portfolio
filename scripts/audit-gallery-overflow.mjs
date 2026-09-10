@@ -10,6 +10,7 @@ class CDP {
     this.id = 0;
     this.pending = new Map();
   }
+
   async open() {
     this.ws = new WebSocket(this.url);
     await new Promise((resolve, reject) => {
@@ -26,6 +27,7 @@ class CDP {
         : waiter.resolve(msg.result);
     });
   }
+
   send(method, params = {}) {
     const id = ++this.id;
     return new Promise((resolve, reject) => {
@@ -33,6 +35,7 @@ class CDP {
       this.ws.send(JSON.stringify({ id, method, params }));
     });
   }
+
   async eval(expression) {
     const result = await this.send("Runtime.evaluate", {
       expression,
@@ -48,6 +51,7 @@ class CDP {
     }
     return result.result.value;
   }
+
   close() {
     this.ws?.close();
   }
@@ -111,8 +115,9 @@ try {
     button.click();
     return true;
   })()`);
-  if (!clicked)
+  if (!clicked) {
     throw new Error("Visible 3D GALLERY navigation control missing");
+  }
   await waitForEval(cdp, `location.pathname.endsWith('/gallery')`, 80, 100);
   await waitForEval(cdp, `!!document.querySelector('.trai-v54-grid')`, 80, 100);
   await sleep(650);
@@ -121,21 +126,135 @@ try {
     const grid = document.querySelector('.trai-v54-grid');
     const hologram = document.querySelector('.trai-v54-hologram');
     if (!grid || !hologram) return { missing: true };
-    const gridStyle = getComputedStyle(grid);
-    const hologramStyle = getComputedStyle(hologram);
+
+    const root = document.documentElement;
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const round = value => Number(value.toFixed(2));
+    const rectOf = element => {
+      const rect = element.getBoundingClientRect();
+      return {
+        left: round(rect.left),
+        right: round(rect.right),
+        top: round(rect.top),
+        bottom: round(rect.bottom),
+        width: round(rect.width),
+        height: round(rect.height)
+      };
+    };
+    const scrollState = async () => {
+      const startY = window.scrollY;
+      window.scrollTo(200, startY);
+      await wait(40);
+      const forcedScrollX = window.scrollX;
+      window.scrollTo(0, startY);
+      await wait(40);
+      return {
+        clientWidth: root.clientWidth,
+        scrollWidth: root.scrollWidth,
+        innerWidth: window.innerWidth,
+        overflow: Math.max(0, root.scrollWidth - root.clientWidth),
+        forcedScrollX
+      };
+    };
+    const snapshot = () => {
+      const gridStyle = getComputedStyle(grid);
+      const hologramStyle = getComputedStyle(hologram);
+      return {
+        root: {
+          clientWidth: root.clientWidth,
+          scrollWidth: root.scrollWidth,
+          innerWidth: window.innerWidth,
+          bodyWidth: round(document.body?.getBoundingClientRect().width || 0)
+        },
+        hologram: {
+          rect: rectOf(hologram),
+          computedWidth: hologramStyle.width,
+          computedRight: hologramStyle.right,
+          computedLeft: hologramStyle.left,
+          contain: hologramStyle.contain,
+          overflowX: hologramStyle.overflowX,
+          clipPath: hologramStyle.clipPath,
+          perspective: hologramStyle.perspective,
+          inlineWidth: hologram.style.width || null,
+          inlineRight: hologram.style.right || null
+        },
+        grid: {
+          rect: rectOf(grid),
+          width: gridStyle.width,
+          height: gridStyle.height,
+          animationName: gridStyle.animationName,
+          backgroundImage: gridStyle.backgroundImage,
+          contain: gridStyle.contain,
+          overflowX: gridStyle.overflowX,
+          clipPath: gridStyle.clipPath,
+          transform: gridStyle.transform
+        }
+      };
+    };
+    const trial = async (name, apply) => {
+      const gridCss = grid.style.cssText;
+      const hologramCss = hologram.style.cssText;
+      window.scrollTo(0, 0);
+      await wait(60);
+      apply();
+      await wait(100);
+      const state = await scrollState();
+      const geometry = snapshot();
+      grid.style.cssText = gridCss;
+      hologram.style.cssText = hologramCss;
+      await wait(100);
+      return { name, state, geometry };
+    };
+
+    window.scrollTo(0, 0);
+    await wait(120);
+    const baselineGeometry = snapshot();
+    const baselineScroll = await scrollState();
+
+    const candidates = [];
+    if (baselineScroll.overflow > 1 || baselineScroll.forcedScrollX > 1) {
+      candidates.push(await trial('hide-grid', () => {
+        grid.style.display = 'none';
+      }));
+      candidates.push(await trial('grid-no-transform', () => {
+        grid.style.animation = 'none';
+        grid.style.transform = 'translate(-50%, -50%)';
+      }));
+      candidates.push(await trial('grid-contain-paint', () => {
+        grid.style.contain = 'paint';
+      }));
+      candidates.push(await trial('grid-clip-path', () => {
+        grid.style.clipPath = 'inset(0)';
+      }));
+      candidates.push(await trial('hologram-clip-path', () => {
+        hologram.style.clipPath = 'inset(0)';
+      }));
+      candidates.push(await trial('hologram-overflow-hidden', () => {
+        hologram.style.overflow = 'hidden';
+      }));
+      candidates.push(await trial('hologram-no-perspective', () => {
+        hologram.style.perspective = 'none';
+      }));
+      candidates.push(await trial('grid-overflow-hidden', () => {
+        grid.style.overflow = 'hidden';
+      }));
+    }
+
     const samples = [];
     let maxOverflow = 0;
+    let maxForcedScrollX = 0;
     const maxHeight = Math.min(
-      Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0),
+      Math.max(root.scrollHeight, document.body?.scrollHeight || 0),
       24000
     );
     const step = Math.max(240, Math.floor(window.innerHeight * .55));
     for (let y = 0; y <= maxHeight; y += step) {
       window.scrollTo(0, y);
-      await new Promise(resolve => setTimeout(resolve, 70));
-      const root = document.documentElement;
+      await wait(70);
       const overflow = Math.max(0, root.scrollWidth - root.clientWidth);
+      const forced = await scrollState();
       maxOverflow = Math.max(maxOverflow, overflow);
+      maxForcedScrollX = Math.max(maxForcedScrollX, forced.forcedScrollX);
       const offenders = overflow > 1
         ? [...document.querySelectorAll('*')]
             .map((element, index) => {
@@ -146,17 +265,19 @@ try {
                 index,
                 tag: element.tagName,
                 id: element.id || null,
-                className: typeof element.className === 'string' ? element.className : null,
+                className:
+                  typeof element.className === 'string' ? element.className : null,
                 rect: {
-                  left: Number(rect.left.toFixed(2)),
-                  right: Number(rect.right.toFixed(2)),
-                  width: Number(rect.width.toFixed(2))
+                  left: round(rect.left),
+                  right: round(rect.right),
+                  width: round(rect.width)
                 },
                 position: style.position,
                 width: style.width,
                 maxWidth: style.maxWidth,
                 overflowX: style.overflowX,
                 contain: style.contain,
+                clipPath: style.clipPath,
                 transform: style.transform
               };
             })
@@ -171,30 +292,33 @@ try {
       samples.push({
         y,
         overflow,
+        forcedScrollX: forced.forcedScrollX,
         clientWidth: root.clientWidth,
         scrollWidth: root.scrollWidth,
         innerWidth: window.innerWidth,
-        bodyWidth: document.body?.getBoundingClientRect().width || 0,
+        bodyWidth: round(document.body?.getBoundingClientRect().width || 0),
+        hologramRect: rectOf(hologram),
+        hologramInlineWidth: hologram.style.width || null,
         offenders
       });
     }
+
     window.scrollTo(0, 0);
-    await new Promise(resolve => setTimeout(resolve, 120));
+    await wait(120);
+    const finalScroll = await scrollState();
+    const finalGeometry = snapshot();
+
     return {
       missing: false,
+      baselineScroll,
+      baselineGeometry,
+      candidates,
       maxOverflow,
-      finalOverflow: Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth),
+      maxForcedScrollX,
+      finalOverflow: finalScroll.overflow,
+      finalForcedScrollX: finalScroll.forcedScrollX,
       samples,
-      visual: {
-        gridWidth: gridStyle.width,
-        gridHeight: gridStyle.height,
-        animationName: gridStyle.animationName,
-        backgroundImage: gridStyle.backgroundImage,
-        hologramOpacity: hologramStyle.opacity,
-        hologramMixBlendMode: hologramStyle.mixBlendMode,
-        contain: hologramStyle.contain,
-        overflowX: hologramStyle.overflowX
-      }
+      finalGeometry
     };
   })()`);
 
@@ -202,30 +326,38 @@ try {
     "peoples-gallery-overflow-audit.json",
     JSON.stringify(report, null, 2)
   );
+  console.log(`PEOPLES_GALLERY_DIAGNOSTICS=${JSON.stringify(report)}`);
 
-  if (report.missing)
+  if (report.missing) {
     throw new Error("TRAI hologram/grid contract missing on gallery");
-  if (report.maxOverflow > 1 || report.finalOverflow > 1) {
+  }
+  if (
+    report.maxOverflow > 1 ||
+    report.maxForcedScrollX > 1 ||
+    report.finalOverflow > 1 ||
+    report.finalForcedScrollX > 1
+  ) {
     throw new Error(
       `Gallery horizontal overflow regression: ${JSON.stringify(report)}`
     );
   }
-  if (!report.visual.animationName.includes("v54-grid-drift")) {
+
+  const visual = report.finalGeometry;
+  if (!visual.grid.animationName.includes("v54-grid-drift")) {
     throw new Error(
-      `TRAI grid animation contract changed: ${report.visual.animationName}`
+      `TRAI grid animation contract changed: ${visual.grid.animationName}`
     );
   }
   if (
-    !report.visual.contain.includes("paint") ||
-    report.visual.overflowX !== "clip"
+    !visual.hologram.contain.includes("paint") ||
+    visual.hologram.overflowX !== "clip"
   ) {
     throw new Error(
-      `TRAI hologram containment contract missing: ${JSON.stringify(report.visual)}`
+      `TRAI hologram containment contract missing: ${JSON.stringify(visual.hologram)}`
     );
   }
 
   console.log("PEOPLES_GALLERY_OVERFLOW=PASS");
-  console.log(JSON.stringify(report));
 } finally {
   cdp.close();
 }
