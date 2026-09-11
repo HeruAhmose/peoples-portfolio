@@ -32,9 +32,10 @@
   animation-name: peoples-trai-v5-internal-contained !important;
 }
 
-/* The organism marks this state before document.startViewTransition(). Reserve
-   the scrollbar gutter during that exact snapshot window so the old and new root
-   snapshots share one layout width even when the destination becomes scrollable. */
-html[data-trai-v5-internal="true"] {
+/* Reserve scrollbar geometry before any same-origin View Transition snapshot is
+   captured. This keeps the root layout width stable when a destination route is
+   taller than its source, preventing the browser snapshot layer from creating a
+   transient horizontal scroll offset while preserving native transition effects. */
+html {
   scrollbar-gutter: stable;
 }
