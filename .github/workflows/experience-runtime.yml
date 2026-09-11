@@ -47,7 +47,7 @@ jobs:
           rm -rf /tmp/peoples-pages-root /tmp/peoples-browser-profile
           mkdir -p /tmp/peoples-pages-root/peoples-portfolio
           cp -a dist/public/. /tmp/peoples-pages-root/peoples-portfolio/
-      - name: Browser-certify estate, audio, motion, mute, and reduced motion
+      - name: Browser-certify estate, audio, motion, mute, reduced motion, and gallery containment
         shell: bash
         run: |
           set -euo pipefail
@@ -65,5 +65,7 @@ jobs:
           done
           curl --fail --silent http://127.0.0.1:9222/json/version >/dev/null
           pnpm audit:built
+          node scripts/audit-gallery-overflow.mjs
           cat peoples-browser-audit.json
           cat peoples-experience-audit.json
+          cat peoples-gallery-overflow-audit.json

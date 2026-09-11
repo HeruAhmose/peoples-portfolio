@@ -1,0 +1,42 @@
+/* Keep the fixed TRAI v5.4 hologram's transformed descendants from contributing
+   to document scrollable overflow while preserving the visual animation itself. */
+.trai-v54-hologram {
+  left: 0 !important;
+  right: auto !important;
+  contain: layout paint !important;
+  overflow: clip !important;
+}
+
+.trai-v54-grid {
+  contain: paint !important;
+}
+
+/* The TRAI same-origin transition pulse remains mounted after its fade completes.
+   Keep the pulse choreography, but do not leave a scaled fixed viewport layer in
+   the document scroll area during that tail window. */
+@keyframes peoples-trai-v5-internal-contained {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  36% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.trai-v5-internal-pulse {
+  animation-name: peoples-trai-v5-internal-contained !important;
+}
+
+/* Chromium's root View Transition snapshot can retain the source scrollport width
+   while a taller destination introduces a vertical scrollbar, briefly allowing an
+   8px horizontal offset. The organism sets this state before startViewTransition;
+   opt the root out of that snapshot only for the internal handoff. The authored
+   pulse above remains the visible transition, and the route callback is unchanged. */
+html[data-trai-v5-internal="true"] {
+  view-transition-name: none;
+}
