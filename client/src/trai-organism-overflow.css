@@ -10,3 +10,24 @@
 .trai-v54-grid {
   contain: paint !important;
 }
+
+/* The TRAI same-origin transition pulse remains mounted after its fade completes.
+   Keep the pulse choreography, but do not leave a scaled fixed viewport layer in
+   the document scroll area during that tail window. */
+@keyframes peoples-trai-v5-internal-contained {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  36% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.trai-v5-internal-pulse {
+  animation-name: peoples-trai-v5-internal-contained !important;
+}
