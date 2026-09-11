@@ -150,6 +150,12 @@ try {
       } catch {}
       return target ? String(target) : null;
     };
+    const viewTransitionAnimations = () => document.getAnimations({ subtree: true })
+      .filter(animation => {
+        const effect = animation.effect;
+        const pseudo = effect?.pseudoElement || effect?.target?.pseudoElement || '';
+        return String(pseudo).includes('view-transition');
+      });
     const activeAnimations = () => document.getAnimations({ subtree: true })
       .filter(animation => animation.playState !== 'finished' && animation.playState !== 'idle')
       .map(animation => {
@@ -224,6 +230,7 @@ try {
 
     const started = performance.now();
     const samples = [];
+    let canceledViewTransition = false;
     for (let i = 0; i < 12; i++) {
       const forcedScrollX = await forceScrollX();
       const sample = {
@@ -244,12 +251,27 @@ try {
           hologramHidden: await withHidden('.trai-v54-hologram'),
           transitionHidden: await withHidden('.trai-v5-transition')
         };
+        const pseudoAnimations = viewTransitionAnimations();
+        if (!canceledViewTransition && pseudoAnimations.length > 0) {
+          const names = pseudoAnimations.map(animation => animation.animationName || null);
+          pseudoAnimations.forEach(animation => animation.cancel());
+          canceledViewTransition = true;
+          await wait(20);
+          sample.ab.viewTransitionCanceled = {
+            count: pseudoAnimations.length,
+            names,
+            forcedScrollX: await forceScrollX(),
+            scrollWidth: root.scrollWidth,
+            clientWidth: root.clientWidth
+          };
+        }
       }
       samples.push(sample);
       await wait(50);
     }
     return {
       samples,
+      canceledViewTransition,
       maxOverflow: Math.max(...samples.map(item => item.overflow)),
       maxForcedScrollX: Math.max(...samples.map(item => item.forcedScrollX))
     };
