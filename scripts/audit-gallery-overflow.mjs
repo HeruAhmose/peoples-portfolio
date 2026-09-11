@@ -121,7 +121,142 @@ try {
   }
   await waitForEval(cdp, `location.pathname.endsWith('/gallery')`, 80, 100);
   await waitForEval(cdp, `!!document.querySelector('.trai-v54-grid')`, 80, 100);
-  await sleep(650);
+
+  const transient = await cdp.eval(`(async () => {
+    const root = document.documentElement;
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const round = value => Number(Number(value || 0).toFixed(2));
+    const forceScrollX = async () => {
+      const y = window.scrollY;
+      window.scrollTo(200, y);
+      await wait(8);
+      const x = window.scrollX;
+      window.scrollTo(0, y);
+      await wait(8);
+      return x;
+    };
+    const labelTarget = target => {
+      try {
+        if (target instanceof Element) {
+          const cls = typeof target.className === 'string'
+            ? target.className.trim().replace(/\\s+/g, '.')
+            : '';
+          return target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (cls ? '.' + cls : '');
+        }
+        if (target?.element instanceof Element) {
+          const element = target.element;
+          return 'pseudo:' + String(target.pseudoElement || '') + ':' + element.tagName.toLowerCase();
+        }
+      } catch {}
+      return target ? String(target) : null;
+    };
+    const activeAnimations = () => document.getAnimations({ subtree: true })
+      .filter(animation => animation.playState !== 'finished' && animation.playState !== 'idle')
+      .map(animation => {
+        const effect = animation.effect;
+        const timing = effect?.getComputedTiming?.() || {};
+        return {
+          animationName: animation.animationName || null,
+          playState: animation.playState,
+          currentTime: round(animation.currentTime),
+          duration: typeof timing.duration === 'number' ? round(timing.duration) : String(timing.duration || ''),
+          target: labelTarget(effect?.target),
+          pseudoElement: effect?.pseudoElement || effect?.target?.pseudoElement || null
+        };
+      })
+      .filter(item =>
+        item.animationName?.includes('trai') ||
+        item.pseudoElement?.includes('view-transition') ||
+        item.target?.includes('trai') ||
+        item.target?.includes('aurora')
+      );
+    const pulseState = () => [...document.querySelectorAll('.trai-v5-internal-pulse')].map(element => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return {
+        animationName: style.animationName,
+        transform: style.transform,
+        opacity: style.opacity,
+        rect: {
+          left: round(rect.left),
+          right: round(rect.right),
+          width: round(rect.width)
+        }
+      };
+    });
+    const offenders = () => [...document.querySelectorAll('body *')]
+      .map(element => {
+        const rect = element.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return null;
+        if (rect.right <= root.clientWidth + 1 && rect.left >= -1) return null;
+        const style = getComputedStyle(element);
+        if (style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          tag: element.tagName.toLowerCase(),
+          id: element.id || null,
+          className: typeof element.className === 'string' ? element.className.slice(0, 160) : null,
+          left: round(rect.left),
+          right: round(rect.right),
+          width: round(rect.width),
+          position: style.position,
+          transform: style.transform
+        };
+      })
+      .filter(Boolean)
+      .slice(0, 30);
+    const withHidden = async selector => {
+      const nodes = [...document.querySelectorAll(selector)];
+      const previous = nodes.map(node => ({
+        node,
+        value: node.style.getPropertyValue('display'),
+        priority: node.style.getPropertyPriority('display')
+      }));
+      nodes.forEach(node => node.style.setProperty('display', 'none', 'important'));
+      await wait(4);
+      const x = await forceScrollX();
+      previous.forEach(({ node, value, priority }) => {
+        if (value) node.style.setProperty('display', value, priority);
+        else node.style.removeProperty('display');
+      });
+      await wait(4);
+      return { count: nodes.length, forcedScrollX: x };
+    };
+
+    const started = performance.now();
+    const samples = [];
+    for (let i = 0; i < 12; i++) {
+      const forcedScrollX = await forceScrollX();
+      const sample = {
+        elapsed: round(performance.now() - started),
+        clientWidth: root.clientWidth,
+        scrollWidth: root.scrollWidth,
+        overflow: Math.max(0, root.scrollWidth - root.clientWidth),
+        forcedScrollX,
+        traiV5Internal: root.dataset.traiV5Internal || null,
+        pulses: pulseState(),
+        animations: activeAnimations()
+      };
+      if (forcedScrollX > 1) {
+        sample.offenders = offenders();
+        sample.ab = {
+          pulseHidden: await withHidden('.trai-v5-internal-pulse'),
+          auroraHidden: await withHidden('.afro-aurora-veil'),
+          hologramHidden: await withHidden('.trai-v54-hologram'),
+          transitionHidden: await withHidden('.trai-v5-transition')
+        };
+      }
+      samples.push(sample);
+      await wait(50);
+    }
+    return {
+      samples,
+      maxOverflow: Math.max(...samples.map(item => item.overflow)),
+      maxForcedScrollX: Math.max(...samples.map(item => item.forcedScrollX))
+    };
+  })()`);
+  console.log(`PEOPLES_GALLERY_TRANSIENT_AUDIT=${JSON.stringify(transient)}`);
+
+  await sleep(150);
 
   const report = await cdp.eval(`(async () => {
     const grid = document.querySelector('.trai-v54-grid');
@@ -219,9 +354,10 @@ try {
     };
   })()`);
 
+  const combined = { transient, ...report };
   await fs.writeFile(
     "peoples-gallery-overflow-audit.json",
-    JSON.stringify(report, null, 2)
+    JSON.stringify(combined, null, 2)
   );
   console.log(`PEOPLES_GALLERY_PHASE_AUDIT=${JSON.stringify(report)}`);
 
@@ -231,11 +367,13 @@ try {
     );
   }
   if (
+    transient.maxOverflow > 1 ||
+    transient.maxForcedScrollX > 1 ||
     report.phaseSweep.maxOverflow > 1 ||
     report.phaseSweep.maxForcedScrollX > 1
   ) {
     throw new Error(
-      `Gallery horizontal overflow regression: ${JSON.stringify(report)}`
+      `Gallery horizontal overflow regression: ${JSON.stringify(combined)}`
     );
   }
   if (!report.geometry.grid.animationName.includes("v54-grid-drift")) {
