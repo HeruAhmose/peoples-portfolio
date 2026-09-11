@@ -31,3 +31,24 @@
 .trai-v5-internal-pulse {
   animation-name: peoples-trai-v5-internal-contained !important;
 }
+
+/* The organism's incoming root View Transition previously began at scale(1.018).
+   That 1.8% viewport enlargement made the page horizontally scrollable by the
+   scrollbar gutter while the transition was active. Preserve the authored blur
+   and opacity reveal, but keep the root geometry at scale(1). */
+@keyframes peoples-trai-v52-view-new-contained {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+html[data-trai-v5-internal="true"]::view-transition-new(root) {
+  animation-name: peoples-trai-v52-view-new-contained !important;
+}
